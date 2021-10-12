@@ -85,7 +85,9 @@ onMouseLeave = (e) => {
     return (
       <div ref={el => { this.container = el;}}>
       <Seo />
-    {currentUser ? (
+    {currentUser ? 
+      currentUser.group === 'admin' ?
+      (
         <nav className="navbar navbar-expand navbar-dark bg-dark">
           <span className="navbar-brand">
             Goodusdata
@@ -159,7 +161,10 @@ onMouseLeave = (e) => {
               </li>
             </div>
          </nav>
-          ) :null}
+          ) :null 
+      : null
+    }
+
 
         <div className="container mt-3">
           <Switch>

@@ -112,6 +112,12 @@ export default class Register extends Component {
 
   onChangeGroups(e) {
     this.setState({
+      group: e.target.value
+    });
+  }
+
+  onChangeGroups(e) {
+    this.setState({
       groups: e.target.value
     });
   }

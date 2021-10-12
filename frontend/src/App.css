@@ -96,3 +96,10 @@ label {
 
 .json-to-table td[colspan='2'] > div {padding:15px 0 10px;}
 .json-to-table td[colspan='2'] table tr:nth-child(odd) {background: #fff} 
+
+.admin {
+
+}
+.admin table .btn {
+  font-size: 11px;
+}

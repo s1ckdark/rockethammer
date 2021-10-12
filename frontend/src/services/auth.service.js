@@ -1,29 +1,31 @@
 import axios from "axios";
-
-const API_URL = "http://172.41.41.182:8080/api/auth/";
+import dotenv from 'dotenv'
+dotenv.config()
+const API_URL = process.env.REACT_APP_API;
 
 class AuthService {
   login(username, password) {
     return axios
-      .post(API_URL + "signin", {
+      .post(API_URL + "/auth/signin", {
         username,
         password
       })
       .then(response => {
         if (response.data.accessToken) {
           localStorage.setItem("user", JSON.stringify(response.data));
+          window.whoami = response.data;
         }
 
         return response.data;
       });
   }
-
+   
   logout() {
     localStorage.removeItem("user");
   }
 
   register(username, password, name, dept,groups) {
-    return axios.post(API_URL + "signup", {
+    return axios.post(API_URL + "/auth/signup", {
       username,
       password,
       name,
