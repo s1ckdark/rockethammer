@@ -1,7 +1,9 @@
 import axios from 'axios';
 import authHeader from './auth-header';
+import dotenv from 'dotenv'
 
-const API_URL = 'http://172.41.41.182:8080/api/test/';
+dotenv.config()
+const API_URL = process.env.REACT_APP_API;
 
 class UserService {
   getPublicContent() {
