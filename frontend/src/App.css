@@ -100,6 +100,14 @@ label {
 .admin {
 
 }
+.admin .list .form-control {
+  font-size: .8em;
+}
+.admin .list td.index p {
+  margin: 0;
+  height: calc(1.5em + .75rem + 2px);
+  padding: .375rem .75rem;
+}
 .admin table .btn {
   font-size: 11px;
 }

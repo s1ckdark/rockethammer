@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { useHistory } from "react-router-dom";
 import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
@@ -55,70 +56,27 @@ const vdept = value => {
   }
 };
 
-const vgroups = value => {
-  if (value.length < 6 || value.length > 40) {
-    return (
-      <div className="alert alert-danger" role="alert">
-        The groups must be between 6 and 40 characters.
-      </div>
-    );
-  }
-};
 
 export default class Register extends Component {
   constructor(props) {
     super(props);
     this.handleRegister = this.handleRegister.bind(this);
-    this.onChangeUsername = this.onChangeUsername.bind(this);
-    this.onChangePassword = this.onChangePassword.bind(this);
-    this.onChangeName = this.onChangeName.bind(this);
-    this.onChangeDept = this.onChangeDept.bind(this);
-    this.onChangeGroups = this.onChangeGroups.bind(this);
+    this.onChangeValue = this.onChangeValue.bind(this);
 
     this.state = {
       username: "",
       password: "",
       name:"",
       dept:"",
-      groups:"",
+      group:"normal",
       successful: false,
       message: ""
     };
   }
 
-  onChangeUsername(e) {
+  onChangeValue = (e) => {
     this.setState({
-      username: e.target.value
-    });
-  }
-
-  onChangePassword(e) {
-    this.setState({
-      password: e.target.value
-    });
-  }
-
-   onChangeName(e) {
-    this.setState({
-      name: e.target.value
-    });
-  }   
-
-  onChangeDept(e) {
-    this.setState({
-      dept: e.target.value
-    });
-  }  
-
-  onChangeGroups(e) {
-    this.setState({
-      group: e.target.value
-    });
-  }
-
-  onChangeGroups(e) {
-    this.setState({
-      groups: e.target.value
+      [e.target.name]: e.target.value
     });
   }
 
@@ -138,7 +96,7 @@ export default class Register extends Component {
         this.state.password,
         this.state.name,
         this.state.dept,
-        this.state.groups
+        this.state.group
       ).then(
         response => {
           this.setState({
@@ -188,7 +146,7 @@ export default class Register extends Component {
                     className="form-control"
                     name="username"
                     value={this.state.username}
-                    onChange={this.onChangeUsername}
+                    onChange={this.onChangeValue}
                     validations={[required, vusername]}
                   />
                 </div>
@@ -200,7 +158,7 @@ export default class Register extends Component {
                     className="form-control"
                     name="password"
                     value={this.state.password}
-                    onChange={this.onChangePassword}
+                    onChange={this.onChangeValue}
                     validations={[required, vpassword]}
                   />
                 </div>
@@ -212,7 +170,7 @@ export default class Register extends Component {
                     className="form-control"
                     name="name"
                     value={this.state.name}
-                    onChange={this.onChangeName}
+                    onChange={this.onChangeValue}
                     validations={[required, vname]}
                   />
                 </div>
@@ -224,26 +182,24 @@ export default class Register extends Component {
                     className="form-control"
                     name="dept"
                     value={this.state.dept}
-                    onChange={this.onChangeDept}
+                    onChange={this.onChangeValue}
                     validations={[required, vdept]}
                   />
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="groups">Groups</label>
                   <Input
-                    type="text"
-                    className="form-control"
-                    name="groups"
-                    value={this.state.groups}
-                    onChange={this.onChangeGroups}
-                    validations={[required, vgroups]}
+                    type="hidden"
+                    name="group"
+                    value={this.state.group}
+                    onChange={this.onChangeValue}
                   />
-                </div>
 
-                <div className="form-group">
+               <div className="form-group">
                   <button className="btn btn-primary btn-block">Sign Up</button>
                 </div>
+                <div className="form-group">
+                  <button className="btn btn-primary btn-block" onClick={this.props.history.goBack}>Cancel</button>
+                  </div>
               </div>
             )}
 
