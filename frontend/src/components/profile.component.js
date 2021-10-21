@@ -60,7 +60,7 @@ export default class Profile extends Component {
               <div className="icon icon-5"><Link to={"/meta"}><img src={'./img/meta.png'} /></Link></div>
               <div className="icon icon-6"><Link to={"/airflow"}><img src={'./img/airflow.png'} /></Link></div>
               <div className="icon icon-7"><Link to={"/elk"}><img src={'./img/elk.png'} /></Link></div>
-              {currentUser.group =='admin' ? <div className="icon icon-8"><Link to={"/admin"}><img src={'./img/admin.png'} /></Link></div> :null}
+              {currentUser.group ==='ADMIN' ? <div className="icon icon-8"><Link to={"/admin"}><img src={'./img/admin.png'} /></Link></div> :null}
             </div>
           </div>
 

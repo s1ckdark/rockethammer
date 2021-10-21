@@ -6,3 +6,10 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+a {
+  color: #212121;
+}
+body a:hover {
+  color: #212121;
+}

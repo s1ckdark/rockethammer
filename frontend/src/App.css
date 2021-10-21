@@ -111,3 +111,23 @@ label {
 .admin table .btn {
   font-size: 11px;
 }
+
+.admin .pagination {
+    justify-content: center;
+}
+.admin .pagination li {
+  margin: .5rem;
+}
+.admin .pagination li.active {
+  font-weight: 800;
+}
+.admin .history {display: none;}
+.admin .active {
+  display: block !important;
+}
+.admin .userManage, .admin .history, .admin .adduser {
+  display: none;
+}
+.admin .tab {
+  
+}
