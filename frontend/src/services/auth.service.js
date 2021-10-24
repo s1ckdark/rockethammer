@@ -4,14 +4,14 @@ dotenv.config()
 const API_URL = process.env.REACT_APP_API;
 
 class AuthService {
-  login(username, password) {
+  login(userid, password) {
     return axios
       .post(API_URL + "/auth/signin", {
-        username,
+        userid,
         password
       })
       .then(response => {
-        if (response.data.accessToken) {
+        if (response.data.token) {
           localStorage.setItem("user", JSON.stringify(response.data));
           window.whoami = response.data;
         }
@@ -24,9 +24,9 @@ class AuthService {
     localStorage.removeItem("user");
   }
 
-  register(username, password, name, dept, group) {
+  register(userid, password, name, dept, group) {
     return axios.post(API_URL + "/auth/signup", {
-      username,
+      userid,
       password,
       name,
       dept,

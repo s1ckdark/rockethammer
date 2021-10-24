@@ -19,11 +19,11 @@ export default class Login extends Component {
   constructor(props) {
     super(props);
     this.handleLogin = this.handleLogin.bind(this);
-    this.onChangeUsername = this.onChangeUsername.bind(this);
+    this.onChangeuserid = this.onChangeuserid.bind(this);
     this.onChangePassword = this.onChangePassword.bind(this);
 
     this.state = {
-      username: "",
+      userid: "",
       password: "",
       loading: false,
       message: "",
@@ -48,9 +48,9 @@ export default class Login extends Component {
     }
   }
 
-  onChangeUsername(e) {
+  onChangeuserid(e) {
     this.setState({
-      username: e.target.value
+      userid: e.target.value
     });
   }
 
@@ -71,7 +71,7 @@ export default class Login extends Component {
     this.form.validateAll();
 
     if (this.checkBtn.context._errors.length === 0) {
-      AuthService.login(this.state.username, this.state.password).then(
+      AuthService.login(this.state.userid, this.state.password).then(
         () => {
           this.props.history.push("/profile");
           window.location.reload();
@@ -115,13 +115,13 @@ export default class Login extends Component {
             }}
           >
             <div className="form-group">
-              <label htmlFor="username">Username</label>
+              <label htmlFor="userid">userid</label>
               <Input
                 type="text"
                 className="form-control"
-                name="username"
-                value={this.state.username}
-                onChange={this.onChangeUsername}
+                name="userid"
+                value={this.state.userid}
+                onChange={this.onChangeuserid}
                 validations={[required]}
               />
             </div>

@@ -3,9 +3,10 @@ import { useHistory } from "react-router-dom";
 import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
-
+import dotenv from "dotenv"
 import AuthService from "../services/auth.service";
-
+import axios from 'axios';
+dotenv.config();
 const required = value => {
   if (!value) {
     return (
@@ -16,11 +17,11 @@ const required = value => {
   }
 };
 
-const vusername = value => {
+const vuserid = value => {
   if (value.length < 3 || value.length > 20) {
     return (
       <div className="alert alert-danger" role="alert">
-        The username must be between 3 and 20 characters.
+        The userid must be between 3 and 20 characters.
       </div>
     );
   }
@@ -58,17 +59,18 @@ const vdept = value => {
 
 
 export default class Register extends Component {
+
   constructor(props) {
     super(props);
     this.handleRegister = this.handleRegister.bind(this);
     this.onChangeValue = this.onChangeValue.bind(this);
 
     this.state = {
-      username: "",
+      userid: "",
       password: "",
       name:"",
       dept:"",
-      group:"normal",
+      group:"USER",
       successful: false,
       message: ""
     };
@@ -78,6 +80,19 @@ export default class Register extends Component {
     this.setState({
       [e.target.name]: e.target.value
     });
+  }
+
+  handleCancelClick = (e) => {
+    console.log("click cancel");
+    this.setState({
+      userid: "",
+      password: "",
+      name:"",
+      dept:"",
+      group:"USER",
+      successful: false,
+      message: ""
+    })
   }
 
   handleRegister(e) {
@@ -92,7 +107,7 @@ export default class Register extends Component {
 
     if (this.checkBtn.context._errors.length === 0) {
       AuthService.register(
-        this.state.username,
+        this.state.userid,
         this.state.password,
         this.state.name,
         this.state.dept,
@@ -103,6 +118,12 @@ export default class Register extends Component {
             message: response.data.message,
             successful: true
           });
+          axios.post(process.env.REACT_APP_API+"/user/upthistory",
+            {
+              userid: this.state.userid,
+              mod_item: "등록"
+            }
+          ).then( res => {this.props.fetchData();this.props.fetchHistoryData()})
         },
         error => {
           const resMessage =
@@ -140,14 +161,14 @@ export default class Register extends Component {
             {!this.state.successful && (
               <div>
                 <div className="form-group">
-                  <label htmlFor="username">Username</label>
+                  <label htmlFor="userid">userid</label>
                   <Input
                     type="text"
                     className="form-control"
-                    name="username"
-                    value={this.state.username}
+                    name="userid"
+                    value={this.state.userid}
                     onChange={this.onChangeValue}
-                    validations={[required, vusername]}
+                    validations={[required, vuserid]}
                   />
                 </div>
 
@@ -198,7 +219,7 @@ export default class Register extends Component {
                   <button className="btn btn-primary btn-block">Sign Up</button>
                 </div>
                 <div className="form-group">
-                  <button className="btn btn-primary btn-block" onClick={this.props.history.goBack}>Cancel</button>
+                  <button type="button" className="btn btn-primary btn-block" onClick={this.handleCancelClick}>Cancel</button>
                   </div>
               </div>
             )}
