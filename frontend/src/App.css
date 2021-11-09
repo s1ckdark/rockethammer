@@ -1,0 +1,136 @@
+label {
+  display: block;
+  margin-top: 10px;
+}
+
+.card-container.card {
+  max-width: 400px !important;
+  padding: 30px;
+  position: relative;
+/*  top: 50%;
+  left: 50%;
+  transform: translate( -50%, -50%);*/
+}
+
+.card {
+  background-color: #f7f7f7;
+  padding: 20px 25px 30px;
+  margin: 0 auto 25px;
+  margin-top: 50px;
+  -moz-border-radius: 2px;
+  -webkit-border-radius: 2px;
+  border-radius: 2px;
+  -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+  -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+}
+
+.profile-img-card {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 10px;
+  display: block;
+  -moz-border-radius: 50%;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+}
+
+.cors-iframe {
+  position: absolute;
+  top: 55px;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+
+}
+
+.serviceIcon {display: flex; align-items: center; justify-content: center; padding: 50px 0 0;}
+.icon {width: 33px; height: 33px;display: block;margin: 10px;}
+.login .icon img {width: 100%;webkit-filter: grayscale(100%);filter: grayscale(100%);opacity: 0.2;}
+.profile .icon img {width: 100%;}
+
+.nav-item {position: relative; padding:0 5px; text-align: center;}
+.nav-item .nav-link {margin:0 5px;}
+.nav-item img {width: 20px; opacity: .8;}
+.nav-item p {transition: all .3s ease-out;font-weight: 700;position: absolute; top:100%; left:50%; transform: translate(-50%,0); visibility: hidden; opacity: 0; color: #fff; font-size: 11px; width:100%; text-align: center;  }
+
+.counter {
+  z-index:999;
+  display:flex;
+  position:absolute;
+  top:0;right:220px;
+  line-height: 25px;
+  padding:15px 0 0;
+  color:#eee;
+}
+.counter input {height:30px;}
+.counter h1 {
+  font-size:25px;
+
+}
+
+.counter .delay {margin:0 15px;  width:80px; text-align: center;}
+
+.container {
+
+}
+
+.airflow .heading-1 {
+    color: #000;
+    text-align: center;
+    padding:15px 0 10px;
+}
+
+.admin .heading-1 {
+    color: #000;
+    text-align: center;
+    padding:15px 0 10px;
+}
+
+.json-to-table {
+  font-size: 10px;
+  display: none;
+  transition: all .3s ease-out;
+}
+
+.json-to-table td[colspan='2'] > div {padding:15px 0 10px;}
+.json-to-table td[colspan='2'] table tr:nth-child(odd) {background: #fff} 
+
+.admin {
+
+}
+.admin .list .form-control {
+  font-size: .8em;
+}
+.admin .list td.index p {
+  margin: 0;
+  height: calc(1.5em + .75rem + 2px);
+  padding: .375rem .75rem;
+}
+.admin table .btn {
+  font-size: 11px;
+}
+
+.admin .pagination {
+    justify-content: center;
+}
+.admin .pagination li {
+  margin: .5rem;
+}
+.admin .pagination li.active {
+  font-weight: 800;
+}
+.admin .history {display: none;}
+.admin .active {
+  display: block !important;
+}
+.admin .userManage, .admin .history, .admin .adduser {
+  display: none;
+}
+.admin .tab {
+  
+}
+.admin .history td {
+      white-space: pre-wrap;
+}
