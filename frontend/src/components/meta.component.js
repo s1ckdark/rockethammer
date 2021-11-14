@@ -24,7 +24,7 @@ import data2 from "./data2.json";
 import data3 from "./data3.json";
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
-
+import Metalist from './metalist.component';
 window.React = React;
 dotenv.config();
 
@@ -33,20 +33,21 @@ export default class Meta extends Component {
     super(props);
     this.state = {
       data:[],
-      mapping:[]
+      mapping:[],
+      keyword:''
     };
   }
 
   componentDidMount() {
     axios.get(process.env.REACT_APP_API+"/meta/get")
       .then(res => {
-        var data = res.data
-        data.map((item,index)=>{
-          var tmp = JSON.parse(item.schema);
-          item.schema = tmp;
-          res.data[index] = item;
-        })
-        this.setState({data:res.data[0]});
+      //   var data = res.data
+      //   data.map((item,index)=>{
+      //     var tmp = JSON.parse(item.schema);
+      //     item.schema = tmp;
+      //     res.data[index] = item;
+      //   })
+      //   this.setState({data:res.data[0]});
       })
   }
   
@@ -63,65 +64,44 @@ export default class Meta extends Component {
     }) 
   }
 
-  onSubmit = (e,index) => {
+  onChangeKeyword = (e,index) =>{
+    this.setState({
+      ...this.state,
+      keyword:e.target.value
+    }) 
+  }
+
+  onSubmit = async(e,index) => {
     e.preventDefault();
-
-    console.log("submit");
+    await axios.get(process.env.REACT_APP_API+"/meta/search",{keyword:this.state.keyword})
+    .then(res => {
+      console.log(res);
+    })
   }
 
-  getTopics = (obj) => {
-    if(typeof obj !== 'object') return [];
-    if(obj.fields) return [obj.fields];
-    var res = [];
-    for(var i in obj){
-      res.push(...this.getTopics(obj[i]));
-    }
-    return res;
- }
- getKey = (obj) =>{
-  const isObject = val =>
-      typeof val === 'object' && !Array.isArray(val);
-
-  const addDelimiter = (a, b) =>
-      a ? `${a}.${b}` : b;
-
-  const paths = (obj = {}, head = '') => {
-      return Object.entries(obj)
-          .reduce((product, [key, value]) => 
-              {
-                  let fullPath = addDelimiter(head, key)
-                  return isObject(value) ?
-                      product.concat(paths(value, fullPath))
-                  : product.concat(fullPath)
-              }, []);
-  }
-
-  return paths(obj);
+onSearch = async()=> {
+  await axios.post(process.env.REACT_APP_API+"/meta/search",{keyword:this.state.keyword})
+  .then(res => {
+    this.setState({
+      ...this.state,
+      data:res.data
+    }) 
+  })
 }
-
 
   render() {
     return (
       <div className="meta">
-        <div className="mapping shadow-lg m-5 p-5">
-      {this.getKey(this.state.data).map((res, index) => {
-         var ikey = res.split('.').slice(-1)[0];
-         var depth = res.split('.').slice(-2)[0];
-         if(res.split('.').length === 1){
-         return (
-         <div className="form-group"><label>{ikey}</label><input name={ikey} value={this.state.mapping[ikey]}  onChange={(e)=>this.onChangeValue(e, index)} /></div>
-
-         )} else {
-          return (
-            <div className="form-group"><label>{res}</label><input name={ikey} value={this.state.mapping[ikey]}  onChange={(e)=>this.onChangeValue(e, index)} /></div>
-   
-            )
-         }})}
-         </div>
-        <div className="save">
-          <button className="btn" onChange={this.onSubmit}>SAVE</button>
-          <button className="btn" onChange={this.reset}>CANCEL</button>
+        <div className="find mx-auto text-center">
+          <div className="form-group">
+            <input className="search" name="search" value={this.state.search} onChange = {this.onChangeKeyword} />
+            <button className="btn searchbtn" onClick={this.onSearch}>검 색</button>
+          </div>
         </div>
+        <div className="mapping shadow-lg m-5 p-5">
+          <Metalist data={this.state.data} />
+         </div>
+
       </div>
     );
   }
@@ -136,3 +116,4 @@ locale      = { locale }
 height      = '550px'
 onChange    = {this.onChangeValue}
 /> */}
+
