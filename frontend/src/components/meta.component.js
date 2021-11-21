@@ -33,7 +33,6 @@ export default class Meta extends Component {
     super(props);
     this.state = {
       data:[],
-      mapping:[],
       keyword:''
     };
   }
@@ -98,7 +97,7 @@ onSearch = async()=> {
             <button className="btn searchbtn" onClick={this.onSearch}>검 색</button>
           </div>
         </div>
-        <div className="mapping shadow-lg m-5 p-5">
+        <div className="mapping bg-light">
           <Metalist data={this.state.data} />
          </div>
 
