@@ -1,58 +1,118 @@
-import React, { Component, useEffect } from "react";
-// import UserService from "../services/user.service";
-import axios from 'axios'
+import React, { Component } from "react";
+import ReactDOM from 'react-dom';
+import {useHistory} from 'react-router-dom';
+import AuthService from "../services/auth.service";
+import UserService from "../services/user.service";
+import { Redirect, Link } from "react-router-dom";
+import dotenv from "dotenv"
+import axios from "axios"
+import PropTypes from 'prop-types';
+import Pagination from "react-js-pagination";
+import { library } from '@fortawesome/fontawesome-svg-core'
+import {
+  faTrashAlt,
+  faUserEdit,
+  faLockOpen,
+  faLock
+} from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import Register from './register.component'
+import { Button,Modal } from 'react-bootstrap'
 import { JsonToTable } from "react-json-to-table";
 import data1 from "./data.json";
 import data2 from "./data2.json";
 import data3 from "./data3.json";
+import JSONInput from 'react-json-editor-ajrm';
+import locale from 'react-json-editor-ajrm/locale/en';
+import Metalist from './metalist.component';
+
+window.React = React;
+dotenv.config();
 
 export default class Meta extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      content: "",
-      data:""
+      data:[],
+      keyword:''
     };
-    this.switchData = this.switchData.bind(this);
   }
 
-
-  switchData = (data) => {
-    console.log(data);
-    Array.from(document.querySelectorAll('.json-to-table')).map( i => i.style.display="none");
-    document.querySelectorAll('.json-to-table')[data].style.display="block"
-  }
 
 
   componentDidMount() {
-    // const jsonData = data1;
-    // axios.get(`./data1.json`)
-    // // axios.get(`http://172.41.41.192:8081/subjects/av_test05-value/versions/latest`)
-    //   .then(res => {
-    //     const contentData = res.data;
-    //     this.setState({content: contentData});
-    //   })
-
+    axios.get(process.env.REACT_APP_API+"/meta/get")
+      .then(res => {
+      //   var data = res.data
+      //   data.map((item,index)=>{
+      //     var tmp = JSON.parse(item.schema);
+      //     item.schema = tmp;
+      //     res.data[index] = item;
+      //   })
+      //   this.setState({data:res.data[0]});
+      })
   }
-  
 
+  reset = (e)=>{
+    e.target.value = '';
+  }
+
+  onChangeValue = (e,index) =>{
+    this.setState({
+      ...this.state,
+      mapping:{
+        ...this.state.data[index],
+        [e.target.name]:e.target.value
+      }
+    }) 
+  }
+
+  onChangeKeyword = (e,index) =>{
+    this.setState({
+      ...this.state,
+      keyword:e.target.value
+    }) 
+  }
+
+  onSubmit = async(e,index) => {
+    e.preventDefault();
+    await axios.get(process.env.REACT_APP_API+"/meta/search",{keyword:this.state.keyword})
+    .then(res => {
+      console.log(res);
+    })
+  }
+
+onSearch = async()=> {
+  await axios.post(process.env.REACT_APP_API+"/meta/search",{keyword:this.state.keyword})
+  .then(res => {
+    this.setState({
+      ...this.state,
+      data:res.data
+    }) 
+  })
+}
 
   render() {
     return (
       <div className="meta">
-      <div className="demo">
-        <button className="btn" onClick={() => this.switchData(0)}>Order</button>
-        <button className="btn" onClick={() => this.switchData(1)}>Product</button>
-        <button className="btn" onClick={() => this.switchData(2)}>User</button>
-      </div>
-      <div className="table">
-         <JsonToTable json={data1} />
-         <JsonToTable json={data2} />
-         <JsonToTable json={data3} />
-      </div>
+        <div className="find mx-auto text-center">
+          <div className="form-group">
+            <input className="search" name="search" value={this.state.search} onChange = {this.onChangeKeyword} />
+            <button className="btn searchbtn" onClick={this.onSearch}>검 색</button>
+          </div>
+        </div>
+        <div className="mapping bg-light">
+          <Metalist data={this.state.data} />
+         </div>
       </div>
     );
   }
 }
 
-
+{/* <JSONInput
+id          = {this.state.data[index]._id}
+placeholder = {res}
+locale      = { locale }
+height      = '550px'
+onChange    = {this.onChangeValue}
+/> */}
