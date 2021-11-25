@@ -128,9 +128,10 @@ label {
 .admin .userManage, .admin .history, .admin .adduser {
   display: none;
 }
-.admin .tab {
-  
-}
+
 .admin .history td {
       white-space: pre-wrap;
 }
+
+.meta .separate-line {width: 1px;}
+.meta .fields-input {  width: 100%;}

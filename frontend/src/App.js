@@ -16,6 +16,7 @@ import Confluent from "./components/confluent.component";
 import Grafana from "./components/grafana.component";
 import Gitlab from "./components/gitlab.component";
 import Meta from "./components/meta.component";
+import Metaedit from "./components/metaedit.component";
 import Portainer from "./components/portainer.component";
 import Admin from "./components/admin.component";
 import Airflow from "./components/airflow.component";
@@ -175,6 +176,7 @@ onMouseLeave = (e) => {
             <Route exact path="/grafana" component={Grafana} />
             <Route exact path="/gitlab" component={Gitlab} />
             <Route exact path="/meta" component={Meta} />
+            <Route exact path="/metaedit" component={Metaedit} />
             <Route exact path="/portainer" component={Portainer} />
             <Route exact path="/airflow" component={Airflow} />
             <Route exact path="/admin" component={Admin} />

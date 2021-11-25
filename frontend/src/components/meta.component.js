@@ -25,6 +25,7 @@ import data3 from "./data3.json";
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
 import Metalist from './metalist.component';
+import Metaedit from './metaedit.component';
 window.React = React;
 dotenv.config();
 
@@ -32,6 +33,7 @@ export default class Meta extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      schema:[],
       data:[],
       keyword:''
     };
@@ -50,32 +52,11 @@ export default class Meta extends Component {
       })
   }
   
-  reset = (e)=>{
-    e.target.value = '';
-  }
-  onChangeValue = (e,index) =>{
-    this.setState({
-      ...this.state,
-      mapping:{
-        ...this.state.data[index],
-        [e.target.name]:e.target.value
-      }
-    }) 
-  }
-
   onChangeKeyword = (e,index) =>{
     this.setState({
       ...this.state,
       keyword:e.target.value
     }) 
-  }
-
-  onSubmit = async(e,index) => {
-    e.preventDefault();
-    await axios.get(process.env.REACT_APP_API+"/meta/search",{keyword:this.state.keyword})
-    .then(res => {
-      console.log(res);
-    })
   }
 
 onSearch = async()=> {
@@ -86,21 +67,30 @@ onSearch = async()=> {
       data:res.data
     }) 
   })
+  await axios.post(process.env.REACT_APP_API+"/schema/search",{keyword:this.state.keyword.replace(/-value/g, "")})
+  .then(res => {
+    this.setState({
+      ...this.state,
+      schema:res.data
+    }) 
+  })
 }
 
   render() {
     return (
       <div className="meta">
-        <div className="find mx-auto text-center">
-          <div className="form-group">
-            <input className="search" name="search" value={this.state.search} onChange = {this.onChangeKeyword} />
-            <button className="btn searchbtn" onClick={this.onSearch}>검 색</button>
+        <div className="find mx-auto my-5 text-center d-block">
+          <div className="form-inline justify-content-center">
+            <input className="search form-control p-3" name="search" value={this.state.search} onChange = {this.onChangeKeyword} />
+            <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={this.onSearch}>검 색</button>
           </div>
         </div>
+        {this.state.data.length > 0 ? 
         <div className="mapping bg-light">
           <Metalist data={this.state.data} />
          </div>
-
+        : <></>
+  }
       </div>
     );
   }
