@@ -87,7 +87,7 @@ onSearch = async()=> {
         </div>
         {this.state.data.length > 0 ? 
         <div className="mapping bg-light">
-          <Metalist data={this.state.data} />
+          <Metalist data={this.state.data} schema={this.state.schema} />
          </div>
         : <></>
   }

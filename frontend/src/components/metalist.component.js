@@ -6,7 +6,8 @@ export default class Metalist extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          meta:[]
+          meta:[],
+          schema:[]
         };
       }
     componentDidMount(){
@@ -14,17 +15,8 @@ export default class Metalist extends Component {
     }
     componentDidUpdate(){
         console.log(this.props.data);
+        console.log(this.props.schema);
     }
-
-    onChangeValue = (e,index) =>{
-        this.setState({
-          ...this.state,
-          meta:{
-            ...this.state.data[index],
-            [e.target.name]:e.target.value
-          }
-        }) 
-      }
 
     onEdit = (e,item) => {
         e.preventDefault();
@@ -62,12 +54,12 @@ export default class Metalist extends Component {
                         </div>
                         <div className="d-flex justify-content-center">
                         <div className="physical-meta col-md-6">
-                            {Object.keys(item).map((fields) => {
+                        {Object.keys(item).map((fields) => {
                             // console.log(fields, typeof(this.state.meta[fields]))
                                 if(typeof(item[fields]) !== "object"){
                                     return (
                                         <div className="d-flex">
-                                            <div className={fields+" col-md-2"}>{fields}</div>
+                                            <div className={fields+" col-md-3"}>{fields}</div>
                                             <div className={"value-"+fields+" value form-group"}>
                                             {item[fields]}
                                             </div>
@@ -76,27 +68,27 @@ export default class Metalist extends Component {
                                     );
                                 }                            
                             })} 
-                            <div className="schemas">
-                                {/* { schema.fields.map((ele, index) => {
-                                    return (
-                                    Object.keys(ele).map((fields) => {
-                                        console.log(fields, schema[`fields`][index][fields]);
-                                        return (
-                                            <div className="d-flex">
-                                                <div className="meta mr-5">{"meta"+index}</div>
-                                                <div className="label mr-5"><p>{fields}</p></div>
-                                                <div className={fields}>{schema[`fields`][index][fields]}</div>
-                                            </div>
-                                        );
-                                        
-                                    })
-                                    );
-                                })
-                                } */}
-                            </div>
+                            {/* subject, version, id만 남기고 가리기 */}
                         </div>
                             <div className="separate-line bg-light"></div>
                             <div className="logical-meta col-md-6">
+                                {this.props.schema.length > 0 ? this.props.schema.map((item,index) =>{
+                                    // Object.keys(item).map((fields) => {
+                                    //      console.log(fields, typeof(item[fields]))
+                                    //         if(typeof(item[fields]) !== "object"){
+                                                return (
+                                                    <div className="d-flex" key={"schema-"+item._id}>
+                                                        {/* <div className={fields+" col-md-2"}>{fields}</div>
+                                                        <div className={"value-"+fields+" value form-group"}>{item[fields]}</div> */}
+                                                        <div className="topic_name col-md-3">topic_name</div>
+                                                        <div className={"value-topic_name value form-group"}>
+                                                        {item[`topic_name`]}
+                                                    </div>
+                                                </div>
+                                                );
+                                            // }}) 
+                                        }): <h3 className="p-3 m-3 text-center">등록된 Meta가 없습니다</h3>
+                                } 
                             </div>
                         </div>
                         <div className="action text-right">
@@ -106,10 +98,9 @@ export default class Metalist extends Component {
                         </div>
                     </div>
                     );
-                }): <h3 className="p-5 m-5 text-center">검색된 meta data가 없습니다</h3>    
+                }): <h3 className="p-3 m-3 text-center">검색된 meta data가 없습니다</h3>    
                 }
             </div>
         );
     }
 }
-

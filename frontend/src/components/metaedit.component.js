@@ -8,7 +8,8 @@ import dotenv from "dotenv"
 import axios from "axios"
 import PropTypes from 'prop-types';
 import Pagination from "react-js-pagination";
-
+import JSONInput from 'react-json-editor-ajrm';
+import locale from 'react-json-editor-ajrm/locale/en';
 window.React = React;
 dotenv.config();
 
@@ -138,6 +139,14 @@ export default class Metaedit extends Component {
             <div className="metalist bg-light p-5">
                  <div className="schemas">
                      <div className="meta">
+                         <JSONInput
+                            id          = {this.state.meta[`id`]}
+                            placeholder = {this.state.meta}
+                            locale      = { locale }
+                            height      = '550px'
+                            onChange    = {this.onChangeValue}
+                            />
+                        {/* jsoneditor 한글화 */}
                     {
                         Object.keys(this.state.meta).map((fields) => {
                             // console.log(fields, typeof(this.state.meta[fields]))
@@ -225,7 +234,7 @@ export default class Metaedit extends Component {
                             {this.state.meta.schema.map((ele, index) => {
                                 return (
                                         <div className="json ml-5" key={"json-"+index}>
-                                            <div className="meta mr-5"><p>{"meta "+index} : <span className="ml-3">&#123;</span></p></div>
+                                            <div className="meta mr-5"><p>{"Fileds "+index} : <span className="ml-3">&#123;</span></p></div>
                                            
                                                 {Object.keys(ele).map((fields) => {
                                                         return (
