@@ -39,14 +39,21 @@ export default class Metaedit extends Component {
               is_null:'',
               default:'',
               memo:''
-          },
-          data:this.props.location.data
+          }
         };
       }
     componentDidMount(){
-          var mapping = [];
-          var schema = JSON.parse(this.state.data.schema);
-          const tmp = this.state.temp;
+        console.log(this.props.location);
+        var mapping = [], schema=[], tmp=[];
+        if(this.props.location.schema.length > 0 ) {
+            console.log("exist")
+            this.setState(prevState => ({
+                meta: this.props.location.schema[0]
+            }))
+        } else {
+            console.log("noexist")
+          schema = JSON.parse(this.state.data.schema);
+          tmp = this.state.temp;
           schema.fields.map((item,idx) => {
               mapping[idx]= tmp
           })
@@ -60,8 +67,34 @@ export default class Metaedit extends Component {
           this.setState(prevState => ({
             mapping: mapping
         }))
+    }
+    console.log(this.state.meta)
      }
-    
+    trans = (name) => {
+        var defineName = {
+            "topic_name":"토픽명",
+            "schema_id":"스키마ID",
+            "meta_id":"메타ID",
+            "schema_version":"스키마버전",
+            "recycle_pol":"데이터삭제주기",
+            "op_name":"관리부서",
+            "service":"업무시스템",
+            "related_topics":"연관토픽",
+            "last_mod_dt":"최종수정시간",
+            "last_mod_id":"최종수정자",
+            "schema":"",
+            "p_name":"물리명",
+            "p_type":"데이터 타입",
+            "l_name":"논리명",
+            "l_def":"설명",
+            "is_null":"Null허용여부",
+            "default":"기본값",
+            "memo":"메모"
+        }
+        return  defineName[name];
+
+
+    }
     iterateObj = (dupeObj) => {
         var retObj = new Object();
         if (typeof (dupeObj) == 'object') {
@@ -139,6 +172,7 @@ export default class Metaedit extends Component {
             <div className="metalist bg-light p-5">
                  <div className="schemas">
                      <div className="meta">
+{/*         
                          <JSONInput
                             id          = {this.state.meta[`id`]}
                             placeholder = {this.state.meta}
@@ -146,14 +180,13 @@ export default class Metaedit extends Component {
                             height      = '550px'
                             onChange    = {this.onChangeValue}
                             />
-                        {/* jsoneditor 한글화 */}
-                    {
-                        Object.keys(this.state.meta).map((fields) => {
+            
+                    {Object.keys(this.state.meta).map((fields) => {
                             // console.log(fields, typeof(this.state.meta[fields]))
                             if(typeof(this.state.meta[fields]) !== "object"){
                                 return (
                                     <div className="d-flex">
-                                        <div className={fields+" col-md-2"}>{fields}</div>
+                                        <div className={fields+" col-md-2"}>{this.trans(fields)}</div>
                                         <div className={"value-"+fields+" value form-group"}>
                                         {this.state.meta[fields]}
                                         <input type="text" name={fields} className={"input-"+fields+" input-value"} value={this.state.meta[fields]} onChange={this.onChangeValue} />
@@ -163,7 +196,7 @@ export default class Metaedit extends Component {
                                 );
                             }                            
                         }) 
-                    }   
+                    }    */}
 
                         {/* <div className="topic_name">
                             <div className="d-flex">
@@ -240,7 +273,7 @@ export default class Metaedit extends Component {
                                                         return (
                                                             <div className={fields+" ml-5"}>
                                                             <div className="d-flex">
-                                                                <div className="label col-md-3"><p>{fields}</p></div>
+                                                                <div className="label col-md-3"><p>{this.trans(fields)}</p></div>
                                                                 <div className={fields}>{this.state.mapping[index][fields]}</div>
                                                                 <div className="schema"><input type="text" name={fields} className={fields} value={this.state.mapping[index][fields]} onChange={(e) => this.onChangeValueTemp(e,index)} /></div>
                                                             </div>
@@ -294,18 +327,33 @@ export default class Metaedit extends Component {
                                             <p>&#125;,</p>
                                         </div>
                                 )})}
+                                <div className="table"> 
+                                <table>
+                                    {/* <thead>
+                                        <tr>
+                                            <th scope="col">#</th>
+                                            <th scope="col" class="text-center">p_name</th>
+                                            <th scope="col" class="text-center">p_type</th>
+                                            <th scope="col" class="text-center">l_name</th>
+                                            <th scope="col" class="text-center">l_def</th>
+                                            <th scope="col" class="text-center">is_null</th>
+                                            <th scope="col" class="text-center">default</th>
+                                            <th scope="col" class="text-center">memo</th>
+                                        </tr>
+                                    </thead> */}
+
                             {this.state.meta.schema.map((ele, index) => {
                                 return (
-                                        <div className="table" key={"table-"+index}> 
-                                            <table>
-                                                <thead>
+                                           <>
+                                           {index === 1 ? 
+                                           <thead>
                                                     <tr>
                                                             <th scope="col">#</th>
                                                     {
                                                         Object.keys(ele).map((fields) => {
                                                             return (
                                                                 <>
-                                                                    <th scope="col" className="text-center">{fields}</th>
+                                                                    <th scope="col" className="text-center">{this.trans(fields)}</th>
                                                                 </>
                                                             );
                                                             
@@ -313,9 +361,10 @@ export default class Metaedit extends Component {
                                                     }   
                                                     </tr>
                                                 </thead>
+                                                : <></>}
                                                 <tbody>
                                                     <tr>
-                                                        <th scope="row">{index}</th>
+                                                        <th scope="row">{index+1}</th>
                                                         {
                                                             Object.keys(ele).map((fields) => {
                                                                 return (
@@ -326,10 +375,11 @@ export default class Metaedit extends Component {
                                                         }   
                                                     </tr>
                                                 </tbody>
-                                            </table>
-                                        </div>
+                                                </>
                                 )
                             })}
+                            </table>
+                        </div>
                         </div>
                     </div>
                         <div className="action text-right">
