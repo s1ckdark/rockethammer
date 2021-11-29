@@ -43,33 +43,62 @@ export default class Metaedit extends Component {
         };
       }
     componentDidMount(){
-        console.log(this.props.location);
-        var mapping = [], schema=[], tmp=[];
-        if(this.props.location.schema.length > 0 ) {
-            console.log("exist")
+        var mapping = [], schema=[];
+        if(this.props.location.type === "edit" > 0 ) {
+            console.log("exist");
             this.setState(prevState => ({
-                meta: this.props.location.schema[0]
+                meta: {
+                    ...prevState.meta,
+                    topic_name: this.props.location.schema[0].topic_name,
+                    schema_id: this.props.location.schema[0].schema_id,
+                    schema_version: this.props.location.schema[0].schema_version,
+                    meta_id:this.props.location.schema[0].meta_id,
+                    recycle_pol:this.props.location.schema[0].recycle_pol,
+                    op_name:this.props.location.schema[0].op_name,
+                    service:this.props.location.schema[0].service,
+                    last_mod_dt:this.props.location.schema[0].last_mod_dt,
+                    last_mod_id:this.props.location.schema[0].last_mod_id,
+                    // related_topics:this.props.location.schema[0].related_topics,
+                    // schema:this.props.location.schema[0].schema
+                
+                }
             }))
         } else {
-            console.log("noexist")
-          schema = JSON.parse(this.state.data.schema);
-          tmp = this.state.temp;
-          schema.fields.map((item,idx) => {
-              mapping[idx]= tmp
-          })
-
-          this.setState(prevState => ({
-              meta: {
-                  ...prevState.meta,
-                  schema: mapping
-              }   
-          }))
-          this.setState(prevState => ({
-            mapping: mapping
-        }))
+            console.log("noexist");
+            schema = JSON.parse(this.props.location.data.schema);
+            schema.fields.map((item,idx) => {
+                var tmp = this.state.temp;
+                tmp.p_name = item[`name`]
+                tmp.p_type = JSON.stringify(item[`type`], 2, null)
+                console.log(idx, tmp);
+                this.setState(prevState => ({
+                    mapping:[...prevState.mapping, tmp]
+                }))
+            })
+            this.setState(prevState => ({
+                meta: {
+                    ...prevState.meta,
+                    schema: mapping
+                }   
+            }))
+            // this.setState(prevState => ({
+            //     mapping: mapping
+            // }))
+            this.setState(prevState => ({
+                meta: {
+                    ...prevState.meta,
+                    topic_name: this.props.location.data.subject.replace(/-value/g, ""),
+                    schema_version: this.props.location.data.version,
+                    schema_id : this.props.location.data.id
+                    // related_topics:this.props.location.schema[0].related_topics,
+                    // schema:this.props.location.schema[0].schema
+                
+                }
+            })
+        )
     }
-    console.log(this.state.meta)
-     }
+}
+
     trans = (name) => {
         var defineName = {
             "topic_name":"토픽명",
@@ -92,8 +121,6 @@ export default class Metaedit extends Component {
             "memo":"메모"
         }
         return  defineName[name];
-
-
     }
     iterateObj = (dupeObj) => {
         var retObj = new Object();
@@ -171,15 +198,20 @@ export default class Metaedit extends Component {
         return (
             <div className="metalist bg-light p-5">
                  <div className="schemas">
-                     <div className="meta">
-{/*         
-                         <JSONInput
+                     <div className="meta" style={{ maxWidth: "1400px", maxHeight: "100%" }}>
+                     {this.props.location.data && this.props.location.schema ? 
+                        <JSONInput
+                            id          = {this.state.meta[`id`]}
+                            placeholder = {this.state.schema}
+                            locale      = { locale }
+                            onChange    = {this.onChangeValue}
+                            />
+                        : <JSONInput
                             id          = {this.state.meta[`id`]}
                             placeholder = {this.state.meta}
                             locale      = { locale }
-                            height      = '550px'
                             onChange    = {this.onChangeValue}
-                            />
+                        />}
             
                     {Object.keys(this.state.meta).map((fields) => {
                             // console.log(fields, typeof(this.state.meta[fields]))
@@ -188,7 +220,6 @@ export default class Metaedit extends Component {
                                     <div className="d-flex">
                                         <div className={fields+" col-md-2"}>{this.trans(fields)}</div>
                                         <div className={"value-"+fields+" value form-group"}>
-                                        {this.state.meta[fields]}
                                         <input type="text" name={fields} className={"input-"+fields+" input-value"} value={this.state.meta[fields]} onChange={this.onChangeValue} />
                                         </div>
 
@@ -196,7 +227,7 @@ export default class Metaedit extends Component {
                                 );
                             }                            
                         }) 
-                    }    */}
+                    }  
 
                         {/* <div className="topic_name">
                             <div className="d-flex">
@@ -263,7 +294,7 @@ export default class Metaedit extends Component {
                                 <div className="label col-md-3">last_mod_id</div>
                                 <div className="meta"><input type="text" name="last_mod_id" className="last_mod_id" value={this.state.meta.last_mod_id} onChange={this.onChangeValue} /></div>
                             </div>
-                        </div> */}
+                        </div> 
                             {this.state.meta.schema.map((ele, index) => {
                                 return (
                                         <div className="json ml-5" key={"json-"+index}>
@@ -282,65 +313,11 @@ export default class Metaedit extends Component {
                                                         
                                                     }) 
                                                 }   
-                                            {/* <div className="p_name">
-                                            <div className="d-flex">
-                                                <div className="label col-md-3">p_name</div>
-                                                <div className="schema"><input type="text" name="p_name" className="p_name" value={this.state.mapping[index][`p_name`]} onChange={(e) => this.onChangeValueTemp(e, index)} /></div>
-                                            </div>
-                                            </div>
-                                            <div className="p_type">
-                                            <div className="d-flex">
-                                                <div className="label col-md-3">p_type</div>
-                                                <div className="schema"><input type="text" name="p_type" className="p_type" value={this.state.mapping[index][`p_type`]} onChange={(e) => this.onChangeValueTemp(e, index)} /></div>
-                                            </div>
-                                            </div>
-                                            <div className="l_name">
-                                            <div className="d-flex">
-                                                <div className="label col-md-3">l_name</div>
-                                                <div className="schema"><input type="text" name="l_name" className="l_name" value={this.state.mapping[index][`l_name`]} onChange={(e) => this.onChangeValueTemp(e, index)} /></div>
-                                            </div>
-                                            </div>
-                                            <div className="l_def">
-                                            <div className="d-flex">
-                                                <div className="label col-md-3">l_def</div>
-                                                <div className="schema"><input type="text" name="l_def" className="l_def" value={this.state.mapping[index][`l_def`]} onChange={(e) => this.onChangeValueTemp(e, index)} /></div>
-                                            </div>
-                                            </div>
-                                            <div className="is_null">
-                                            <div className="d-flex">
-                                                <div className="label col-md-3">is_null</div>
-                                                <div className="schema"><input type="text" name="is_null" className="is_null" value={this.state.mapping[index][`is_null`]} onChange={(e) => this.onChangeValueTemp(e, index)} /></div>
-                                            </div>
-                                            </div>
-                                            <div className="default">
-                                            <div className="d-flex">
-                                                <div className="label col-md-3">default</div>
-                                                <div className="schema"><input type="text" name="default" className="default" value={this.state.mapping[index][`default`]} onChange={(e) => this.onChangeValueTemp(e, index)} /></div>
-                                            </div>
-                                            </div>
-                                            <div className="memo">
-                                            <div className="d-flex">
-                                                <div className="label col-md-3">memo</div>
-                                                <div className="schema"><input type="text" name="memo" className="memo" value={this.state.mapping[index][`memo`]} onChange={(e) => this.onChangeValueTemp(e, index)} /></div>
-                                            </div>
-                                            </div> */}
                                             <p>&#125;,</p>
                                         </div>
-                                )})}
+                                )})}*/}
                                 <div className="table"> 
                                 <table>
-                                    {/* <thead>
-                                        <tr>
-                                            <th scope="col">#</th>
-                                            <th scope="col" class="text-center">p_name</th>
-                                            <th scope="col" class="text-center">p_type</th>
-                                            <th scope="col" class="text-center">l_name</th>
-                                            <th scope="col" class="text-center">l_def</th>
-                                            <th scope="col" class="text-center">is_null</th>
-                                            <th scope="col" class="text-center">default</th>
-                                            <th scope="col" class="text-center">memo</th>
-                                        </tr>
-                                    </thead> */}
 
                             {this.state.meta.schema.map((ele, index) => {
                                 return (

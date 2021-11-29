@@ -73,7 +73,7 @@ export default class Metalist extends Component {
                                 </td>
                                 <td className="action">
                                     {this.props.schema.length > 0 ?
-                                   <><button type="button" className="btn btn-info mr-1"><Link to={{pathname:'/metaedit', data:item, schema:this.props.schema}}>EDIT</Link></button><button type="button" className="btn btn-secondary" onClick={(e)=>this.delete(item._id)}>DELETE</button></>: <> <button type="button" className="btn btn-primary mr-1" onClick={(e)=>this.onEdit(e)}>Register</button></> }
+                                   <><button type="button" className="btn btn-primary mr-1"><Link to={{pathname:'/metaedit', data:item, schema:this.props.schema, type:"edit"}}>EDIT</Link></button><button type="button" className="btn btn-secondary" onClick={(e)=>this.delete(item._id)}>DELETE</button></>:<><button type="button" className="btn btn-info mr-1"><Link to={{pathname:'/metaedit', data:item,schema:this.props.schema, type:"register"}}>등록</Link></button></> }
                                 </td>
                             </tr>
                     );

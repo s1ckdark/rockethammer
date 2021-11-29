@@ -42,20 +42,20 @@ export default class Meta extends Component {
   componentDidMount() {
     axios.get(process.env.REACT_APP_API+"/meta/get")
       .then(res => {
-      //   var data = res.data
-      //   data.map((item,index)=>{
-      //     var tmp = JSON.parse(item.schema);
-      //     item.schema = tmp;
-      //     res.data[index] = item;
-      //   })
-      //   this.setState({data:res.data[0]});
+        // var data = res.data
+        // data.map((item,index)=>{
+        //   var tmp = JSON.parse(item.schema);
+        //   item.schema = tmp;
+        //   res.data[index] = item;
+        // })
+        this.setState({data:res.data});
       })
   }
   
   onChangeKeyword = (e,index) =>{
     this.setState({
       ...this.state,
-      keyword:e.target.value
+      keyword:e.target.value+"-value"
     }) 
   }
 
@@ -85,7 +85,7 @@ onSearch = async()=> {
             <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={this.onSearch}>검 색</button>
           </div>
         </div>
-        {this.state.data.length > 0 ? 
+        {this.state.data && this.state.data.length > 0 ? 
         <div className="mapping bg-light">
           <Metalist data={this.state.data} schema={this.state.schema} />
          </div>
@@ -95,14 +95,3 @@ onSearch = async()=> {
     );
   }
 }
-
-
- 
-{/* <JSONInput
-id          = {this.state.data[index]._id}
-placeholder = {res}
-locale      = { locale }
-height      = '550px'
-onChange    = {this.onChangeValue}
-/> */}
-
