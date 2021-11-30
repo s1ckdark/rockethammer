@@ -39,19 +39,9 @@ export default class Meta extends Component {
   componentDidMount() {
     axios.get(process.env.REACT_APP_API+"/schema/get")
       .then(res => {
-<<<<<<< HEAD
-        // var data = res.data
-        // data.map((item,index)=>{
-        //   var tmp = JSON.parse(item.schema);
-        //   item.schema = tmp;
-        //   res.data[index] = item;
-        // })
-        this.setState({data:res.data});
-=======
         this.setState({
           schema:res.data
         })
->>>>>>> master
       })
   }
   
@@ -82,11 +72,7 @@ onSearch = async()=> {
             <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={this.onSearch}>검 색</button>
           </div>
         </div>
-<<<<<<< HEAD
-        {this.state.data && this.state.data.length > 0 ? 
-=======
         {this.state.schema.length > 0 ? 
->>>>>>> master
         <div className="mapping bg-light">
           <Metalist schema={this.state.schema} />
          </div>
@@ -95,9 +81,5 @@ onSearch = async()=> {
       </div>
     );
   }
-<<<<<<< HEAD
-}
-=======
 }
 
->>>>>>> master

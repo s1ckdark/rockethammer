@@ -102,14 +102,14 @@ export default class Metaupdate extends Component {
              [e.target.name]:e.target.value
          }   
         }))
-        this.setState({
-            ...this.state,
-            data:{
-                ...this.state.data,
-                last_mod_dt:(new Date).toISOString(),
-                last_mod_id:AuthService.getCurrentUser().userid
-            }
-        }) 
+//        this.setState({
+//          ...this.state,
+//        data:{
+//                ...this.state.data,
+//                last_mod_dt:(new Date).toISOString(),
+//               last_mod_id:AuthService.getCurrentUser().userid
+//            }
+//        }) 
       }
 
     onChangeValueTemp = (e, index) =>{
@@ -144,7 +144,15 @@ export default class Metaupdate extends Component {
 
     onSubmit = async(e,_id) => {
         e.preventDefault();
-        await axios.post(process.env.REACT_APP_API+"/meta/update/"+_id, this.state.data).then( res => {
+        this.setState({
+		...this.state,
+	data:{
+            ...this.state.data,
+            last_mod_dt:(new Date).toISOString(),
+            last_mod_id:AuthService.getCurrentUser().userid
+        }
+	})
+	    await axios.post(process.env.REACT_APP_API+"/meta/update/"+_id, this.state.data).then( res => {
             if(res.status===200) alert("수정 완료")
         })
     }
@@ -172,6 +180,7 @@ export default class Metaupdate extends Component {
                         placeholder = {this.state.data}
                         locale      = { locale }
                         height      = '550px'
+			width       = '100%'
                         onChange    = {this.onChangeValueJSON}
                         />
                         <div className="action text-right">

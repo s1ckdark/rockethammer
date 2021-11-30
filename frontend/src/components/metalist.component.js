@@ -3,6 +3,8 @@ import { isCompositeComponent } from "react-dom/test-utils";
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import dotenv from "dotenv";
+import JSONInput from 'react-json-editor-ajrm';
+import locale from 'react-json-editor-ajrm/locale/en';
 window.React = React;
 dotenv.config();
 
@@ -12,6 +14,7 @@ export default class Metalist extends Component {
         this.state = {
           meta:[],
           idx:'',
+		show:false
         };
       }
     componentDidMount(){
@@ -42,13 +45,25 @@ export default class Metalist extends Component {
         }
         return true;
     }
-    detailView = (e, idx, _id) => {
+
+detailView = (e, idx, _id) => {
         e.preventDefault();
         axios.post(process.env.REACT_APP_API+"/meta/getmeta",{keyword:_id}).then(res => {
-            res.data && res.data.length > 0 ? this.setState({...this.state, meta:res.data[0]}):this.setState({...this.state, meta:{},idx:idx})
+            res.data && res.data.length > 0 ? this.setState({...this.state, meta:res.data[0],show:true}):this.setState({...this.state, meta:{},idx:idx,show:true})
         })
     }
-
+    jsonVIEW = () => {
+        this.setState({
+            ...this.state,
+            jsonVIEW:true
+        })
+    }
+    closeVIEW = () => {
+        this.setState({
+            ...this.state,
+            jsonVIEW:false
+        })
+    }
     render()
     {
         return (
@@ -91,7 +106,7 @@ export default class Metalist extends Component {
                             </tbody>
                         </table>
                     </div>
-                   {Object.keys(this.state.meta).length > 0 ? 
+                   {this.state.show ? 
                     <div className="detailview col-md-4 p-5 m-5 border-left">
                         <div className="detail ">
                             {Object.keys(this.state.meta).length > 0 ? 
@@ -101,7 +116,7 @@ export default class Metalist extends Component {
                                 <p><span className="mr-2">Meta Version</span>{this.state.meta.meta_id}</p>
                                 <p>{this.state.meta.last_mod_id}</p>
                                 <p>{this.state.meta.last_mod_dt}</p>
-                                <button type="button" className="btn btn-info mr-1"><Link to={{pathname:'/metaupdate', data:this.state.meta, type:"update"}}>수정</Link></button><button type="button" className="btn btn-secondary" onClick={(e)=>this.onDel(e,this.state.meta._id)}>삭제</button></>                     
+                                <button type="button" className="btn btn-success mr-1" onClick={this.jsonVIEW}>조회</button><button type="button" className="btn btn-info mr-1"><Link to={{pathname:'/metaupdate', data:this.state.meta, type:"update"}}>수정</Link></button><button type="button" className="btn btn-secondary" onClick={(e)=>this.onDel(e,this.state.meta._id)}>삭제</button></>                     
                                 :
                                 <>
                                 <p>등록된 Meta가 존재하지 않습니다</p>
@@ -111,46 +126,20 @@ export default class Metalist extends Component {
                     </div>
                     : <></>}
                 </div>
+		        {this.state.jsonVIEW ?
+                <div className="viewJSON">
+                    <div className="closeJSON"><button type="button" onClick={this.closeVIEW} className="btn btn-warning">CLOSE</button></div>
+                    <JSONInput
+                    id          = {this.state.meta[`_id`]}
+                    placeholder = {this.state.meta}
+                    locale      = { locale }
+                    height      = '100%'
+                    width       = '100%'
+                    />
+                </div>
+                : <></>}
             </div>
 
-<<<<<<< HEAD
-                    </tr>
-                </thead>
-                <tbody>
-            {this.props.data.length > 0 ? this.props.data.map((item,index) => {
-                var temp = {};
-                var mapping = {};
-                var schema = JSON.parse(item.schema);
-                Object.keys(item).map((res,index) => {
-                        this.IsJsonString(item[res]) ? temp[res] = JSON.parse(item[res]): temp[res]=item[res]
-                })
-                return(
-                            <tr className="text-center">
-                                 <th scope="row">{index+1}</th>
-                                <td className="value-subject value form-group">
-                                {item.subject.replace(/-value/g, "")}
-                                </td>
-                                <td className="value-version value form-group">
-                                {item.version}
-                                </td>
-                                <td className="value-id value form-group">
-                                {item.id}
-                                </td>
-                                <td className="value-id value form-group">
-                                {this.props.schema.length > 0 ? "yes" : "no"}
-                                </td>
-                                <td className="action">
-                                    {this.props.schema.length > 0 ?
-                                   <><button type="button" className="btn btn-primary mr-1"><Link to={{pathname:'/metaedit', data:item, schema:this.props.schema, type:"edit"}}>EDIT</Link></button><button type="button" className="btn btn-secondary" onClick={(e)=>this.delete(item._id)}>DELETE</button></>:<><button type="button" className="btn btn-info mr-1"><Link to={{pathname:'/metaedit', data:item,schema:this.props.schema, type:"register"}}>등록</Link></button></> }
-                                </td>
-                            </tr>
-                    );
-                }): <h3 className="p-3 m-3 text-center">검색된 meta data가 없습니다</h3>    
-                }
-                </tbody>
-            </table>
-=======
->>>>>>> master
         );
     }
 }

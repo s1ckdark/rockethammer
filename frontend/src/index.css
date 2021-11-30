@@ -7,10 +7,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-<<<<<<< HEAD
 .btn > a, .btn > a:hover {
   color: #fff;
 }
-=======
-button a, button a:hover { color: #fff; }
->>>>>>> master

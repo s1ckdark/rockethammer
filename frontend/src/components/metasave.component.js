@@ -169,7 +169,15 @@ export default class Metaedit extends Component {
 
     onSubmit = async(e) => {
         e.preventDefault();
-        await axios.post(process.env.REACT_APP_API+"/meta/insert", this.state.data).then( res => {
+          this.setState({
+        ...this.state,
+        data:{
+            ...this.state.data,
+            last_mod_dt:(new Date).toISOString(),
+            last_mod_id:AuthService.getCurrentUser().userid
+        }
+    }) 
+	    await axios.post(process.env.REACT_APP_API+"/meta/insert", this.state.data).then( res => {
             if(res.status===200) alert("등록 완료")
         })
     }
@@ -211,6 +219,7 @@ export default class Metaedit extends Component {
                         placeholder = {this.state.data}
                         locale      = { locale }
                         height      = '550px'
+			width       = '100%'
                         onChange    = {this.onChangeValueJSON}
                         />
                         <div className="action text-right">
