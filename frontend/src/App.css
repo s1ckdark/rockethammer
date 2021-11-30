@@ -47,6 +47,7 @@ label {
 
 .serviceIcon {display: flex; align-items: center; justify-content: center; padding: 50px 0 0;}
 .icon {width: 33px; height: 33px;display: block;margin: 10px;}
+.logo {width:200px;}
 .login .icon img {width: 100%;webkit-filter: grayscale(100%);filter: grayscale(100%);opacity: 0.2;}
 .profile .icon img {width: 100%;}
 

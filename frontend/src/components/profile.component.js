@@ -44,6 +44,7 @@ export default class Profile extends Component {
             {(this.state.userReady) ?
               <div className="card-body">
                   <header className="jumbotron">
+                    <img src="./img/rh_logo.png" alt="rockerhammer" className="w-100"/>
                     <h3><strong>{currentUser.name}</strong>님</h3>
                     <h4>현재 방문 시각은<br/> {h % 12}:{(m < 10 ? '0' + m : m)}:{(s < 10 ? '0' + s : s)} {h < 12 ? 'AM' : 'PM'} 입니다.<br/> </h4> 
                   </header>
@@ -53,14 +54,14 @@ export default class Profile extends Component {
                     <p><strong>Authorities:</strong>{" "}{currentUser.group && currentUser.group ? currentUser.group : null}</p>
                   </div>
             </div>: null}
-                        <div className="serviceIcon">
-              <div className="icon icon-1"><Link to={"/confluent"}><img src={'./img/confluent.png'} /></Link></div>
-              <div className="icon icon-3"><Link to={"/grafana"}><img src={'./img/grafana.png'} /></Link></div>
-              <div className="icon icon-4"><Link to={"/portainer"}><img src={'./img/portainer.png'} /></Link></div>
-              <div className="icon icon-5"><Link to={"/meta"}><img src={'./img/meta.png'} /></Link></div>
-              <div className="icon icon-6"><Link to={"/airflow"}><img src={'./img/airflow.png'} /></Link></div>
-              <div className="icon icon-7"><Link to={"/elk"}><img src={'./img/elk.png'} /></Link></div>
-              {currentUser.group =='admin' ? <div className="icon icon-8"><Link to={"/admin"}><img src={'./img/admin.png'} /></Link></div> :null}
+              <div className="serviceIcon">
+              <div className="icon icon-1"><Link to={"/confluent"}><img alt="c3" src={'./img/confluent.png'} /></Link></div>
+              <div className="icon icon-3"><Link to={"/meta"}><img alt="meta" src={'./img/meta.png'} /></Link></div>
+              <div className="icon icon-4"><Link to={"/connector"}><img alt="connector" src={'./img/connector.png'} /></Link></div>
+              <div className="icon icon-5"><Link to={"/kafkamonitor"}><img alt="kafka monitor" src={'./img/kafkamonitor.png'} /></Link></div>
+              <div className="icon icon-6"><Link to={"/k8monitor"}><img alt="k8 monitor" src={'./img/k8monitor.png'} /></Link></div>
+              <div className="icon icon-7"><Link to={"/metric"}><img alt="metric" src={'./img/metric.png'} /></Link></div>
+              {currentUser.group =='admin' ? <div className="icon icon-8"><Link to={"/admin"}><img alt="admin" src={'./img/admin.png'} /></Link></div> :null}
             </div>
           </div>
 

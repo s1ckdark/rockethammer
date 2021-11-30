@@ -19,13 +19,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Register from './register.component'
 import { Button,Modal } from 'react-bootstrap'
 import { JsonToTable } from "react-json-to-table";
-import data1 from "./data.json";
-import data2 from "./data2.json";
-import data3 from "./data3.json";
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
 import Metalist from './metalist.component';
-import Metaedit from './metaedit.component';
+import Metaupdate from './metaupdate.component';
 window.React = React;
 dotenv.config();
 
@@ -40,8 +37,9 @@ export default class Meta extends Component {
   }
 
   componentDidMount() {
-    axios.get(process.env.REACT_APP_API+"/meta/get")
+    axios.get(process.env.REACT_APP_API+"/schema/get")
       .then(res => {
+<<<<<<< HEAD
         // var data = res.data
         // data.map((item,index)=>{
         //   var tmp = JSON.parse(item.schema);
@@ -49,6 +47,11 @@ export default class Meta extends Component {
         //   res.data[index] = item;
         // })
         this.setState({data:res.data});
+=======
+        this.setState({
+          schema:res.data
+        })
+>>>>>>> master
       })
   }
   
@@ -60,15 +63,9 @@ export default class Meta extends Component {
   }
 
 onSearch = async()=> {
-  await axios.post(process.env.REACT_APP_API+"/meta/search",{keyword:this.state.keyword})
+  await axios.post(process.env.REACT_APP_API+"/schema/search",{keyword:this.state.keyword})
   .then(res => {
-    this.setState({
-      ...this.state,
-      data:res.data
-    }) 
-  })
-  await axios.post(process.env.REACT_APP_API+"/schema/search",{keyword:this.state.keyword.replace(/-value/g, "")})
-  .then(res => {
+    console.log(res);
     this.setState({
       ...this.state,
       schema:res.data
@@ -85,13 +82,22 @@ onSearch = async()=> {
             <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={this.onSearch}>검 색</button>
           </div>
         </div>
+<<<<<<< HEAD
         {this.state.data && this.state.data.length > 0 ? 
+=======
+        {this.state.schema.length > 0 ? 
+>>>>>>> master
         <div className="mapping bg-light">
-          <Metalist data={this.state.data} schema={this.state.schema} />
+          <Metalist schema={this.state.schema} />
          </div>
         : <></>
   }
       </div>
     );
   }
+<<<<<<< HEAD
 }
+=======
+}
+
+>>>>>>> master
