@@ -13,15 +13,19 @@ import Profile from "./components/profile.component";
 // import BoardModerator from "./components/board-moderator.component";
 // import BoardAdmin from "./components/board-admin.component";
 import Confluent from "./components/confluent.component";
-import Grafana from "./components/grafana.component";
-import Gitlab from "./components/gitlab.component";
+// import Grafana from "./components/grafana.component";
+// import Gitlab from "./components/gitlab.component";
 import Meta from "./components/meta.component";
-import Metaedit from "./components/metaedit.component";
-import Portainer from "./components/portainer.component";
-import Admin from "./components/admin.component";
-import Airflow from "./components/airflow.component";
+import Metaupdate from "./components/metaupdate.component";
+import Metasave from "./components/metasave.component";
+// import Portainer from "./components/portainer.component";
+// import Airflow from "./components/airflow.component";
 import Seo from "./components/seo.component";
-import Elk from "./components/elk.component";
+import Connector from "./components/connector.component";
+import KafkaMonitor from "./components/kafkamonitor.component";
+import K8Monitor from "./components/k8monitor.component";
+import Metric from "./components/metric.component";
+import Admin from "./components/admin.component";
 
 class App extends Component {
   constructor(props) {
@@ -91,59 +95,53 @@ onMouseLeave = (e) => {
       (
         <nav className="navbar navbar-expand navbar-dark bg-dark">
           <span className="navbar-brand">
-            Goodusdata
+            <img src={'./img/rh_logo.png'} alt="ROCKETHAMMER" className="logo"/>
           </span>
           <div className="navbar-nav mr-auto">
             <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
               <Link to={"/home"} className="nav-link">
-                  <img src={'./img/home.png'} />
+                  <img alt="Home" src={'./img/home.png'} />
               <p>홈</p></Link>
             </li>
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
               <Link to={"/confluent"}  className="nav-link">
-               <img src={'./img/confluent-white.png'} />
-              <p>모니터링 </p>
+               <img alt="Confluent" src={'./img/confluent-white.png'} />
+              <p>C3 </p>
               </Link>
               </li>     
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
-                <Link to={"/gitlab"} className="nav-link">
-                  <img src={'./img/gitlab.png'} />
-                <p>소스관리</p>
-                </Link>
-              </li>          
-              <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
-                <Link to={"/grafana"} className="nav-link">
-                  <img src={'./img/grafana.png'} alt="대쉬보드"/>
-                <p>시각화</p>
-                </Link>
-              </li>
-              <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
                 <Link to={"/meta"} className="nav-link">
-                  <img src={'./img/meta-white.png'} />
+                  <img alt="Meta" src={'./img/meta-white.png'} />
                 <p>메타관리</p>
                 </Link>
               </li>
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
-                <Link to={"/portainer"} className="nav-link">
-                  <img src={'./img/portainer.png'} />
-                <p>이미지관리</p>
-                </Link>
-              </li>              
-              <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
-                <Link to={"/airflow"} className="nav-link">
-                  <img src={'./img/airflow.png'} />
-                <p>작업관리</p>
+                <Link to={"/connector"} className="nav-link">
+                  <img alt="Connector" src={'./img/connector-white.png'} />
+                <p>커넥터 관리</p>
                 </Link>
               </li>
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
-                <Link to={"/elk"} className="nav-link">
-                  <img src={'./img/elk.png'} />
-                <p>검색</p>
+                <Link to={"/kafkamonitor"} className="nav-link">
+                  <img alt="kafkamonitor" src={'./img/kafkamonitor.png'} />
+                <p>카프카 모니터링</p>
+                </Link>
+              </li>              
+              <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
+                <Link to={"/k8monitor"} className="nav-link">
+                  <img alt="k8monitor" src={'./img/k8monitor.png'} />
+                <p>쿠버네티스 모니터링</p>
+                </Link>
+              </li>
+              <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
+                <Link to={"/metric"} className="nav-link">
+                  <img alt="metric" src={'./img/metric.png'} />
+                <p>메트릭 수집기</p>
                 </Link>
               </li>
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
                 <Link to={"/admin"} className="nav-link">
-                  <img src={'./img/admin-white.png'} />
+                  <img alt="service" src={'./img/admin-white.png'} />
                 <p>관리자</p>
                 </Link>
               </li>             
@@ -165,22 +163,20 @@ onMouseLeave = (e) => {
           ) :null 
       : null
     }
-
-
         <div className="container mt-3">
           <Switch>
             <Route exact path={["/", "/home"]} component={Home} />
             <Route exact path="/register" component={Register} />
             <Route exact path="/profile" component={Profile} />
             <Route exact path="/confluent" component={Confluent} />
-            <Route exact path="/grafana" component={Grafana} />
-            <Route exact path="/gitlab" component={Gitlab} />
             <Route exact path="/meta" component={Meta} />
-            <Route exact path="/metaedit" component={Metaedit} />
-            <Route exact path="/portainer" component={Portainer} />
-            <Route exact path="/airflow" component={Airflow} />
+            <Route exact path="/metaupdate" component={Metaupdate} />
+            <Route exact path="/metasave" component={Metasave} />
+            <Route exact path="/connector" component={Connector} />
+            <Route exact path="/kafkamonitor" component={KafkaMonitor} />
+            <Route exact path="/k8monitor" component={K8Monitor} />
+            <Route exact path="/metric" component={Metric} />
             <Route exact path="/admin" component={Admin} />
-            <Route exact path="/elk" component={Elk} />
           </Switch>
         </div>
       </div>

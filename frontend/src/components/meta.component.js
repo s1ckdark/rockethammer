@@ -19,13 +19,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Register from './register.component'
 import { Button,Modal } from 'react-bootstrap'
 import { JsonToTable } from "react-json-to-table";
-import data1 from "./data.json";
-import data2 from "./data2.json";
-import data3 from "./data3.json";
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
 import Metalist from './metalist.component';
-import Metaedit from './metaedit.component';
+import Metaupdate from './metaupdate.component';
 window.React = React;
 dotenv.config();
 
@@ -40,15 +37,11 @@ export default class Meta extends Component {
   }
 
   componentDidMount() {
-    axios.get(process.env.REACT_APP_API+"/meta/get")
+    axios.get(process.env.REACT_APP_API+"/schema/get")
       .then(res => {
-      //   var data = res.data
-      //   data.map((item,index)=>{
-      //     var tmp = JSON.parse(item.schema);
-      //     item.schema = tmp;
-      //     res.data[index] = item;
-      //   })
-      //   this.setState({data:res.data[0]});
+        this.setState({
+          schema:res.data
+        })
       })
   }
   
@@ -60,15 +53,9 @@ export default class Meta extends Component {
   }
 
 onSearch = async()=> {
-  await axios.post(process.env.REACT_APP_API+"/meta/search",{keyword:this.state.keyword})
+  await axios.post(process.env.REACT_APP_API+"/schema/search",{keyword:this.state.keyword})
   .then(res => {
-    this.setState({
-      ...this.state,
-      data:res.data
-    }) 
-  })
-  await axios.post(process.env.REACT_APP_API+"/schema/search",{keyword:this.state.keyword.replace(/-value/g, "")})
-  .then(res => {
+    console.log(res);
     this.setState({
       ...this.state,
       schema:res.data
@@ -85,9 +72,9 @@ onSearch = async()=> {
             <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={this.onSearch}>검 색</button>
           </div>
         </div>
-        {this.state.data.length > 0 ? 
+        {this.state.schema.length > 0 ? 
         <div className="mapping bg-light">
-          <Metalist data={this.state.data} schema={this.state.schema} />
+          <Metalist schema={this.state.schema} />
          </div>
         : <></>
   }
@@ -95,14 +82,4 @@ onSearch = async()=> {
     );
   }
 }
-
-
- 
-{/* <JSONInput
-id          = {this.state.data[index]._id}
-placeholder = {res}
-locale      = { locale }
-height      = '550px'
-onChange    = {this.onChangeValue}
-/> */}
 
