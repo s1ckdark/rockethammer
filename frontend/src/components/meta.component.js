@@ -13,7 +13,8 @@ import {
   faTrashAlt,
   faUserEdit,
   faLockOpen,
-  faLock
+  faLock,
+  faSmileBeam
 } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Register from './register.component'
@@ -23,6 +24,7 @@ import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
 import Metalist from './metalist.component';
 import Metaupdate from './metaupdate.component';
+import Metasave from './metasave.component';
 window.React = React;
 dotenv.config();
 
@@ -32,7 +34,9 @@ export default class Meta extends Component {
     this.state = {
       schema:[],
       data:[],
-      keyword:''
+      keyword:'',
+      save:false,
+      update:false
     };
   }
 
@@ -48,7 +52,7 @@ export default class Meta extends Component {
   onChangeKeyword = (e,index) =>{
     this.setState({
       ...this.state,
-      keyword:e.target.value
+      keyword:e.target.value+"-value"
     }) 
   }
 
@@ -76,6 +80,10 @@ onSearch = async()=> {
         <div className="mapping bg-light">
           <Metalist schema={this.state.schema} />
          </div>
+        // <div className="register">
+        //   <Metaupdate />
+        //   <Metasave />
+        // </div>
         : <></>
   }
       </div>

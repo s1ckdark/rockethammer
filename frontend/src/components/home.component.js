@@ -166,12 +166,11 @@ export default class Login extends Component {
           </Form>
         <div className="serviceIcon">
           <div className="icon icon-1"><img src={'./img/confluent.png'} alt="confluent"/></div>
-          <div className="icon icon-2"><img src={'./img/gitlab.png'} alt="gitlab"/></div>
-          <div className="icon icon-3"><img src={'./img/grafana.png'} alt="grafana"/></div>
-          <div className="icon icon-6"><img src={'./img/portainer.png'} alt="potainer"/></div>
-          <div className="icon icon-7"><img src={'./img/meta.png'} alt="meta"/></div>
-          <div className="icon icon-8"><img src={'./img/airflow.png'} alt="airflow"/></div>
-          <div className="icon icon-9"><img src={'./img/elk.png'} alt="elk"/></div>
+          <div className="icon icon-2"><img src={'./img/meta.png'} alt="meta"/></div>
+          <div className="icon icon-3"><img src={'./img/connector.png'} alt="connector"/></div>
+          <div className="icon icon-6"><img src={'./img/kafkamonitor.png'} alt="kafka monitor"/></div>
+          <div className="icon icon-7"><img src={'./img/k8monitor.png'} alt="k8monitor"/></div>
+          <div className="icon icon-8"><img src={'./img/metric.png'} alt="metric"/></div>
           <div className="icon icon-10"><img src={'./img/admin.png'} alt="admin"/></div> 
         </div>
         </div>

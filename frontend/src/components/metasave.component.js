@@ -19,6 +19,7 @@ export default class Metaedit extends Component {
         this.state = {
             data:{
               topic_name:'',
+              topic_desc:'',
               schema_id:'',
               meta_id:'',
               schema_version:'',
@@ -62,7 +63,9 @@ export default class Metaedit extends Component {
                 topic_name: data.subject.replace(/-value/g, ""),
                 schema_id: data.id,
                 schema_version: data.version,
-                meta:jsons
+                meta:jsons,
+                last_mod_dt:(new Date).toISOString(),
+                last_mod_id:AuthService.getCurrentUser().userid
             }
         })
 
@@ -99,7 +102,8 @@ export default class Metaedit extends Component {
             "l_def":"설명",
             "is_null":"Null허용여부",
             "default":"기본값",
-            "memo":"메모"
+            "memo":"메모",
+            "topic_desc":"토픽설명"
         }
         return  defineName[name] ? defineName[name]:name;
     }
@@ -169,8 +173,10 @@ export default class Metaedit extends Component {
 
     onSubmit = async(e) => {
         e.preventDefault();
-        await axios.post(process.env.REACT_APP_API+"/meta/insert", this.state.data).then( res => {
-            if(res.status===200) alert("등록 완료")
+	    await axios.post(process.env.REACT_APP_API+"/meta/insert", this.state.data).then( res => {
+            if(res.status===200) {alert("등록 완료");setTimeout(() => { 
+                this.goBack();
+            }, 2000);}
         })
     }
 
@@ -211,11 +217,12 @@ export default class Metaedit extends Component {
                         placeholder = {this.state.data}
                         locale      = { locale }
                         height      = '550px'
+			            width       = '100%'
                         onChange    = {this.onChangeValueJSON}
                         />
-                        <div className="action text-right">
-                            <button type="button" className="btn btn-primary mr-3" onClick={this.onSubmit}>SAVE</button>
-                            <button type="button" className="btn btn-secondary" onClick={this.reset}>CANCEL</button>
+                        <div className="action text-right my-5">
+                            <button type="button" className="btn btn-primary mr-3" onClick={this.onSubmit}>저장</button>
+                            <button type="button" className="btn btn-secondary" onClick={this.goBack}>돌아가기</button>
                         </div>
                     </div>
                     <div className={this.state.viewmode === "table" ? "d-block type-table" : "d-none type-table"}>

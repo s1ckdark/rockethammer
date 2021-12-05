@@ -3,6 +3,8 @@ import { isCompositeComponent } from "react-dom/test-utils";
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import dotenv from "dotenv";
+import JSONInput from 'react-json-editor-ajrm';
+import locale from 'react-json-editor-ajrm/locale/en';
 window.React = React;
 dotenv.config();
 
@@ -12,6 +14,7 @@ export default class Metalist extends Component {
         this.state = {
           meta:[],
           idx:'',
+		  show:false
         };
       }
     componentDidMount(){
@@ -42,13 +45,27 @@ export default class Metalist extends Component {
         }
         return true;
     }
+
     detailView = (e, idx, _id) => {
         e.preventDefault();
-        axios.post(process.env.REACT_APP_API+"/meta/getmeta",{keyword:_id}).then(res => {
-            res.data && res.data.length > 0 ? this.setState({...this.state, meta:res.data[0]}):this.setState({...this.state, meta:{},idx:idx})
+        console.log(idx)
+        console.log(e.target);
+         axios.post(process.env.REACT_APP_API+"/meta/getmeta",{keyword:_id}).then(res => {
+            res.data && res.data.length > 0 ? this.setState({...this.state, meta:res.data[0],show:true, idx:idx}):this.setState({...this.state, meta:{},idx:idx,show:true})
         })
     }
-
+    jsonVIEW = () => {
+        this.setState({
+            ...this.state,
+            jsonVIEW:true
+        })
+    }
+    closeVIEW = () => {
+        this.setState({
+            ...this.state,
+            jsonVIEW:false
+        })
+    }
     render()
     {
         return (
@@ -59,9 +76,11 @@ export default class Metalist extends Component {
                             <thead>
                                 <tr className="text-center p-3">
                                     <th scope="col" className="col-md-1">#</th>
-                                    <th scope="col" className="col-md-6">스키마명</th>
+                                    <th scope="col" className="col-md-3">스키마명</th>
                                     <th scope="col" className="col-md-2">스키마버전</th>
                                     <th scope="col" className="col-md-2">스키마Id</th>
+                                    <th scope="col" className="col-md-2">수정자</th>
+                                    <th scope="col" className="col-md-2">수정일시</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -73,7 +92,7 @@ export default class Metalist extends Component {
                                     this.IsJsonString(item[res]) ? temp[res] = JSON.parse(item[res]): temp[res]=item[res]
                             })
                             return(
-                                        <tr className="text-center" onClick={(e)=>this.detailView(e, index, item.subject.replace(/-value/g, ""),index)}>
+                                        <tr data-index={index} className={this.state.idx === index ? "table-active text-center":"text-center"} key={item._id} onClick={(e)=>this.detailView(e, index, item.subject.replace(/-value/g, ""))}>
                                              <th scope="row">{index+1}</th>
                                             <td className="value-subject value form-group">
                                             {item.subject.replace(/-value/g, "")}
@@ -84,6 +103,12 @@ export default class Metalist extends Component {
                                             <td className="value-id value form-group">
                                             {item.id}
                                             </td>
+                                            <td className="last_mod_id value form-group">
+                                            {item.id}
+                                            </td>
+                                            <td className="last_mod_dt value form-group">
+                                            {item.id}
+                                            </td>
                                         </tr>
                                 );
                             }): <h3 className="p-3 m-3 text-center">검색된 meta data가 없습니다</h3>    
@@ -91,7 +116,7 @@ export default class Metalist extends Component {
                             </tbody>
                         </table>
                     </div>
-                   {Object.keys(this.state.meta).length > 0 ? 
+                   {this.state.show ? 
                     <div className="detailview col-md-4 p-5 m-5 border-left">
                         <div className="detail ">
                             {Object.keys(this.state.meta).length > 0 ? 
@@ -101,7 +126,7 @@ export default class Metalist extends Component {
                                 <p><span className="mr-2">Meta Version</span>{this.state.meta.meta_id}</p>
                                 <p>{this.state.meta.last_mod_id}</p>
                                 <p>{this.state.meta.last_mod_dt}</p>
-                                <button type="button" className="btn btn-info mr-1"><Link to={{pathname:'/metaupdate', data:this.state.meta, type:"update"}}>수정</Link></button><button type="button" className="btn btn-secondary" onClick={(e)=>this.onDel(e,this.state.meta._id)}>삭제</button></>                     
+                                <button type="button" className="btn btn-success mr-1" onClick={this.jsonVIEW}>조회</button><button type="button" className="btn btn-info mr-1"><Link to={{pathname:'/metaupdate', data:this.state.meta, type:"update"}}>수정</Link></button><button type="button" className="btn btn-secondary" onClick={(e)=>this.onDel(e,this.state.meta._id)}>삭제</button></>                     
                                 :
                                 <>
                                 <p>등록된 Meta가 존재하지 않습니다</p>
@@ -111,6 +136,18 @@ export default class Metalist extends Component {
                     </div>
                     : <></>}
                 </div>
+		        {this.state.jsonVIEW ?
+                <div className="viewJSON">
+                    <div className="closeJSON"><button type="button" onClick={this.closeVIEW} className="btn btn-warning">CLOSE</button></div>
+                    <JSONInput
+                    id          = {this.state.meta[`_id`]}
+                    placeholder = {this.state.meta}
+                    locale      = { locale }
+                    height      = '100%'
+                    width       = '100%'
+                    />
+                </div>
+                : <></>}
             </div>
 
         );
