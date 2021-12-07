@@ -75,8 +75,8 @@ export default class Metalist extends Component {
                         <table className="metalist bg-light table table-hover">
                             <thead>
                                 <tr className="text-center p-3">
-                                    <th scope="col" className="col-md-1">#</th>
-                                    <th scope="col" className="col-md-3">스키마명</th>
+                                    <th scope="col" className="col-md-1">번호</th>
+                                    <th scope="col" className="col-md-3">토픽명</th>
                                     <th scope="col" className="col-md-2">스키마버전</th>
                                     <th scope="col" className="col-md-2">스키마Id</th>
                                     <th scope="col" className="col-md-2">수정자</th>

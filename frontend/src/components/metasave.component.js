@@ -176,7 +176,7 @@ export default class Metaedit extends Component {
 	    await axios.post(process.env.REACT_APP_API+"/meta/insert", this.state.data).then( res => {
             if(res.status===200) {alert("등록 완료");setTimeout(() => { 
                 this.goBack();
-            }, 2000);}
+            }, 500);}
         })
     }
 
