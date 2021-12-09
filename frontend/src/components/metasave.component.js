@@ -18,7 +18,7 @@ import "ace-builds/src-noconflict/ext-language_tools"
 window.React = React;
 dotenv.config();
 
-export default class Metaedit extends Component {
+export default class Metasave extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -40,61 +40,49 @@ export default class Metaedit extends Component {
         };
       }
     componentDidMount(){
-        const {type, data} = this.props.location;
+        const {schema, type, data} = this.props.location;
         if(data) {
             console.log("props");
-            localStorage.setItem('meta', this.state.data);
             this.setState({
                 data: data
             });
+            let toJson = JSON.parse(data.schema);
+            let jsons = [];
+            toJson.fields.map((item, idx) => {
+                console.log(item);
+                let json = {};
+                json.p_name = item.name;
+                json.p_type = item.type;
+                json.l_name = '';
+                json.l_def = '';
+                json.is_null = '';
+                json.default = '';
+                json.memo = '';
+                jsons[idx] = json;
+            })
+            console.log(jsons);
+    
+            this.setState({
+                ...this.state,
+                data:{
+                    ...this.state.data,
+                    topic_name: data.subject.replace(/-value/g, ""),
+                    schema_id: data.id,
+                    schema_version: data.version,
+                    meta:jsons,
+                    last_mod_dt:(new Date).toISOString(),
+                    last_mod_id:AuthService.getCurrentUser().userid
+                }
+            }, ()=>{
+                localStorage.setItem('data', JSON.stringify(this.state.data));
+            })
         } else {
             console.log("no props");
             this.setState({
-                data: localStorage.getItem('meta')
+                data: JSON.parse(localStorage.getItem('data')),
             })
         }
 
-        let toJson = JSON.parse(data.schema);
-        let jsons = [];
-        toJson.fields.map((item, idx) => {
-            console.log(item);
-            let json = {};
-            json.p_name = item.name;
-            json.p_type = item.type;
-            json.l_name = '';
-            json.l_def = '';
-            json.is_null = '';
-            json.default = '';
-            json.memo = '';
-            jsons[idx] = json;
-        })
-        console.log(jsons);
-
-        this.setState({
-            ...this.state,
-            data:{
-                ...this.state.data,
-                topic_name: data.subject.replace(/-value/g, ""),
-                schema_id: data.id,
-                schema_version: data.version,
-                meta:jsons,
-                last_mod_dt:(new Date).toISOString(),
-                last_mod_id:AuthService.getCurrentUser().userid
-            }
-        })
-
- 
-
-    //       this.setState(prevState => ({
-    //           meta: {
-    //               ...prevState.meta,
-    //               schema: mapping
-    //           }   
-    //       }))
-    //       this.setState(prevState => ({
-    //         mapping: mapping
-    //     }))
-    // console.log(this.state.meta)
      }
 
     trans = (name) => {
@@ -240,7 +228,7 @@ export default class Metaedit extends Component {
                             mode="json"
                             theme="tomorrow"
                             name={this.state.data[`_id`]}
-                            value = {JSON.stringify(this.state.meta, null, 4)}
+                            value = {JSON.stringify(this.state.data, null, 4)}
                             // editorProps={{ $blockScrolling: true }}
                             onChange={this.onChangeValueJSON}
                             fontSize= {14}

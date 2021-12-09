@@ -169,7 +169,7 @@ export default class Metaupdate extends Component {
 	    await axios.post(process.env.REACT_APP_API+"/meta/update/"+_id, this.state.data).then( res => {
             if(res.status===200) {alert("수정 완료");setTimeout(() => { 
                 this.goBack();
-            }, 2000);}
+            }, 1000);}
         })
     }
 
@@ -285,7 +285,7 @@ export default class Metaupdate extends Component {
                         }) 
                     }    
                     <div className="action text-center m-5">
-                        <button type="button" className="btn btn-primary mr-3" onClick={(e)=>this.onSubmit(e,this.state.data._id)}>등록</button>
+                        <button type="button" className="btn btn-primary mr-3" onClick={(e)=>this.onSubmit(e,this.state.data._id)}>수정</button>
                         <button type="button" className="btn btn-secondary" onClick={this.goBack}>돌아가기</button>
                     </div>
                     </div>
