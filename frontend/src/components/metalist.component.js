@@ -39,7 +39,15 @@ export default class Metalist extends Component {
 
     onDel = (e,_id) => {
         e.preventDefault();
-        console.log(_id);
+        if (window.confirm("정말 삭제하시겠습니까??") == true){    //확인
+            axios.delete(process.env.REACT_APP_API+"/meta/delete",{data:{keyword:_id}}).then(res => {
+                 alert("삭제가 완료되었습니다");
+                 setTimeout(() => { 
+                    window.location.reload(false);
+                }, 1000);
+            }) 
+        }
+        
     }
 
     IsJsonString = (str) => {
@@ -49,14 +57,6 @@ export default class Metalist extends Component {
             return false;
         }
         return true;
-    }
-
-    convertKey = (json) => {
-        var temp = {};
-        Object.keys(json).map((key, index) => {
-            console.log(key);
-        })
-        return temp;
     }
 
     onChangeJSON = (newValue) => {
@@ -70,7 +70,6 @@ export default class Metalist extends Component {
         axios.post(process.env.REACT_APP_API+"/meta/getmeta",{keyword:_id}).then(res => {
             if(res.data && res.data.length > 0) {
                 this.setState({...this.state, meta:res.data[0],show:true, idx:idx})
-                this.convertKey(res.data[0]);
             } else {
                 this.setState({...this.state, meta:{},idx:idx,show:true})
             }
