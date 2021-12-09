@@ -5,6 +5,11 @@ import axios from 'axios';
 import dotenv from "dotenv";
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
+import AceEditor from "react-ace";
+import "ace-builds/src-noconflict/mode-json";
+import "ace-builds/src-noconflict/theme-github";
+import "ace-builds/src-noconflict/theme-tomorrow";
+import "ace-builds/src-noconflict/ext-language_tools"
 window.React = React;
 dotenv.config();
 
@@ -46,12 +51,29 @@ export default class Metalist extends Component {
         return true;
     }
 
+    convertKey = (json) => {
+        var temp = {};
+        Object.keys(json).map((key, index) => {
+            console.log(key);
+        })
+        return temp;
+    }
+
+    onChangeJSON = (newValue) => {
+        console.log("change", newValue);
+    }
+
     detailView = (e, idx, _id) => {
         e.preventDefault();
         console.log(idx)
         console.log(e.target);
-         axios.post(process.env.REACT_APP_API+"/meta/getmeta",{keyword:_id}).then(res => {
-            res.data && res.data.length > 0 ? this.setState({...this.state, meta:res.data[0],show:true, idx:idx}):this.setState({...this.state, meta:{},idx:idx,show:true})
+        axios.post(process.env.REACT_APP_API+"/meta/getmeta",{keyword:_id}).then(res => {
+            if(res.data && res.data.length > 0) {
+                this.setState({...this.state, meta:res.data[0],show:true, idx:idx})
+                this.convertKey(res.data[0]);
+            } else {
+                this.setState({...this.state, meta:{},idx:idx,show:true})
+            }
         })
     }
     jsonVIEW = () => {
@@ -139,12 +161,27 @@ export default class Metalist extends Component {
 		        {this.state.jsonVIEW ?
                 <div className="viewJSON">
                     <div className="closeJSON"><button type="button" onClick={this.closeVIEW} className="btn btn-warning">CLOSE</button></div>
-                    <JSONInput
-                    id          = {this.state.meta[`_id`]}
-                    placeholder = {this.state.meta}
-                    locale      = { locale }
-                    height      = '100%'
-                    width       = '100%'
+                    {/* <JSONInput
+                        id          = {this.state.meta[`_id`]}
+                        placeholder = {this.state.meta}
+                        locale      = { locale }
+                        height      = '100%'
+                        width       = '100%'
+                        fontSize    = {14}
+                        mode        = 'json'
+                        theme       = "tomorrow"
+                        onChange={this.onChangeJSON}
+                    /> */}
+                    <AceEditor
+                        mode="json"
+                        theme="tomorrow"
+                        name={this.state.meta[`_id`]}
+                        value = {JSON.stringify(this.state.meta, null, 4)}
+                        // editorProps={{ $blockScrolling: true }}
+                        onChange={this.onChangeJSON}
+                        fontSize= {14}
+                        width= "100%"
+                        height="100%"
                     />
                 </div>
                 : <></>}

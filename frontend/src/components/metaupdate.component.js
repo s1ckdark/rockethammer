@@ -24,10 +24,18 @@ export default class Metaupdate extends Component {
       }
     componentDidMount(){
         const {type, data} = this.props.location;
-        this.setState({
-            ...this.state,
-            data: data
-        });
+        if(data) {
+            console.log("props");
+            localStorage.setItem('meta', JSON.stringify(data));
+            this.setState({
+                data: data
+            });
+        } else {
+            console.log("no props");
+            this.setState({
+                data: JSON.parse(localStorage.getItem('meta'))
+            })
+        }
  
      }
 

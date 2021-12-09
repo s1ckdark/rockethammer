@@ -36,9 +36,17 @@ export default class Metaedit extends Component {
       }
     componentDidMount(){
         const {type, data} = this.props.location;
-        this.setState({
-            data: data
-        });
+        if(data) {
+            console.log("props");
+            this.setState({
+                data: data
+            });
+        } else {
+            console.log("no props");
+            this.setState({
+                data: localStorage.getItem('meta')
+            })
+        }
 
         let toJson = JSON.parse(data.schema);
         let jsons = [];
@@ -68,6 +76,8 @@ export default class Metaedit extends Component {
                 last_mod_id:AuthService.getCurrentUser().userid
             }
         })
+
+        localStorage.setItem('meta', this.state.data);
 
     //       this.setState(prevState => ({
     //           meta: {

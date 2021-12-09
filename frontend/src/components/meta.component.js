@@ -25,6 +25,7 @@ import locale from 'react-json-editor-ajrm/locale/en';
 import Metalist from './metalist.component';
 import Metaupdate from './metaupdate.component';
 import Metasave from './metasave.component';
+
 window.React = React;
 dotenv.config();
 
@@ -80,10 +81,6 @@ onSearch = async()=> {
         <div className="mapping bg-light">
           <Metalist schema={this.state.schema} />
          </div>
-        // <div className="register">
-        //   <Metaupdate />
-        //   <Metasave />
-        // </div>
         : <></>
   }
       </div>
