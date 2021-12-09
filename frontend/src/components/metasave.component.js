@@ -233,7 +233,7 @@ export default class Metasave extends Component {
                             onChange={this.onChangeValueJSON}
                             fontSize= {14}
                             width= "100%"
-                            height="100%"
+                            height="60vh"
                         />
                         <div className="action text-right my-5">
                             <button type="button" className="btn btn-primary mr-3" onClick={this.onSubmit}>저장</button>

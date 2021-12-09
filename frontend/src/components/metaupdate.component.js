@@ -203,12 +203,13 @@ export default class Metaupdate extends Component {
                             mode="json"
                             theme="tomorrow"
                             name={this.state.data[`_id`]}
-                            value = {JSON.stringify(this.state.meta, null, 4)}
+                            value = {JSON.stringify(this.state.data, null, 4)}
+                            // value = {this.state.data}
                             // editorProps={{ $blockScrolling: true }}
                             onChange={this.onChangeValueJSON}
                             fontSize= {14}
                             width= "100%"
-                            height="100%"
+                            height="60vh"
                         />
                         <div className="action text-right">
                             <button type="button" className="btn btn-primary mr-3" onClick={this.onSubmit}>SAVE</button>
