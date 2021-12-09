@@ -239,7 +239,7 @@ export default class Metaedit extends Component {
                         <AceEditor
                             mode="json"
                             theme="tomorrow"
-                            name={this.state.meta[`_id`]}
+                            name={this.state.data[`_id`]}
                             value = {JSON.stringify(this.state.meta, null, 4)}
                             // editorProps={{ $blockScrolling: true }}
                             onChange={this.onChangeValueJSON}

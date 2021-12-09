@@ -100,8 +100,8 @@ export default class Metalist extends Component {
                                     <th scope="col" className="col-md-3">토픽명</th>
                                     <th scope="col" className="col-md-2">스키마버전</th>
                                     <th scope="col" className="col-md-2">스키마Id</th>
-                                    <th scope="col" className="col-md-2">수정자</th>
-                                    <th scope="col" className="col-md-2">수정일시</th>
+                                    {/* <th scope="col" className="col-md-2">수정자</th>
+                                    <th scope="col" className="col-md-2">수정일시</th> */}
                                 </tr>
                             </thead>
                             <tbody>
@@ -124,12 +124,12 @@ export default class Metalist extends Component {
                                             <td className="value-id value form-group">
                                             {item.id}
                                             </td>
-                                            <td className="last_mod_id value form-group">
+                                            {/* <td className="last_mod_id value form-group">
                                             {item.id}
                                             </td>
                                             <td className="last_mod_dt value form-group">
                                             {item.id}
-                                            </td>
+                                            </td> */}
                                         </tr>
                                 );
                             }): <h3 className="p-3 m-3 text-center">검색된 meta data가 없습니다</h3>    

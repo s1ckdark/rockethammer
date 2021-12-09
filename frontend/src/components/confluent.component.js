@@ -72,7 +72,7 @@ export default class Confluent extends Component {
          <input className="delay" value={this.state.delay} onChange={this.handleDelayChange} />
          Running<input type="checkbox" checked={this.state.isRunning} onChange={this.handleIsRunningChange} />
          </div>*/}
-        <Iframe url="http://172.41.41.199:9021"
+        <Iframe url="http://10.20.19.62:9021"
         key={this.state.count}
         id="confluent"
         className="cors-iframe"
