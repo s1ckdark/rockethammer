@@ -10,6 +10,11 @@ import PropTypes from 'prop-types';
 import Pagination from "react-js-pagination";
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
+import AceEditor from "react-ace";
+import "ace-builds/src-noconflict/mode-json";
+import "ace-builds/src-noconflict/theme-github";
+import "ace-builds/src-noconflict/theme-tomorrow";
+import "ace-builds/src-noconflict/ext-language_tools"
 window.React = React;
 dotenv.config();
 
@@ -186,13 +191,24 @@ export default class Metaupdate extends Component {
                         <button type="button" className={this.state.viewmode === "table" ? "btn btn-success" : "btn btn-dark"} onClick={(e)=>this.viewMode(e,"table")}>TABLE</button>
                     </div>
                     <div className={this.state.viewmode === "json" ? "d-block type-json" : "d-none type-json"}>
-                        <JSONInput
+                        {/* <JSONInput
                         id          = {this.state.data[`_id`]}
                         placeholder = {this.state.data}
                         locale      = { locale }
                         height      = '550px'
-			width       = '100%'
+			            width       = '100%'
                         onChange    = {this.onChangeValueJSON}
+                        /> */}
+                        <AceEditor
+                            mode="json"
+                            theme="tomorrow"
+                            name={this.state.data[`_id`]}
+                            value = {JSON.stringify(this.state.meta, null, 4)}
+                            // editorProps={{ $blockScrolling: true }}
+                            onChange={this.onChangeValueJSON}
+                            fontSize= {14}
+                            width= "100%"
+                            height="100%"
                         />
                         <div className="action text-right">
                             <button type="button" className="btn btn-primary mr-3" onClick={this.onSubmit}>SAVE</button>
