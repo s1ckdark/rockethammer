@@ -175,12 +175,46 @@ export default class Metaupdate extends Component {
 
     viewMode = (e, type) => {
         e.preventDefault();
-        this.setState({...this.state, viewmode:type})
+        this.setState({...this.state, 
+            json:this.replaceKey(this.state.data),
+            viewmode:type})
     }
     goBack = ()=>{
         this.props.history.goBack();
     }
 
+    replaceKey = (data)=>{
+        const swaps = {
+            "_id":"_id",
+            "topic_name":"토픽명",
+            "schema_id":"스키마ID",
+            "meta_id":"메타ID",
+            "schema_version":"스키마버전",
+            "meta_version":"메타버전",
+            "recycle_pol":"데이터삭제주기",
+            "op_name":"관리부서",
+            "service":"업무시스템",
+            "related_topics":"연관토픽",
+            "last_mod_dt":"최종수정시간",
+            "last_mod_id":"최종수정자",
+            "schema":"",
+            "p_name":"물리명",
+            "p_type":"데이터 타입",
+            "l_name":"논리명",
+            "l_def":"설명",
+            "is_null":"Null허용여부",
+            "default":"기본값",
+            "memo":"메모",
+            "topic_desc":"토픽설명"
+        };
+        const pattern = new RegExp(
+        Object.keys(swaps).map(e => `(?:"(${e})":)`).join("|"), "g"
+        );
+        const result = JSON.parse(
+        JSON.stringify(data).replace(pattern, m => `"${swaps[m.slice(1,-2)]}":`)
+        );
+        return result;
+    }
     render()
     {
         return (
@@ -202,8 +236,8 @@ export default class Metaupdate extends Component {
                         <AceEditor
                             mode="json"
                             theme="tomorrow"
-                            name={this.state.data[`_id`]}
-                            value = {JSON.stringify(this.state.data, null, 4)}
+                            name={this.state.json[`_id`]}
+                            value = {JSON.stringify(this.state.json, null, 4)}
                             // value = {this.state.data}
                             // editorProps={{ $blockScrolling: true }}
                             onChange={this.onChangeValueJSON}
