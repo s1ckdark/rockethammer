@@ -107,7 +107,9 @@ export default class Admin extends Component {
       .then(res => {
       const firstPageIndex = (this.state.history.currentPage - 1) * this.state.history.pageSize;
       const lastPageIndex = firstPageIndex + this.state.history.pageSize;
-      if(res.data[0].history.length > 0){
+      console.log(res);
+      // if(res.data[0].history.length > 0){
+      if(res.data[0].length > 0){
       this.setState({
           ...this.state,
           history:{

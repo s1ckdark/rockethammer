@@ -61,7 +61,7 @@ export default class Profile extends Component {
               <div className="icon icon-5"><Link to={"/kafkamonitor"}><img alt="kafka monitor" src={'./img/kafkamonitor.png'} /></Link></div>
               <div className="icon icon-6"><Link to={"/k8monitor"}><img alt="k8 monitor" src={'./img/k8monitor.png'} /></Link></div>
               <div className="icon icon-7"><Link to={"/metric"}><img alt="metric" src={'./img/metric.png'} /></Link></div>
-              {currentUser.group =='admin' ? <div className="icon icon-8"><Link to={"/admin"}><img alt="admin" src={'./img/admin.png'} /></Link></div> :null}
+              {currentUser.group === 'admin' ? <div className="icon icon-8"><Link to={"/admin"}><img alt="admin" src={'./img/admin.png'} /></Link></div> :null}
             </div>
           </div>
 

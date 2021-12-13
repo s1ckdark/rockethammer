@@ -92,7 +92,7 @@ export default class Metaupdate extends Component {
                 } else if (typeof (dupeObj[objInd]) == 'number') {
                     retObj[objInd] = dupeObj[objInd];
                 } else if (typeof (dupeObj[objInd]) == 'boolean') {
-                    ((dupeObj[objInd] == true) ? retObj[objInd] = true : retObj[objInd] = false);
+                    ((dupeObj[objInd] === true) ? retObj[objInd] = true : retObj[objInd] = false);
                 }       
             }
         }
