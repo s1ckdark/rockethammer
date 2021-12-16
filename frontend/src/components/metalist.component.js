@@ -9,7 +9,8 @@ import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/theme-tomorrow";
-import "ace-builds/src-noconflict/ext-language_tools"
+import "ace-builds/src-noconflict/ext-language_tools";
+import Pagination from "react-js-pagination";
 window.React = React;
 dotenv.config();
 
@@ -127,7 +128,7 @@ export default class Metalist extends Component {
         return (
             <div className="result">
                 <div className="d-flex">
-                    <div className="schemaList col-md-8 p-5">
+                    <div className="schemaList col-md-7 p-5">
                         <table className="metalist bg-light table table-hover">
                             <thead>
                                 <tr className="text-center p-3">
@@ -173,7 +174,7 @@ export default class Metalist extends Component {
                         </table>
                     </div>
                    {this.state.show ? 
-                    <div className="detailview col-md-4 p-5 m-5 border-left">
+                    <div className="detailview col-md-5 p-5 m-5 border-left">
                         <div className="detail ">
                             {Object.keys(this.state.meta).length > 0 ? 
                                 <>

@@ -209,48 +209,7 @@ export default class Metasave extends Component {
         let result = tmp.filter(ele => ele === name)
         return result.length > 0 ? true : false
     }
-    // convertJSON = (obj, firstlevel) => {
-    //     // consider string, number and boolean values in JSON as the last
-    //     // elements and can't be recursed into any further
-    //     if (typeof obj == 'string' || typeof obj == 'number' || typeof obj == 'boolean') {
-    //         var ab = [];
-    //         var bc = {};
-    //         bc.key = '';
-    //         bc.val = obj;
-    //         ab.push(bc);
-    //         return ab;
-    //     }
-   
-    //     // the top most call which builds the final result
-    //     if (firstlevel) {
-    //         var result = {};
-    //         for (key in obj) {
-    //             var val = obj[key];
-    //             var s = this.convertJSON(val, false);
-    //             for (var o = 0; o < s.length; o++) {
-    //                 var v = s[o];
-    //                 result[key + v['key']] = v['val'];
-    //             }
-    //         }
-    //         return result;
-    //     } else {
-    //         // this is where the recursion happens. As long as objects are found,
-    //         // we use the code below to keep on parsing obj keys
-    //         var paths = [];
-    //         for (var key in obj) {
-    //             var val = obj[key];
-    //             var s = this.convertJSON(val, false);
-    //             for (var o = 0; o < s.length; o++) {
-    //                 var v = s[o];
-    //                 var de = {};
-    //                 de.key = "[" + key + "]" + v['key'];
-    //                 de.val = v['val'];
-    //                 paths.push(de);
-    //             }
-    //         }
-    //         return paths;
-    //     }
-    // }
+
     replaceKey = (data)=>{
         const swaps = {
             "_id":"_id",

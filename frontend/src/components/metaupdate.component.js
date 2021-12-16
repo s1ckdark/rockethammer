@@ -78,20 +78,20 @@ export default class Metaupdate extends Component {
     }
     iterateObj = (dupeObj) => {
         var retObj = new Object();
-        if (typeof (dupeObj) == 'object') {
-            if (typeof (dupeObj.length) == 'number')
+        if (typeof (dupeObj) === 'object') {
+            if (typeof (dupeObj.length) === 'number')
                 retObj = new Array();
     
             for (var objInd in dupeObj) {
-                if (dupeObj[objInd] == null)
+                if (dupeObj[objInd] === null)
                     dupeObj[objInd] = "Empty";
-                if (typeof (dupeObj[objInd]) == 'object') {
+                if (typeof (dupeObj[objInd]) === 'object') {
                     retObj[objInd] = this.iterateObj(dupeObj[objInd]);
-                } else if (typeof (dupeObj[objInd]) == 'string') {
+                } else if (typeof (dupeObj[objInd]) === 'string') {
                     retObj[objInd] = dupeObj[objInd];
-                } else if (typeof (dupeObj[objInd]) == 'number') {
+                } else if (typeof (dupeObj[objInd]) === 'number') {
                     retObj[objInd] = dupeObj[objInd];
-                } else if (typeof (dupeObj[objInd]) == 'boolean') {
+                } else if (typeof (dupeObj[objInd]) === 'boolean') {
                     ((dupeObj[objInd] === true) ? retObj[objInd] = true : retObj[objInd] = false);
                 }       
             }
@@ -116,14 +116,6 @@ export default class Metaupdate extends Component {
              [e.target.name]:e.target.value
          }   
         }))
-//        this.setState({
-//          ...this.state,
-//        data:{
-//                ...this.state.data,
-//                last_mod_dt:(new Date).toISOString(),
-//               last_mod_id:AuthService.getCurrentUser().userid
-//            }
-//        }) 
       }
 
     onChangeValueTemp = (e, index) =>{
@@ -220,7 +212,7 @@ export default class Metaupdate extends Component {
         return (
             <div className="metalist bg-light p-5">
             <div className="meta">
-            <div className="mode d-flex justify-content-end">
+            <div className="mode d-flex justify-content-end mb-5">
                         <button type="button" className={this.state.viewmode === "json" ? "btn btn-success" : "btn btn-dark mr-2"} onClick={(e)=>this.viewMode(e,"json")}>JSON</button>
                         <button type="button" className={this.state.viewmode === "table" ? "btn btn-success" : "btn btn-dark"} onClick={(e)=>this.viewMode(e,"table")}>TABLE</button>
                     </div>
@@ -251,14 +243,15 @@ export default class Metaupdate extends Component {
                         </div>
                     </div>
                     <div className={this.state.viewmode === "table" ? "d-block type-table" : "d-none type-table"}>
+                        <div className="d-flex flex-wrap">
                     {Object.keys(this.state.data).map((fields) => {
                             if(typeof(this.state.data[fields]) !== "object"){
                                 if(fields !== "_id") {
                                     return (
-                                        <div className="d-flex">
-                                            <div className={fields+" col-md-2"}>{this.trans(fields)}</div>
-                                            <div className={"value-"+fields+" value form-group"}>
-                                            <input type="text" name={fields} className={"input-"+fields+" input-value"} value={this.state.data[fields]} onChange={this.onChangeValue} readOnly={this.readonly(fields)}/>
+                                        <div className="d-flex w-50 justify-content-center">
+                                            <div className={fields+" col-md-4 text-left"}>{this.trans(fields)}</div>
+                                            <div className={"value-"+fields+" value form-group col-md-6"}>
+                                            <input type="text" name={fields} className={"input-"+fields+" input-value w-100"} value={this.state.data[fields]} onChange={this.onChangeValue} readOnly={this.readonly(fields)}/>
                                             </div>
                                         </div>
                                     );
@@ -319,13 +312,13 @@ export default class Metaupdate extends Component {
                             }                            
                         }) 
                     }    
-                    <div className="action text-center m-5">
+                    <div className="action text-center mx-auto my-5">
                         <button type="button" className="btn btn-primary mr-3" onClick={(e)=>this.onSubmit(e,this.state.data._id)}>수정</button>
                         <button type="button" className="btn btn-secondary" onClick={this.goBack}>돌아가기</button>
                     </div>
                     </div>
                 </div>
-   
+                </div>
                 </div>
         );
     }
