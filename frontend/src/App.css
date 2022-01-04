@@ -140,7 +140,7 @@ label {
   background-color: #c8c8c8;
 }
 
-.closeJSON {
+.closeBtn {
   position: fixed;
   top: 30px;
   right: 30px;
@@ -148,3 +148,13 @@ label {
 }
 
 .select {background-color:#6c757d}
+
+.viewHistory {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 999;
+  background-color: #fff;
+}

@@ -122,6 +122,12 @@ onMouseLeave = (e) => {
                 </Link>
               </li>
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
+                <Link to={"/kafkadminr"} className="nav-link">
+                  <img alt="kafkadmin" src={'./img/kafkamonitor.png'} />
+                <p>카프카 어드민</p>
+                </Link>
+              </li> 
+              <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
                 <Link to={"/kafkamonitor"} className="nav-link">
                   <img alt="kafkamonitor" src={'./img/kafkamonitor.png'} />
                 <p>카프카 모니터링</p>
@@ -173,6 +179,7 @@ onMouseLeave = (e) => {
             <Route exact path="/metaupdate" component={Metaupdate} />
             <Route exact path="/metasave" component={Metasave} />
             <Route exact path="/connector" component={Connector} />
+            <Route exact path="/kafkaadmin" component={KafkaMonitor} />
             <Route exact path="/kafkamonitor" component={KafkaMonitor} />
             <Route exact path="/k8monitor" component={K8Monitor} />
             <Route exact path="/metric" component={Metric} />

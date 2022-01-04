@@ -1,8 +1,7 @@
 import axios from 'axios';
 import authHeader from './auth-header';
-import dotenv from 'dotenv'
-
-dotenv.config()
+// import dotenv from 'dotenv'
+// dotenv.config()
 const API_URL = process.env.REACT_APP_API;
 
 class UserService {

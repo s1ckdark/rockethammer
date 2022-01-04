@@ -4,7 +4,7 @@ import {useHistory, withRouter} from 'react-router-dom';
 import AuthService from "../services/auth.service";
 import UserService from "../services/user.service";
 import { Redirect, Link } from "react-router-dom";
-import dotenv from "dotenv"
+
 import axios from "axios"
 import PropTypes from 'prop-types';
 import Pagination from "react-js-pagination";
@@ -16,7 +16,7 @@ import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/ext-language_tools"
 window.React = React;
-dotenv.config();
+
 
 export default class Metasave extends Component {
     constructor(props) {

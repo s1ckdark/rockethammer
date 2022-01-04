@@ -4,7 +4,7 @@ import {useHistory} from 'react-router-dom';
 import AuthService from "../services/auth.service";
 import UserService from "../services/user.service";
 import { Redirect, Link } from "react-router-dom";
-import dotenv from "dotenv"
+
 import axios from "axios"
 import PropTypes from 'prop-types';
 import Pagination from "react-js-pagination";
@@ -16,13 +16,15 @@ import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/ext-language_tools"
 window.React = React;
-dotenv.config();
+
 
 export default class Metaupdate extends Component {
     constructor(props) {
         super(props);
         this.state = {
         data:{},
+        updatedata:{},
+        prevData:{},
         json:{},
         viewmode:'table'
         };
@@ -33,12 +35,15 @@ export default class Metaupdate extends Component {
             console.log("props");
             localStorage.setItem('meta', JSON.stringify(data));
             this.setState({
-                data: data
+                updatedata: data,
+                prevData:data
             });
         } else {
             console.log("no props");
             this.setState({
-                data: JSON.parse(localStorage.getItem('meta'))
+                updatedata: JSON.parse(localStorage.getItem('meta')),
+                prevData:JSON.parse(localStorage.getItem('meta'))
+
             })
         }
  
@@ -110,9 +115,10 @@ export default class Metaupdate extends Component {
 
     onChangeValue = (e) =>{
         e.preventDefault();
+        console.log(this.state.data[e.target.name], this.state.prevData[e.target.name]);
         this.setState(prevState => ({
-         data: {
-             ...prevState.data,
+         updatedata: {
+             ...prevState.updatedata,
              [e.target.name]:e.target.value
          }   
         }))
@@ -120,8 +126,10 @@ export default class Metaupdate extends Component {
 
     onChangeValueTemp = (e, index) =>{
         e.preventDefault();
-        console.log(index, e.target.name, e.target.value)
-        let metas = [...this.state.data.meta];
+        // console.log(index, e.target.name, e.target.value)
+        console.log(this.state.prevData.meta[index][e.target.name], e.target.value);
+       if(this.state.prevData.meta[index][e.target.name] !== e.target.value) {
+        let metas = [...this.state.updatedata.meta];
         metas.map((ele, idx) => {
             if(idx === index) {
                 let meta = {...metas[index]};
@@ -132,11 +140,11 @@ export default class Metaupdate extends Component {
         )
         this.setState({
             ...this.state,
-            data: {
-                ...this.state.data,
+            updatedata: {
+                ...this.state.updatedata,
                 meta:metas
             }   
-        })
+        }) } 
     }
 
     onChangeValueJSON = (e, index) =>{
@@ -152,17 +160,20 @@ export default class Metaupdate extends Component {
         e.preventDefault();
         this.setState({
 		...this.state,
-	data:{
-            ...this.state.data,
-            last_mod_dt:(new Date).toISOString(),
-            last_mod_id:AuthService.getCurrentUser().userid
-        }
-	})
-	    await axios.post(process.env.REACT_APP_API+"/meta/update/"+_id, this.state.data).then( res => {
-            if(res.status===200) {alert("수정 완료");setTimeout(() => { 
-                this.goBack();
-            }, 1000);}
+        data:{
+                hist_id:'',
+                topic_name:this.state.prevData.topic_name,
+                before:this.state.prevData,
+                after:this.state.updatedata,
+                last_mod_dt:(new Date).toISOString(),
+                last_mod_id:AuthService.getCurrentUser().userid
+            }
         })
+	    // await axios.post(process.env.REACT_APP_API+"/meta/update/"+_id, this.state.data).then( res => {
+        //     if(res.status===200) {alert("수정 완료");setTimeout(() => { 
+        //         this.goBack();
+        //     }, 1000);}
+        // })
     }
 
     viewMode = (e, type) => {

@@ -4,7 +4,7 @@ import {useHistory} from 'react-router-dom';
 import AuthService from "../services/auth.service";
 import UserService from "../services/user.service";
 import { Redirect, Link } from "react-router-dom";
-import dotenv from "dotenv"
+
 import axios from "axios"
 import PropTypes from 'prop-types';
 import Pagination from "react-js-pagination";
@@ -24,7 +24,8 @@ import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
 
 window.React = React;
-dotenv.config();
+// import dotenv from "dotenv"
+// dotenv.config();
 
 export default class Meta extends Component {
   constructor(props) {

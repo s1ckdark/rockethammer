@@ -15,9 +15,10 @@ export default class Seo extends Component {
     return (
       <Helmet>
         <meta charSet="utf-8" />
-        <title>Goodusdata data platform</title>
-        <meta name="description" content="goodusdata" />
-        <link rel="canonical" href="http://172.41.41.182:3000" />
+        <title>GOODSUSDATA - ROCKET HAMMER</title>
+        <meta name="keywords" content="Rockethammer, Goodusdata, Kafka, Data Platform" />
+        <meta name="description" content="GOODSUSDATA - ROCKET HAMMER" />
+        <link rel="canonical" href="http://10.20.19.62:3000" />
       </Helmet>
     )
   }
