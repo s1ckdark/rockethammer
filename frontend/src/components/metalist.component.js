@@ -11,11 +11,9 @@ import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/ext-language_tools";
 import Pagination from "react-js-pagination";
-import ReactJsonViewCompare from 'react-json-view-compare';
 import Historylist from "./historylist.component";
+
 window.React = React;
-// import dotenv from "dotenv";
-// dotenv.config();
 
 export default class Metalist extends Component {
     constructor(props) {

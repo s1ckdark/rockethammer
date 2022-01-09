@@ -23,7 +23,8 @@ export default class Metaupdate extends Component {
         super(props);
         this.state = {
         data:{},
-        updatedata:{},
+        history:{},
+        updateData:{},
         prevData:{},
         json:{},
         viewmode:'table'
@@ -35,13 +36,13 @@ export default class Metaupdate extends Component {
             console.log("props");
             localStorage.setItem('meta', JSON.stringify(data));
             this.setState({
-                updatedata: data,
+                updateData: data,
                 prevData:data
             });
         } else {
             console.log("no props");
             this.setState({
-                updatedata: JSON.parse(localStorage.getItem('meta')),
+                updateData: JSON.parse(localStorage.getItem('meta')),
                 prevData:JSON.parse(localStorage.getItem('meta'))
 
             })
@@ -117,8 +118,8 @@ export default class Metaupdate extends Component {
         e.preventDefault();
         console.log(this.state.data[e.target.name], this.state.prevData[e.target.name]);
         this.setState(prevState => ({
-         updatedata: {
-             ...prevState.updatedata,
+         updateData: {
+             ...prevState.updateData,
              [e.target.name]:e.target.value
          }   
         }))
@@ -129,7 +130,7 @@ export default class Metaupdate extends Component {
         // console.log(index, e.target.name, e.target.value)
         console.log(this.state.prevData.meta[index][e.target.name], e.target.value);
        if(this.state.prevData.meta[index][e.target.name] !== e.target.value) {
-        let metas = [...this.state.updatedata.meta];
+        let metas = [...this.state.updateData.meta];
         metas.map((ele, idx) => {
             if(idx === index) {
                 let meta = {...metas[index]};
@@ -140,8 +141,8 @@ export default class Metaupdate extends Component {
         )
         this.setState({
             ...this.state,
-            updatedata: {
-                ...this.state.updatedata,
+            updateData: {
+                ...this.state.updateData,
                 meta:metas
             }   
         }) } 
@@ -159,27 +160,49 @@ export default class Metaupdate extends Component {
     onSubmit = async(e,_id) => {
         e.preventDefault();
         this.setState({
-		...this.state,
+            ...this.state,
         data:{
-                hist_id:'',
-                topic_name:this.state.prevData.topic_name,
-                before:this.state.prevData,
-                after:this.state.updatedata,
+                ...this.state.data,
                 last_mod_dt:(new Date).toISOString(),
                 last_mod_id:AuthService.getCurrentUser().userid
             }
         })
-	    // await axios.post(process.env.REACT_APP_API+"/meta/update/"+_id, this.state.data).then( res => {
+        this.setState({
+		...this.state,
+        history:{
+                hist_id:'',
+                topic_name:this.state.prevData.topic_name,
+                before:this.state.prevData,
+                after:this.state.updateData,
+                last_mod_dt:(new Date).toISOString(),
+                last_mod_id:AuthService.getCurrentUser().userid
+            }
+        })
+        console.log(this.state.history);
+        console.log(this.state.data);
+
+        if(JSON.stringify(this.state.prevData) === JSON.stringify(this.state.updateData)){ 
+            alert("변경된 내용이 없습니다.");
+            this.goBack();
+        } else {
+            console.log("changed");
+            // await axios.post(process.env.REACT_APP_API+"/meta/update/"+_id, this.state.data).then( res => {
+            // await axios.post(process.env.REACT_APP_API+"/history/insert", this.state.history).then(res =>{
         //     if(res.status===200) {alert("수정 완료");setTimeout(() => { 
         //         this.goBack();
         //     }, 1000);}
+            // })
+
         // })
+        }
+        
+	    
     }
 
     viewMode = (e, type) => {
         e.preventDefault();
         this.setState({...this.state, 
-            json:this.replaceKey(this.state.data),
+            json:this.replaceKey(this.state.updateData),
             viewmode:type})
     }
     goBack = ()=>{
@@ -255,20 +278,20 @@ export default class Metaupdate extends Component {
                     </div>
                     <div className={this.state.viewmode === "table" ? "d-block type-table" : "d-none type-table"}>
                         <div className="d-flex flex-wrap">
-                    {Object.keys(this.state.data).map((fields) => {
-                            if(typeof(this.state.data[fields]) !== "object"){
+                    {Object.keys(this.state.updateData).map((fields) => {
+                            if(typeof(this.state.updateData[fields]) !== "object"){
                                 if(fields !== "_id") {
                                     return (
                                         <div className="d-flex w-50 justify-content-center">
                                             <div className={fields+" col-md-4 text-left"}>{this.trans(fields)}</div>
                                             <div className={"value-"+fields+" value form-group col-md-6"}>
-                                            <input type="text" name={fields} className={"input-"+fields+" input-value w-100"} value={this.state.data[fields]} onChange={this.onChangeValue} readOnly={this.readonly(fields)}/>
+                                            <input type="text" name={fields} className={"input-"+fields+" input-value w-100"} value={this.state.updateData[fields]} onChange={this.onChangeValue} readOnly={this.readonly(fields)}/>
                                             </div>
                                         </div>
                                     );
                                     } else {
                                         return(
-                                            <input type="hidden" name={fields} className={"input-"+fields+" input-value"} value={this.state.data[fields]} onChange={this.onChangeValue} readOnly={this.readonly(fields)}/>
+                                            <input type="hidden" name={fields} className={"input-"+fields+" input-value"} value={this.state.updateData[fields]} onChange={this.onChangeValue} readOnly={this.readonly(fields)}/>
                                         )
                                     }
                             } else {
@@ -277,14 +300,14 @@ export default class Metaupdate extends Component {
                                     <div className="d-flex">
                                         <div className={fields+" col-md-2"}>{this.trans(fields)}</div>
                                         <div className={"value-"+fields+" value form-group"}>
-                                            <input type="text" name={fields} className={"input-"+fields+" input-value"} value={this.state.data[fields]} onChange={this.onChangeValue} readOnly={this.readonly(fields)}/>
+                                            <input type="text" name={fields} className={"input-"+fields+" input-value"} value={this.state.updateData[fields]} onChange={this.onChangeValue} readOnly={this.readonly(fields)}/>
                                         </div>
                                     </div>
                                     )
                                 } else if(fields === 'meta') {
                                     return (
                                         <table className="table my-5">
-                                            {this.state.data[fields].map((ele, index) => {
+                                            {this.state.updateData[fields].map((ele, index) => {
                                                 return (
                                                     <>
                                                     {index === 0 ? 
@@ -307,7 +330,7 @@ export default class Metaupdate extends Component {
                                                                 <th scope="row">{index+1}</th>
                                                                 {Object.keys(ele).map((fields2) => {
                                                                         return (
-                                                                            <td><input type="text" name={fields2} className={"fields-input "+fields2} value={this.state.data[fields][index][fields2]} onChange={(e)=>this.onChangeValueTemp(e,index)}  readOnly={this.readonly(fields2)}/></td>
+                                                                            <td><input type="text" name={fields2} className={"fields-input "+fields2} value={this.state.updateData[fields][index][fields2]} onChange={(e)=>this.onChangeValueTemp(e,index)}  readOnly={this.readonly(fields2)}/></td>
                                                                         );
                                                                         
                                                                     }) 
@@ -324,7 +347,7 @@ export default class Metaupdate extends Component {
                         }) 
                     }    
                     <div className="action text-center mx-auto my-5">
-                        <button type="button" className="btn btn-primary mr-3" onClick={(e)=>this.onSubmit(e,this.state.data._id)}>수정</button>
+                        <button type="button" className="btn btn-primary mr-3" onClick={(e)=>this.onSubmit(e,this.state.updateData._id)}>수정</button>
                         <button type="button" className="btn btn-secondary" onClick={this.goBack}>돌아가기</button>
                     </div>
                     </div>

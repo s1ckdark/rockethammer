@@ -18,8 +18,6 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Register from './register.component'
 import { Button,Modal } from 'react-bootstrap'
-import { JsonToTable } from "react-json-to-table";
-
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
 

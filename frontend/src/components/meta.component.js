@@ -19,7 +19,6 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Register from './register.component'
 import { Button,Modal } from 'react-bootstrap'
-import { JsonToTable } from "react-json-to-table";
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
 import Metalist from './metalist.component';
@@ -28,15 +27,12 @@ import Metaupdate from './metaupdate.component';
 import Metasave from './metasave.component';
 
 window.React = React;
-// import dotenv from "dotenv"
-// dotenv.config();
 
 export default class Meta extends Component {
   constructor(props) {
     super(props);
     this.state = {
       schema:[],
-      history:[],
       data:[],
       keyword:'',
       save:false,
@@ -49,12 +45,6 @@ export default class Meta extends Component {
       .then(res => {
         this.setState({
           schema:res.data
-        })
-      })
-      axios.get(process.env.REACT_APP_API+"/history/get")
-      .then(res => {
-        this.setState({
-          history:res.data
         })
       })
   }

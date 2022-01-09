@@ -10,7 +10,7 @@ import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/ext-language_tools";
 import Pagination from "react-js-pagination";
-import ReactJsonViewCompare from 'react-json-view-compare';
+import ReactDiffViewer from 'react-diff-viewer';
 
 window.React = React;
 
@@ -154,10 +154,8 @@ export default class Historylist extends Component {
                     </div>
                     {this.state.show ? 
                     <div className="detailView">
-                        <div className="closeHistoryDetail closeBtn"><button type="button" onClick={this.closeHistoryDetail} className="btn btn-warning">CLOSE</button></div>
-                        {/* <ReactJsonViewCompare oldData={this.state.before} newData={this.state.after} /> */}
-                        <div className="old">{JSON.stringify(this.state.before, null, 2)}</div>
-                        <div className="new">{JSON.stringify(this.state.after, null, 2)}</div>
+                        <div className="closeHistoryDetail closeBtn"><button type="button" onClick={this.closeHisotryDetail} className="btn btn-warning">CLOSE</button></div>
+                        <ReactDiffViewer oldValue={JSON.stringify(this.state.before.meta, null, 2)} newValue={JSON.stringify(this.state.after.meta, null, 2)} splitView={true} />
                     </div>
                     : <></>}
                     {/* <Pagination
