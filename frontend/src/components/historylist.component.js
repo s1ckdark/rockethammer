@@ -57,13 +57,52 @@ export default class Historylist extends Component {
         // console.log(this.props);
     }
 
+    replaceKey = (data)=>{
+        const swaps = {
+            "_id":"_id",
+            "topic_name":"토픽명",
+            "schema_id":"스키마ID",
+            "meta_id":"메타ID",
+            "schema_version":"스키마버전",
+            "meta_version":"메타버전",
+            "recycle_pol":"데이터삭제주기",
+            "op_name":"관리부서",
+            "service":"업무시스템",
+            "related_topics":"연관토픽",
+            "last_mod_dt":"최종수정시간",
+            "last_mod_id":"최종수정자",
+            "schema":"",
+            "p_name":"물리명",
+            "p_type":"데이터 타입",
+            "l_name":"논리명",
+            "l_def":"설명",
+            "is_null":"Null허용여부",
+            "default":"기본값",
+            "memo":"메모",
+            "topic_desc":"토픽설명"
+        };
+        const pattern = new RegExp(
+        Object.keys(swaps).map(e => `(?:"(${e})":)`).join("|"), "g"
+        );
+        const result = JSON.parse(
+        JSON.stringify(data).replace(pattern, m => `"${swaps[m.slice(1,-2)]}":`)
+        );
+        return result;
+    }
+
+    exist = (json,key) => {
+        json.map((res,index)=>{
+          res.hasOwnProperty(key) ? console.log(index, key):console.log("no")
+        })
+      }
+
     detailView = (e, idx, before, after) => {
         console.log(idx);
         this.setState({
             ...this.state,
             show:true,
-            before: JSON.parse(before),
-            after: JSON.parse(after)
+            before: this.replaceKey(JSON.parse(before)),
+            after: this.replaceKey(JSON.parse(after))
         })
     }
 
@@ -121,7 +160,7 @@ export default class Historylist extends Component {
     {
         return (
             <div className="result">
-                <div className="d-flex">
+                <div className="container">
                     <div className="history col-md-7 p-5">
                         <table className="historylist bg-light table table-hover">
                             <thead>
@@ -155,7 +194,7 @@ export default class Historylist extends Component {
                     {this.state.show ? 
                     <div className="detailView">
                         <div className="closeHistoryDetail closeBtn"><button type="button" onClick={this.closeHisotryDetail} className="btn btn-warning">CLOSE</button></div>
-                        <ReactDiffViewer oldValue={JSON.stringify(this.state.before.meta, null, 2)} newValue={JSON.stringify(this.state.after.meta, null, 2)} splitView={true} />
+                        <ReactDiffViewer oldValue={JSON.stringify(this.state.before, null, 2)} newValue={JSON.stringify(this.state.after, null, 2)} splitView={true} />
                     </div>
                     : <></>}
                     {/* <Pagination
@@ -165,7 +204,8 @@ export default class Historylist extends Component {
                         onChange={this.handleUserPageChange}
                     /> */}
                 </div>
-            </div>
+                </div>
+
 
         );
     }
