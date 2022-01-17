@@ -122,7 +122,7 @@ onMouseLeave = (e) => {
                 </Link>
               </li>
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
-                <Link to={"/kafkadminr"} className="nav-link">
+                <Link to={"/kafkadmin"} className="nav-link">
                   <img alt="kafkadmin" src={'./img/kafkamonitor.png'} />
                 <p>카프카 어드민</p>
                 </Link>
