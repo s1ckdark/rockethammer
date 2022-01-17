@@ -130,7 +130,7 @@ onMouseLeave = (e) => {
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
                 <Link to={"/kafkamonitor"} className="nav-link">
                   <img alt="kafkamonitor" src={'./img/kafkamonitor.png'} />
-                <p>카프카 모니터링</p>
+                <p>카프카<br/>모니터링</p>
                 </Link>
               </li>              
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
