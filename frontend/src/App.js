@@ -118,13 +118,13 @@ onMouseLeave = (e) => {
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
                 <Link to={"/connector"} className="nav-link">
                   <img alt="Connector" src={'./img/connector-white.png'} />
-                <p>커넥터 관리</p>
+                <p>커넥터<br/>관리</p>
                 </Link>
               </li>
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
                 <Link to={"/kafkadmin"} className="nav-link">
                   <img alt="kafkadmin" src={'./img/kafkamonitor.png'} />
-                <p>카프카 어드민</p>
+                <p>카프카<br/>어드민</p>
                 </Link>
               </li> 
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
@@ -136,13 +136,13 @@ onMouseLeave = (e) => {
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
                 <Link to={"/k8monitor"} className="nav-link">
                   <img alt="k8monitor" src={'./img/k8monitor.png'} />
-                <p>쿠버네티스 모니터링</p>
+                <p>쿠버네티스<br/>모니터링</p>
                 </Link>
               </li>
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
                 <Link to={"/metric"} className="nav-link">
                   <img alt="metric" src={'./img/metric.png'} />
-                <p>메트릭 수집기</p>
+                <p>메트릭<br/>수집기</p>
                 </Link>
               </li>
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>

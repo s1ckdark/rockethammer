@@ -33,7 +33,7 @@ export default class Metaupdate extends Component {
     componentDidMount(){
         const {type, data} = this.props.location;
         if(data) {
-            console.log("props");
+            console.log("props",data);
             localStorage.setItem('meta', JSON.stringify(data));
             this.setState({
                 updateData: data,
@@ -158,19 +158,20 @@ export default class Metaupdate extends Component {
         e.preventDefault();
         this.setState({
             ...this.state,
-        data:{
-                ...this.state.data,
-                last_mod_dt:(new Date).toISOString(),
-                last_mod_id:AuthService.getCurrentUser().userid
-            }
-        })
+            updateData:{
+                    ...this.state.data,
+                    last_mod_dt:(new Date).toISOString(),
+                    last_mod_id:AuthService.getCurrentUser().userid
+                }
+            })
+
+        //history state
         this.setState({
 		...this.state,
         history:{
-                hist_id:'',
                 topic_name:this.state.prevData.topic_name,
-                before:this.state.prevData,
-                after:this.state.updateData,
+                before:JSON.stringify(this.state.prevData),
+                after:JSON.stringify(this.state.updateData),
                 last_mod_dt:(new Date).toISOString(),
                 last_mod_id:AuthService.getCurrentUser().userid
             }
@@ -183,7 +184,7 @@ export default class Metaupdate extends Component {
             this.goBack();
         } else {
             console.log("changed");
-            this.exist(prevData, this.state.json);
+            // this.exist(prevData, this.state.json);
             // Object.keys(prevData).map( res => {
             //     console.log(res);
             //     this.exist(this.state.updateData, res);
@@ -197,49 +198,48 @@ export default class Metaupdate extends Component {
             //     json:this.replaceKey(this.state.updateData, "krtoen")
             // })
             // if(this.state.updateData.hasOwnProperty('물리명')){alert("있다!")} else {alert("없다")}
-            // await axios.post(process.env.REACT_APP_API+"/meta/update/"+_id, this.state.data).then( res => {
-            //     axios.post(process.env.REACT_APP_API+"/history/insert", this.state.history).then(res =>{
-            //     if(res.status===200) {alert("수정 완료");setTimeout(() => { 
-            //         this.goBack();
-            //     }, 1000);}
-            //     })
-
-            // })
+            await axios.post(process.env.REACT_APP_API+"/meta/update/"+_id, this.state.updateData).then( res => {
+                axios.post(process.env.REACT_APP_API+"/history/insert/", this.state.history).then(res =>{
+                if(res.status===200) {alert("수정 완료");setTimeout(() => { 
+                    this.goBack();
+                }, 1000);}
+                })
+            })
         }
     }
     
-
-    exist = (prev, after) => {
-        let keys= [], metakeys=[], err=[];
-        if(typeof(prev) === 'object' || typeof(after) === 'object') {
-            // this.detect(prev, after);
-            Object.keys(prev).map( res => {
-               keys.push(res);
-            })
-            prev.meta.map(res => {
-                Object.keys(res).map( item => {
-                    metakeys.push(item);
-                })
-            })
-            keys = [...new Set(keys)]          
-            keys.map(key => {
-                after.hasOwnProperty(key) ? console.log("yes", key) :  err.push(key)
-                })
+// detect json key changed.
+//     exist = (prev, after) => {
+//         let keys= [], metakeys=[], err=[];
+//         if(typeof(prev) === 'object' || typeof(after) === 'object') {
+//             // this.detect(prev, after);
+//             Object.keys(prev).map( res => {
+//                keys.push(res);
+//             })
+//             prev.meta.map(res => {
+//                 Object.keys(res).map( item => {
+//                     metakeys.push(item);
+//                 })
+//             })
+//             keys = [...new Set(keys)]          
+//             keys.map(key => {
+//                 after.hasOwnProperty(key) ? console.log("yes", key) :  err.push(key)
+//                 })
             
-            metakeys.map(key => {
-                    after['meta'].map((ele) => {
-                        console.log(ele, key);
-                        ele.hasOwnProperty(key) ? console.log("yes", key) : err.push(key)
-                        // console.log("no", key);
-                })
-            })
-            if(err.length > 0) { this.setState({...this.state, jsonerr:err}); alert("JSON 키는 변경될 수 없습니다.");}
-    } else {
-        alert("JSON을 입력해주세요")
-    }
-}
+//             metakeys.map(key => {
+//                     after['meta'].map((ele) => {
+//                         console.log(ele, key);
+//                         ele.hasOwnProperty(key) ? console.log("yes", key) : err.push(key)
+//                         // console.log("no", key);
+//                 })
+//             })
+//             if(err.length > 0) { this.setState({...this.state, jsonerr:err}); alert("JSON 키는 변경될 수 없습니다.");}
+//     } else {
+//         alert("JSON을 입력해주세요")
+//     }
+// }
 
-    detect = (base, update) => {
+    // detect = (base, update) => {
         // let keys =[];
         // console.log(base);
         // Object.keys(base).map(ele=>{
@@ -260,7 +260,7 @@ export default class Metaupdate extends Component {
             
             // res.hasOwnProperty(key) ? console.log(index, key):console.log("no")
         // })
-    }
+    // }
 	    
     replaceKey = (data, mode)=>{
         let swaps;
@@ -343,11 +343,12 @@ export default class Metaupdate extends Component {
 
     render()
     {
+        console.log(this.state.updateData);
         return (
             <div className="metalist bg-light p-5">
             <div className="meta">
             <div className="mode d-flex justify-content-end mb-5">
-                        <button type="button" className={this.state.viewmode === "json" ? "btn btn-success" : "btn btn-dark mr-2"} onClick={(e)=>this.viewMode(e,"json")}>JSON</button>
+                        <button type="button" className={this.state.viewmode === "json" ? "btn btn-success" : "btn btn-dark mr-2"} onClick={(e)=>this.viewMode(e,"json")}>JSON VIEW</button>
                         <button type="button" className={this.state.viewmode === "table" ? "btn btn-success" : "btn btn-dark ml-2"} onClick={(e)=>this.viewMode(e,"table")}>TABLE</button>
                     </div>
                     <div className={this.state.viewmode === "json" ? "d-block type-json" : "d-none type-json"}>
@@ -362,6 +363,7 @@ export default class Metaupdate extends Component {
                             editorProps={{ $blockScrolling: true }}
                             onChange={this.onChangeValueJSON}
                             fontSize= {14}
+                            readOnly
                             setOptions={{
                                 enableBasicAutocompletion: true,
                                 enableLiveAutocompletion: true,
@@ -454,7 +456,7 @@ export default class Metaupdate extends Component {
                     </div>
                 </div>
                     <div className="action text-center mx-auto my-5">
-                        <button type="button" className="btn btn-primary mr-3" onClick={(e)=>this.onSubmit(e,this.state.updateData._id, this.state.viewmode)}>수정</button>
+                        <button type="button" className="btn btn-primary mr-3" onClick={(e)=>this.onSubmit(e,this.state.updateData._id)} disabled={this.state.viewmode ==='table' ?  "":"true" }>수정</button>
                         <button type="button" className="btn btn-secondary" onClick={this.goBack}>돌아가기</button>
                     </div>
                 </div>

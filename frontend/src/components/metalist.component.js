@@ -71,14 +71,15 @@ export default class Metalist extends Component {
 
     onDel = (e,_id) => {
         e.preventDefault();
-        if (window.confirm("정말 삭제하시겠습니까??") == true){    //확인
-            axios.delete(process.env.REACT_APP_API+"/meta/delete",{data:{keyword:_id}}).then(res => {
-                 alert("삭제가 완료되었습니다");
-                 setTimeout(() => { 
-                    window.location.reload(false);
-                }, 1000);
-            }) 
-        }       
+        this.historyAction(e, "delete", _id);
+        // if (window.confirm("정말 삭제하시겠습니까??") == true){    //확인
+        //     axios.delete(process.env.REACT_APP_API+"/meta/delete",{data:{keyword:_id}}).then(res => {
+        //          alert("삭제가 완료되었습니다");
+        //          setTimeout(() => { 
+        //             window.location.reload(false);
+        //         }, 1000);
+        //     }) 
+        // }       
     }
 
     IsJsonString = (str) => {
@@ -96,7 +97,6 @@ export default class Metalist extends Component {
 
     detailView = (e, idx, topic_name) => {
         e.preventDefault();
-        console.log(e.target);
         axios.post(process.env.REACT_APP_API+"/meta/getmeta",{keyword:topic_name}).then(res => {
             if(res.data && res.data.length > 0) {
                 this.setState({...this.state, meta:res.data[0],show:true, idx:idx})
@@ -111,7 +111,6 @@ export default class Metalist extends Component {
                 this.setState({...this.state, history:{},idx:idx})
             }
         })
-        console.log(this.state.history.length);
     }
 
     historyView = (e, idx, topic_name) => {
@@ -175,6 +174,12 @@ export default class Metalist extends Component {
         );
         return result;
     }
+
+    historyAction = (e,act, id) => {
+        e.preventDefault();
+        console.log(e, act, id);
+    }
+
     render()
     {
         return (
@@ -227,7 +232,7 @@ export default class Metalist extends Component {
                                 <p><span className="mr-2">Meta Version</span>{this.state.meta.meta_id}</p>
                                 <p>{this.state.meta.last_mod_id}</p>
                                 <p>{this.state.meta.last_mod_dt}</p>
-                                <button type="button" className="btn btn-success mr-1" onClick={this.jsonVIEW}>조회</button><button type="button" className="btn btn-info mr-1"><Link to={{pathname:'/metaupdate', data:this.state.meta, type:"update"}}>수정</Link></button><button type="button" className="btn btn-secondary" onClick={(e)=>this.onDel(e,this.state.meta._id)}>삭제</button> {this.state.history && this.state.history.length >0 ? <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.meta.topic_name)}>HISTORY</button> : <></>}</>                     
+                                <button type="button" className="btn btn-success mr-1" onClick={this.jsonVIEW}>조회</button><button type="button" className="btn btn-info mr-1"><Link to={{pathname:'/metaupdate', data:this.state.meta, type:"update"}}>수정</Link></button><button type="button" className="btn btn-secondary" onClick={(e)=>this.onDel(e,this.state.meta._id)}>삭제</button> {this.state.history && this.state.history.length >0 ? <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.meta.topic_name)}>HISTORY</button> : <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.meta.topic_name)} disabled={true}>HISTORY</button>}</>                     
                                 :
                                 <>
                                 <p>등록된 Meta가 존재하지 않습니다</p>
