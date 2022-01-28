@@ -167,8 +167,8 @@ export default class Historylist extends Component {
                                 <tr className="text-center p-3">
                                     <th scope="col" className="col-md-1">번호</th>
                                     <th scope="col" className="col-md-3">토픽명</th>
-                                    <th scope="col" className="col-md-2">수정자</th>
-                                    <th scope="col" className="col-md-2">수정일시</th>
+                                    <th scope="col" className="col-md-3">수정자</th>
+                                    <th scope="col" className="col-md-3">수정일시</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -179,11 +179,11 @@ export default class Historylist extends Component {
                                             <td className="value-subject value form-group">
                                             {item.topic_name}
                                             </td>
+                                            <td className="last_mod_dt value form-group">
+                                            {item.last_mod_id}                                     
+                                            </td>
                                             <td className="last_mod_id value form-group">
                                             {item.last_mod_dt}
-                                            </td>
-                                            <td className="last_mod_dt value form-group">
-                                            {item.last_mod_id}
                                             </td>
                                         </tr>
                                     );

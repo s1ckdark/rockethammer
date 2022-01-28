@@ -455,8 +455,8 @@ export default class Metaupdate extends Component {
                     }    
                     </div>
                 </div>
-                    <div className="action text-center mx-auto my-5">
-                        <button type="button" className="btn btn-primary mr-3" onClick={(e)=>this.onSubmit(e,this.state.updateData._id)} disabled={this.state.viewmode ==='table' ?  "":"true" }>수정</button>
+                    <div className={this.state.viewmode === 'table' ? "action visible text-center mx-auto my-5" : "action invisible text-center mx-auto my-5"}>
+                        <button type="button" className="btn btn-primary mr-3" onClick={(e)=>this.onSubmit(e,this.state.updateData._id)}>수정</button>
                         <button type="button" className="btn btn-secondary" onClick={this.goBack}>돌아가기</button>
                     </div>
                 </div>
