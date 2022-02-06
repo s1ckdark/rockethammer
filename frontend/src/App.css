@@ -163,3 +163,5 @@ label {
   z-index: 100;
   background-color: #fff;
 }
+
+.paging ul li {list-style-type: none;}

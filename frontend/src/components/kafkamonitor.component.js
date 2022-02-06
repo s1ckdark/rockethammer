@@ -16,7 +16,7 @@ export default class Kafkamonitor extends Component {
     return (
       <div className="kafkamonitor">
       <div className="container">
-        <Iframe url="http://10.20.19.76:3100/d/jwPKIsniz/kafka-consumer-lag?orgId=1&from=1642308757663&to=1642395157663"
+        <Iframe url="http://10.20.19.76:3100/d/sckEbYTMk/kafka-metrics-monitoring?orgId=1&refresh=30s&from=1643877669071&to=1643964069072"
         id="KafkaMonitor"
         className="cors-iframe"/>
       </div>

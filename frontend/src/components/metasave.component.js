@@ -50,14 +50,14 @@ export default class Metasave extends Component {
             let toJson = JSON.parse(data.schema);
             let jsons = [];
             toJson.fields.map((item, idx) => {
-                console.log(item);
                 let json = {};
                 json.p_name = item.name;
                 json.p_type = item.type;
                 json.l_name = '';
                 json.l_def = '';
-                json.is_null = '';
-                json.default = '';
+                //null허용여부 분기 default값 지정
+                json.is_null = typeof(item['type']) === 'array' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'y': 'n' 
+                json.default = item.default ? item.default : ''
                 json.memo = '';
                 jsons[idx] = json;
             })
@@ -205,7 +205,7 @@ export default class Metasave extends Component {
     }
 
     readonly = (name) => {
-        var tmp = ["p_name","p_type","topic_name","schema_id","schema_version","_id"];
+        var tmp = ["p_name","p_type","topic_name","schema_id","schema_version","_id","is_null","default"];
         let result = tmp.filter(ele => ele === name)
         return result.length > 0 ? true : false
     }
@@ -254,20 +254,11 @@ export default class Metasave extends Component {
                         <button type="button" className={this.state.viewmode === "table" ? "btn btn-success" : "btn btn-dark"} onClick={(e)=>this.viewMode(e,"table")}>TABLE</button>
                     </div>
                     <div className={this.state.viewmode === "json" ? "d-block type-json" : "d-none type-json"}>
-                        {/* <JSONInput
-                        id          = {this.state.data[`_id`]}
-                        placeholder = {this.state.data}
-                        locale      = { locale }
-                        height      = '550px'
-			            width       = '100%'
-                        onChange    = {this.onChangeValueJSON}
-                        /> */}
                         <AceEditor
                             mode="json"
                             theme="tomorrow"
                             name={this.state.json[`_id`]}
                             value = {JSON.stringify(this.state.json, null, 4)}
-                            // editorProps={{ $blockScrolling: true }}
                             onChange={this.onChangeValueJSON}
                             fontSize= {14}
                             width= "100%"

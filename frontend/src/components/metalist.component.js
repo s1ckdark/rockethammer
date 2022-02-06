@@ -12,51 +12,62 @@ import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/ext-language_tools";
 import Pagination from "react-js-pagination";
 import Historylist from "./historylist.component";
-
 window.React = React;
 
 export default class Metalist extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          meta:[],
-          history:[],
+          meta:{
+              data:[],
+              totalcnt:0,
+              activePage: 1,
+              pageSize:10,
+              currentTableData:[]
+          },
+          history:{
+              data:[],
+              totalcnt:0,
+              activePage: 1,
+              pageSize:10,
+              currentTableData:[]
+          },
           idx:'',
 		  show:false,
           showHistory:false,
           json:{},
           jsonVIEW:false
         };
-        this.handleUserPageChange = this._handleUserPageChange.bind(this);
+        this.handleMetaPageChange = this._handleMetaPageChange.bind(this);
         this.handleHistoryPageChange = this._handleHistoryPageChange.bind(this);
     }
 
-    _handleUserPageChange(pageNumber) {
+    _handleMetaPageChange(pageNumber) {
         console.log(`active page is ${pageNumber}`);
         this.setState({
-        ...this.state,
-        user:{
-            ...this.state.user,
-            currentPage: pageNumber
-        }
-        });
-        this.fetchData();
+            ...this.state,
+            meta:{
+                ...this.state.meta,
+                activePage: pageNumber
+            }
+        }, ()=>{this.fetchMetaData();})
     }
 
     _handleHistoryPageChange(pageNumber) {
         console.log(`active page is ${pageNumber}`);
         this.setState({
         ...this.state,
-        history:{
-            ...this.state.history,
-            currentPage: pageNumber
-        }
+            historyPage:{
+                ...this.state.history,
+                activePage:pageNumber
+            }
         });
         this.fetchHistoryData();
     }
       
     componentDidMount(){
         // console.log(this.props);
+        this.fetchMetaData();
     }
 
     onEdit = (e,item) => {
@@ -81,6 +92,49 @@ export default class Metalist extends Component {
         //     }) 
         // }       
     }
+
+    fetchMetaData = () => {
+        const firstPageIndex = (this.state.meta.activePage - 1) * this.state.meta.pageSize;
+        const lastPageIndex = firstPageIndex + this.state.meta.pageSize;
+
+        this.setState({
+            ...this.state,
+            meta:{
+                ...this.state.meta,
+                data:this.props.schema,
+                totalcnt: this.props.schema.length,
+                currentTableData:this.props.schema.slice(firstPageIndex, lastPageIndex)
+            }
+        })
+    } 
+    
+
+    
+      fetchHistoryData = () => {
+          const firstPageIndex = (this.state.history.activePage - 1) * this.state.history.pageSize;
+          const lastPageIndex = firstPageIndex + this.state.history.pageSize;
+
+          if(this.state.history.data.length > 0){
+          this.setState({
+              ...this.state,
+              history:{
+                ...this.state.history,
+                totalcnt: this.state.history.data.length,
+                currentTableData:this.state.history.data.slice(firstPageIndex, lastPageIndex)
+              }
+            })
+        } else {
+          this.setState({
+              ...this.state,
+              history:{
+                ...this.state.history,
+                data: [],
+                totalcnt: 0,
+                currentTableData:[]
+              }
+            })
+        }
+      }
 
     IsJsonString = (str) => {
         try {
@@ -190,13 +244,15 @@ export default class Metalist extends Component {
                             <thead>
                                 <tr className="text-center p-3">
                                     <th scope="col" className="col-md-1">번호</th>
-                                    <th scope="col" className="col-md-3">토픽명</th>
-                                    <th scope="col" className="col-md-2">스키마버전</th>
-                                    <th scope="col" className="col-md-2">스키마Id</th>
+                                    <th scope="col" className="col-md-5">토픽명</th>
+                                    <th scope="col" className="col-md-1">스키마버전</th>
+                                    <th scope="col" className="col-md-1">스키마Id</th>
                                 </tr>
                             </thead>
                             <tbody>
-                        {this.props.schema.length > 0 ? this.props.schema.map((item,index) => {
+                        {/* {this.props.schema.length > 0 ? this.props.schema.map((item,index) => { */}
+                          {this.state.meta.currentTableData.length > 0 ? this.state.meta.currentTableData.map((item,index) => {
+                         
                             var temp = {};
                             var mapping = {};
                             var schema = JSON.parse(item.schema);
@@ -225,14 +281,14 @@ export default class Metalist extends Component {
                    {this.state.show ? 
                     <div className="detailview col-md-5 p-5 m-5 border-left">
                         <div className="detail ">
-                            {Object.keys(this.state.meta).length > 0 ? 
+                            {Object.keys(this.state.meta.data).length > 0 ? 
                                 <>
-                                <h3>{this.state.meta.topic_name}</h3>
-                                <p className="d-inline"><span className="mr-2">Schema Version</span>{this.state.meta.schema_id}</p>
-                                <p><span className="mr-2">Meta Version</span>{this.state.meta.meta_id}</p>
-                                <p>{this.state.meta.last_mod_id}</p>
-                                <p>{this.state.meta.last_mod_dt}</p>
-                                <button type="button" className="btn btn-success mr-1" onClick={this.jsonVIEW}>조회</button><button type="button" className="btn btn-info mr-1"><Link to={{pathname:'/metaupdate', data:this.state.meta, type:"update"}}>수정</Link></button><button type="button" className="btn btn-secondary" onClick={(e)=>this.onDel(e,this.state.meta._id)}>삭제</button> {this.state.history && this.state.history.length >0 ? <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.meta.topic_name)}>HISTORY</button> : <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.meta.topic_name)} disabled={true}>HISTORY</button>}</>                     
+                                <h3>{this.state.meta.data.topic_name}</h3>
+                                <p className="d-inline"><span className="mr-2">Schema Version</span>{this.state.meta.data.schema_id}</p>
+                                <p><span className="mr-2">Meta Version</span>{this.state.meta.data.meta_id}</p>
+                                <p>{this.state.meta.data.last_mod_id}</p>
+                                <p>{this.state.meta.data.last_mod_dt}</p>
+                                <button type="button" className="btn btn-success mr-1" onClick={this.jsonVIEW}>조회</button><button type="button" className="btn btn-info mr-1"><Link to={{pathname:'/metaupdate', data:this.state.meta, type:"update"}}>수정</Link></button><button type="button" className="btn btn-secondary" onClick={(e)=>this.onDel(e,this.state.meta.data._id)}>삭제</button> {this.state.history && this.state.history.length >0 ? <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.meta.data.topic_name)}>HISTORY</button> : <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.meta.data.topic_name)} disabled={true}>HISTORY</button>}</>                     
                                 :
                                 <>
                                 <p>등록된 Meta가 존재하지 않습니다</p>
@@ -241,12 +297,6 @@ export default class Metalist extends Component {
                         </div>
                     </div>
                     : <></>}
-                    {/* <Pagination
-                        activePage={this.state.user.currentPage}
-                        itemsCountPerPage={this.state.user.pageSize}
-                        totalItemsCount={this.state.user.totalcnt}
-                        onChange={this.handleUserPageChange}
-                    /> */}
                 </div>
                 {this.state.showHistory ? 
                 <div className="viewHistory">
@@ -269,6 +319,18 @@ export default class Metalist extends Component {
                     />
                 </div>
                 : <></>}
+                <div className="paging text-center mx-auto py-5">
+                    <Pagination
+                        activePage={this.state.meta.activePage}
+                        itemsCountPerPage={this.state.meta.pageSize}
+                        totalItemsCount={this.state.meta.totalcnt}
+                        pageRangeDisplayed={5}
+                        onChange={this.handleMetaPageChange}
+                        itemClass="page-item"
+                        linkClass="page-link"
+                        innerClass="pagination d-flex justify-content-center"
+                    />
+                    </div>
             </div>
 
         );
