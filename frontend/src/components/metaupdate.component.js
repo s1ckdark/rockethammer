@@ -78,7 +78,7 @@ export default class Metaupdate extends Component {
     }
 
     readonly = (name) => {
-        var tmp = ["p_name","p_type","topic_name","schema_id","schema_version","_id"];
+        var tmp = ["p_name","p_type","topic_name","schema_id","schema_version","_id","is_null","default"];
         let result = tmp.filter(ele => ele === name)
         return result.length > 0 ? true : false
     }
