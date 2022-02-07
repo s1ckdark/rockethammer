@@ -50,13 +50,14 @@ export default class Metasave extends Component {
             let toJson = JSON.parse(data.schema);
             let jsons = [];
             toJson.fields.map((item, idx) => {
+                console.log(typeof(item['type']));
                 let json = {};
                 json.p_name = item.name;
                 json.p_type = item.type;
                 json.l_name = '';
                 json.l_def = '';
                 //null허용여부 분기 default값 지정
-                json.is_null = typeof(item['type']) === 'array' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'y': 'n' 
+                json.is_null = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'y': 'n' 
                 json.default = item.default ? item.default : ''
                 json.memo = '';
                 jsons[idx] = json;

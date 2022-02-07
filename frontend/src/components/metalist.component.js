@@ -244,15 +244,15 @@ export default class Metalist extends Component {
                         <table className="metalist bg-light table table-hover">
                             <thead>
                                 <tr className="text-center p-3">
-                                    <th scope="col" className="col-md-1">번호</th>
-                                    <th scope="col" className="col-md-5">토픽명</th>
-                                    <th scope="col" className="col-md-1">스키마버전</th>
-                                    <th scope="col" className="col-md-1">스키마Id</th>
+                                    <th scope="col" className="col-md-1">#</th>
+                                    <th scope="col" className="col-md-7">토픽명</th>
+                                    <th scope="col" className="col-md-2">스키마Ver</th>
+                                    <th scope="col" className="col-md-2">스키마Id</th>
                                 </tr>
                             </thead>
                             <tbody>
-                        {this.props.schema.length > 0 ? this.props.schema.map((item,index) => { 
-                        //   {this.state.meta.currentTableData.length > 0 ? this.state.meta.currentTableData.map((item,index) => {
+                        {/* {this.props.schema.length > 0 ? this.props.schema.map((item,index) => {  */}
+                        {this.state.meta.currentTableData.length > 0 ? this.state.meta.currentTableData.map((item,index) => {
                          
                             var temp = {};
                             var mapping = {};
@@ -261,18 +261,18 @@ export default class Metalist extends Component {
                                     this.IsJsonString(item[res]) ? temp[res] = JSON.parse(item[res]): temp[res]=item[res]
                             })
                             return(
-                                        <tr data-index={index} className={this.state.idx === index ? "table-active text-center":"text-center"} key={item._id} onClick={(e)=>this.detailView(e, index, item.subject.replace(/-value/g, ""))}>
-                                             <th scope="row">{index+1}</th>
-                                            <td className="value-subject value form-group">
+                                    <tr data-index={index} className={this.state.idx === index ? "table-active text-center":"text-center"} key={item._id} onClick={(e)=>this.detailView(e, index, item.subject.replace(/-value/g, ""))}>
+                                        <th scope="row">{index+1}</th>
+                                        <td className="value-subject value form-group">
                                             {item.subject.replace(/-value/g, "")}
-                                            </td>
-                                            <td className="value-version value form-group">
+                                        </td>
+                                        <td className="value-version value form-group">
                                             {item.version}
-                                            </td>
-                                            <td className="value-id value form-group">
+                                        </td>
+                                        <td className="value-id value form-group">
                                             {item.id}
-                                            </td>
-                                        </tr>
+                                        </td>
+                                    </tr>
                                 );
                             }): <h3 className="p-3 m-3 text-center">검색된 meta data가 없습니다</h3>    
                             }
