@@ -36,7 +36,8 @@ export default class Metalist extends Component {
 		  show:false,
           showHistory:false,
           json:{},
-          jsonVIEW:false
+          jsonVIEW:false,
+          detail:{}
         };
         this.handleMetaPageChange = this._handleMetaPageChange.bind(this);
         this.handleHistoryPageChange = this._handleHistoryPageChange.bind(this);
@@ -153,9 +154,9 @@ export default class Metalist extends Component {
         e.preventDefault();
         axios.post(process.env.REACT_APP_API+"/meta/getmeta",{keyword:topic_name}).then(res => {
             if(res.data && res.data.length > 0) {
-                this.setState({...this.state, meta:res.data[0],show:true, idx:idx})
+                this.setState({...this.state, detail:res.data[0],show:true, idx:idx})
             } else {
-                this.setState({...this.state, meta:{},idx:idx,show:true})
+                this.setState({...this.state, detail:{},idx:idx,show:true})
             }
         })
         axios.post(process.env.REACT_APP_API+"/history/get",{keyword:topic_name}).then(res => {
@@ -250,8 +251,8 @@ export default class Metalist extends Component {
                                 </tr>
                             </thead>
                             <tbody>
-                        {/* {this.props.schema.length > 0 ? this.props.schema.map((item,index) => { */}
-                          {this.state.meta.currentTableData.length > 0 ? this.state.meta.currentTableData.map((item,index) => {
+                        {this.props.schema.length > 0 ? this.props.schema.map((item,index) => { 
+                        //   {this.state.meta.currentTableData.length > 0 ? this.state.meta.currentTableData.map((item,index) => {
                          
                             var temp = {};
                             var mapping = {};
@@ -281,13 +282,13 @@ export default class Metalist extends Component {
                    {this.state.show ? 
                     <div className="detailview col-md-5 p-5 m-5 border-left">
                         <div className="detail ">
-                            {Object.keys(this.state.meta.data).length > 0 ? 
+                            {Object.keys(this.state.detail).length > 0 ? 
                                 <>
-                                <h3>{this.state.meta.data.topic_name}</h3>
-                                <p className="d-inline"><span className="mr-2">Schema Version</span>{this.state.meta.data.schema_id}</p>
-                                <p><span className="mr-2">Meta Version</span>{this.state.meta.data.meta_id}</p>
-                                <p>{this.state.meta.data.last_mod_id}</p>
-                                <p>{this.state.meta.data.last_mod_dt}</p>
+                                <h3>{this.state.detail.topic_name}</h3>
+                                <p className="d-inline"><span className="mr-2">Schema Version</span>{this.state.detail.schema_id}</p>
+                                <p><span className="mr-2">Meta Version</span>{this.state.detail.meta_id}</p>
+                                <p>{this.state.detail.last_mod_id}</p>
+                                <p>{this.state.detail.last_mod_dt}</p>
                                 <button type="button" className="btn btn-success mr-1" onClick={this.jsonVIEW}>조회</button><button type="button" className="btn btn-info mr-1"><Link to={{pathname:'/metaupdate', data:this.state.meta, type:"update"}}>수정</Link></button><button type="button" className="btn btn-secondary" onClick={(e)=>this.onDel(e,this.state.meta.data._id)}>삭제</button> {this.state.history && this.state.history.length >0 ? <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.meta.data.topic_name)}>HISTORY</button> : <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.meta.data.topic_name)} disabled={true}>HISTORY</button>}</>                     
                                 :
                                 <>
