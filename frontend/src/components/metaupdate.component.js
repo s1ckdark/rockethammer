@@ -199,7 +199,7 @@ export default class Metaupdate extends Component {
             // })
             // if(this.state.updateData.hasOwnProperty('물리명')){alert("있다!")} else {alert("없다")}
             await axios.post(process.env.REACT_APP_API+"/meta/update/"+_id, this.state.updateData).then( res => {
-                axios.post(process.env.REACT_APP_API+"/history/insert/", this.state.history).then(res =>{
+                axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
                 if(res.status===200) {alert("수정 완료");setTimeout(() => { 
                     this.goBack();
                 }, 1000);}

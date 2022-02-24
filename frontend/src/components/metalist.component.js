@@ -32,6 +32,7 @@ export default class Metalist extends Component {
               pageSize:10,
               currentTableData:[]
           },
+          schema:[],
           idx:'',
 		  show:false,
           showHistory:false,
@@ -159,11 +160,18 @@ export default class Metalist extends Component {
                 this.setState({...this.state, detail:{},idx:idx,show:true})
             }
         })
-        axios.post(process.env.REACT_APP_API+"/history/get",{keyword:topic_name}).then(res => {
+        axios.post(process.env.REACT_APP_API+"/history/gethistory",{keyword:topic_name}).then(res => {
             if(res.data && res.data.length > 0) {
                 this.setState({...this.state, history:res.data, idx:idx})
             } else {
                 this.setState({...this.state, history:{},idx:idx})
+            }
+        })
+        axios.post(process.env.REACT_APP_API+"/schema/search",{keyword:topic_name}).then(res => {
+            if(res.data && res.data.length > 0) {
+                this.setState({...this.state, schema:res.data.filter(f=> f[`subject`].includes(topic_name)), idx:idx})
+            } else {
+                this.setState({...this.state, schema:[],idx:idx})
             }
         })
     }
@@ -186,7 +194,6 @@ export default class Metalist extends Component {
     jsonVIEW = () => {
         this.setState({
             ...this.state,
-            json:this.replaceKey(this.state.meta),
             jsonVIEW:true
         })
     }
@@ -245,7 +252,7 @@ export default class Metalist extends Component {
                             <thead>
                                 <tr className="text-center p-3">
                                     <th scope="col" className="col-md-1">#</th>
-                                    <th scope="col" className="col-md-7">토픽명</th>
+                                    <th scope="col" className="col-md-5">토픽명</th>
                                     <th scope="col" className="col-md-2">스키마Ver</th>
                                     <th scope="col" className="col-md-2">스키마Id</th>
                                 </tr>
@@ -261,10 +268,10 @@ export default class Metalist extends Component {
                                     this.IsJsonString(item[res]) ? temp[res] = JSON.parse(item[res]): temp[res]=item[res]
                             })
                             return(
-                                    <tr data-index={index} className={this.state.idx === index ? "table-active text-center":"text-center"} key={item._id} onClick={(e)=>this.detailView(e, index, item.subject.replace(/-value/g, ""))}>
+                                    <tr data-index={index} className={this.state.idx === index ? "table-active text-center":"text-center"} key={item._id} onClick={(e)=>this.detailView(e, index, item.subject.replace(/(-value|-key)/g, ""))}>
                                         <th scope="row">{index+1}</th>
                                         <td className="value-subject value form-group">
-                                            {item.subject.replace(/-value/g, "")}
+                                            {item.subject}
                                         </td>
                                         <td className="value-version value form-group">
                                             {item.version}
@@ -274,7 +281,7 @@ export default class Metalist extends Component {
                                         </td>
                                     </tr>
                                 );
-                            }): <h3 className="p-3 m-3 text-center">검색된 meta data가 없습니다</h3>    
+                            }): <tr><td colSpan="4"><h3 className="p-3 m-3 text-center">검색된 meta data가 없습니다</h3></td> </tr>
                             }
                             </tbody>
                         </table>
@@ -289,11 +296,11 @@ export default class Metalist extends Component {
                                 <p><span className="mr-2">Meta Version</span>{this.state.detail.meta_id}</p>
                                 <p>{this.state.detail.last_mod_id}</p>
                                 <p>{this.state.detail.last_mod_dt}</p>
-                                <button type="button" className="btn btn-success mr-1" onClick={this.jsonVIEW}>조회</button><button type="button" className="btn btn-info mr-1"><Link to={{pathname:'/metaupdate', data:this.state.meta, type:"update"}}>수정</Link></button><button type="button" className="btn btn-secondary" onClick={(e)=>this.onDel(e,this.state.meta.data._id)}>삭제</button> {this.state.history && this.state.history.length >0 ? <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.meta.data.topic_name)}>HISTORY</button> : <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.meta.data.topic_name)} disabled={true}>HISTORY</button>}</>                     
+                                <button type="button" className="btn btn-success mr-1" onClick={this.jsonVIEW}>조회</button><button type="button" className="btn btn-info mr-1"><Link to={{pathname:'/metaupdate', data:this.state.detail, type:"update"}}>수정</Link></button><button type="button" className="btn btn-secondary" onClick={(e)=>this.onDel(e,this.state.detail._id)}>삭제</button> {this.state.history && this.state.history.length >0 ? <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.meta.data.topic_name)}>HISTORY</button> : <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.meta.data.topic_name)} disabled={true}>HISTORY</button>}</>                     
                                 :
                                 <>
                                 <p>등록된 Meta가 존재하지 않습니다</p>
-                                <button type="button" className="btn btn-primary mr-1"><Link to={{pathname:'/metasave', data:this.props.schema[this.state.idx], type:"reg"}}>등록</Link></button>
+                                <button type="button" className="btn btn-primary mr-1"><Link to={{pathname:'/metasave', data:this.state.schema, type:"reg"}}>등록</Link></button>
                                 </>}
                         </div>
                     </div>
@@ -312,7 +319,7 @@ export default class Metalist extends Component {
                         mode="json"
                         theme="tomorrow"
                         name={this.state.json[`_id`]}
-                        value = {JSON.stringify(this.state.json, null, 4)}
+                        value = {JSON.stringify(this.replaceKey(this.state.detail), null, 4)}
                         onChange={this.onChangeJSON}
                         fontSize= {14}
                         width= "100%"

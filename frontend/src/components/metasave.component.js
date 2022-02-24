@@ -23,67 +23,87 @@ export default class Metasave extends Component {
         super(props);
         this.state = {
             data:{
-              topic_name:'',
-              topic_desc:'',
-              schema_id:'',
-              meta_id:'',
-              schema_version:'',
-              recycle_pol:'',
-              op_name:'',
-              service:'',
-              related_topics:[],
-              last_mod_dt:'',
-              last_mod_id:'',
-              meta:[]
-          },
+                key:{
+                    topic_name:'',
+                    topic_desc:'',
+                    schema_id:'',
+                    meta_id:'',
+                    schema_version:'',
+                    recycle_pol:'',
+                    op_name:'',
+                    service:'',
+                    related_topics:[],
+                    last_mod_dt:'',
+                    last_mod_id:'',
+                    meta:[]
+                },
+                value:{
+                    topic_name:'',
+                    topic_desc:'',
+                    schema_id:'',
+                    meta_id:'',
+                    schema_version:'',
+                    recycle_pol:'',
+                    op_name:'',
+                    service:'',
+                    related_topics:[],
+                    last_mod_dt:'',
+                    last_mod_id:'',
+                    meta:[]
+                }
+            },
           viewmode:'table',
           json:{}
         };
       }
     componentDidMount(){
+        // console.log(this.props.location)
         const {schema, type, data} = this.props.location;
-        if(data) {
-            console.log("props");
-            this.setState({
-                data: data
-            });
-            let toJson = JSON.parse(data.schema);
-            let jsons = [];
-            toJson.fields.map((item, idx) => {
-                console.log(typeof(item['type']));
-                let json = {};
-                json.p_name = item.name;
-                json.p_type = item.type;
-                json.l_name = '';
-                json.l_def = '';
-                //null허용여부 분기 default값 지정
-                json.is_null = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'y': 'n' 
-                json.default = item.default ? item.default : ''
-                json.memo = '';
-                jsons[idx] = json;
-            })
-            console.log(jsons);
-    
-            this.setState({
-                ...this.state,
-                data:{
-                    ...this.state.data,
-                    topic_name: data.subject.replace(/-value/g, ""),
-                    schema_id: data.id,
-                    schema_version: data.version,
-                    meta:jsons,
-                    last_mod_dt:(new Date).toISOString(),
-                    last_mod_id:AuthService.getCurrentUser().userid
-                }
-            }, ()=>{
-                localStorage.setItem('data', JSON.stringify(this.state.data));
-            })
+            if(data) {
+                data.map( json => {
+                    // console.log(json);
+                let whatisit = json.subject.split("-").pop();
+                let toJson = JSON.parse(json.schema);
+                let jsons = [];
+                    toJson.fields.map((item, idx) => {
+                        let json = {};
+                        json.p_name = item.name;
+                        json.p_type = item.type;
+                        json.l_name = '';
+                        json.l_def = '';
+                        //null허용여부 분기 default값 지정
+                        json.is_null = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'y': 'n' 
+                        json.default = item.default ? item.default : ''
+                        json.memo = '';
+                        jsons[idx] = json;
+                    })
+                        this.setState(prevState => ({
+                            data:{
+                                ...prevState.data,
+                                [whatisit]:{
+                                    topic_name: json.subject.replace(/-value/g, ""),
+                                    schema_id: json.id,
+                                    schema_version: json.version,
+                                    meta:jsons,
+                                    last_mod_dt:(new Date).toISOString(),
+                                    last_mod_id:AuthService.getCurrentUser().userid
+                                }
+                            }
+                        }), ()=>{
+                            localStorage.setItem('data', JSON.stringify(this.state.data));
+                            console.log("set ok props "+whatisit,this.state.data[whatisit]);
+                        })
+                })
+
+          
         } else {
-            console.log("no props");
             this.setState({
                 data: JSON.parse(localStorage.getItem('data')),
+            }, ()=>{
+                console.log("set ok noprops ",this.state.data);
             })
         }
+
 
      }
 
@@ -146,20 +166,24 @@ export default class Metasave extends Component {
         return true;
     }
 
-    onChangeValue = (e) =>{
+    onChangeValue = (e, fields) =>{
         e.preventDefault();
+        console.log(fields);
         this.setState(prevState => ({
          data: {
              ...prevState.data,
+             [fields]:{
+                 ...this.state.data[fields],
              [e.target.name]:e.target.value
-         }   
+             }
+            }   
         }))
       }
 
     onChangeValueTemp = (e, index) =>{
         e.preventDefault();
         console.log(index, e.target.name, e.target.value)
-        let metas = [...this.state.data.meta];
+        let metas = [...this.state.data.value.meta];
         metas.map((ele, idx) => {
             if(idx === index) {
                 let meta = {...metas[index]};
@@ -172,21 +196,24 @@ export default class Metasave extends Component {
             ...this.state,
             data: {
                 ...this.state.data,
-                meta:metas
+                value:{
+                    ...this.state.data.value,
+                    meta:metas
+                }
             }   
         })
     }
 
     onSubmit = async(e) => {
         e.preventDefault();
-	    await axios.post(process.env.REACT_APP_API+"/meta/insert", this.state.data).then( res => {
+	    await axios.post(process.env.REACT_APP_API+"/meta/insert", this.state.data.value).then( res => {
             if(res.status===200) {alert("등록 완료");setTimeout(() => { 
                 this.goBack();
             }, 500);}
         })
     }
-
-    onChangeValueJSON = (e, index) =>{
+    
+    onChangeValueJSON = (e, index, whatisit) =>{
         e.preventDefault();
         this.setState({
             ...this.state,
@@ -246,7 +273,7 @@ export default class Metasave extends Component {
     render()
     {
         this.replaceKey(this.state.data);
-        
+        let fields="key";
         return (
             <div className="metalist bg-light p-5">
             <div className="meta">
@@ -270,47 +297,53 @@ export default class Metasave extends Component {
                             <button type="button" className="btn btn-secondary" onClick={this.goBack}>돌아가기</button>
                         </div>
                     </div>
-                    <div className={this.state.viewmode === "table" ? "d-block type-table" : "d-none type-table"}>
-                    {Object.keys(this.state.data).map((fields) => {
-                            if(typeof(this.state.data[fields]) !== "object"){
-                                if(fields !== "_id") {
+                    <div className={this.state.viewmode === "table" ? "d-block type-table" : "d-none type-table"}>  
+                    {Object.keys(this.state.data).map(fields => {
+                        return (
+                            <section className={fields+"_schema mb-5"}>
+                                <h3 className="mb-5">{fields} Schema</h3>
+                        {Object.keys(this.state.data[fields]).map(field => {
+                            let data = this.state.data;
+                            console.log(field,data[fields][field],typeof(data[fields][field]))
+                            if(typeof(data[fields][field]) !== "object"){
+                                if(field !== "_id") {
                                 return (
                                     <div className="d-flex">
-                                        <div className={fields+" col-md-2"}>{this.trans(fields)}</div>
-                                        <div className={"value-"+fields+" value form-group"}>
-                                        <input type="text" name={fields} className={"input-"+fields+" input-value"} value={this.state.data[fields]} onChange={this.onChangeValue} readOnly={this.readonly(fields)}/>
+                                        <div className={field+" col-md-2"}>{this.trans(field)}</div>
+                                        <div className={"value-"+field+" value form-group"}>
+                                            <input type="text" name={field} className={"input-"+field+" input-value"} value={data[fields][field]} onChange={(e)=> this.onChangeValue(e, fields)} readOnly={this.readonly(field)}/>
                                         </div>
                                     </div>
                                 );
                                 } else {
                                     return(
-                                        <input type="hidden" name={fields} className={"input-"+fields+" input-value"} value={this.state.data[fields]} onChange={this.onChangeValue} readOnly={this.readonly(fields)}/>
+                                        <input type="hidden" name={field} className={"input-"+field+" input-value"} value={data[fields][field]} onChange={(e)=> this.onChangeValue(e, fields)} readOnly={this.readonly(field)}/>
                                     )
                                 }
                             } else {
-                                if(fields === 'related_topics'){
+                                if(field === 'related_topics'){
                                     return(
                                     <div className="d-flex">
-                                        <div className={fields+" col-md-2"}>{this.trans(fields)}</div>
-                                        <div className={"value-"+fields+" value form-group"}>
-                                            <input type="text" name={fields} className={"input-"+fields+" input-value"} value={this.state.data[fields]} onChange={this.onChangeValue} readOnly={this.readonly(fields)}/>
+                                        <div className={field+" col-md-2"}>{this.trans(field)}</div>
+                                        <div className={"value-"+field+" value form-group"}>
+                                            <input type="text" name={field} className={"input-"+field+" input-value"} value={data[fields][field]} onChange={(e)=> this.onChangeValue(e, fields)} readOnly={this.readonly(field)}/>
                                         </div>
                                     </div>
                                     )
-                                } else if(fields === 'meta') {
+                                } else if(field === 'meta') {
                                     return (
                                         <table className="table my-5">
-                                            {this.state.data[fields].map((ele, index) => {
+                                            {data[fields][field].map((ele, index) => {
                                                 return (
                                                     <>
                                                     {index === 0 ? 
                                                         <thead>
                                                             <tr>
                                                                 <th scope="col">#</th>
-                                                                {Object.keys(ele).map((fields2) => {
+                                                                {Object.keys(ele).map((field2) => {
                                                                     return (
                                                                         <>
-                                                                            <th scope="col" className="text-center">{this.trans(fields2)}</th>
+                                                                            <th scope="col" className="text-center">{this.trans(field2)}</th>
                                                                         </>
                                                                     );
                                                                 }) 
@@ -321,9 +354,9 @@ export default class Metasave extends Component {
                                                         <tbody>
                                                             <tr>
                                                                 <th scope="row">{index+1}</th>
-                                                                {Object.keys(ele).map((fields2) => {
+                                                                {Object.keys(ele).map((field2) => {
                                                                         return (
-                                                                            <td><input type="text" name={fields2} className={"fields-input "+fields2} value={this.state.data[fields][index][fields2]} onChange={(e)=>this.onChangeValueTemp(e,index)} readOnly={this.readonly(fields2)} /></td>
+                                                                            <td><input type="text" name={field2} className={"field-input "+field2} value={data[fields][field][index][field2]} onChange={(e)=>this.onChangeValueTemp(e,index, fields)} readOnly={this.readonly(field2)} /></td>
                                                                         );
                                                                         
                                                                     }) 
@@ -337,7 +370,12 @@ export default class Metasave extends Component {
                                     )
                                 }
                             }                            
-                        }) 
+                        
+                        }) }
+                        </section>
+                    
+                        );
+                    })
                     }    
                     <div className="action text-center">
                         <button type="button" className="btn btn-primary mr-3" onClick={this.onSubmit}>저장</button>
