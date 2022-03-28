@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, useMemo } from "react";
 import { isCompositeComponent } from "react-dom/test-utils";
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -21,9 +21,10 @@ export default class Metalist extends Component {
           meta:{
               data:[],
               totalcnt:0,
+              current:0,
               activePage: 1,
               pageSize:10,
-              currentTableData:[]
+              dataList:[]
           },
           history:{
               data:[],
@@ -50,7 +51,7 @@ export default class Metalist extends Component {
             ...this.state,
             meta:{
                 ...this.state.meta,
-                activePage: pageNumber
+                current: pageNumber-1
             }
         }, ()=>{this.fetchMetaData();})
     }
@@ -68,7 +69,7 @@ export default class Metalist extends Component {
     }
       
     componentDidMount(){
-        // console.log(this.props);
+        console.log(this.pagination());
         this.fetchMetaData();
     }
 
@@ -95,20 +96,96 @@ export default class Metalist extends Component {
         // }       
     }
 
-    fetchMetaData = () => {
-        const firstPageIndex = (this.state.meta.activePage - 1) * this.state.meta.pageSize;
-        const lastPageIndex = firstPageIndex + this.state.meta.pageSize;
+    range = (start, end) => {
+        let length = end - start + 1;
+        /*
+            Create an array of certain length and set the elements within it from
+          start value to end value.
+        */
+        return Array.from({ length }, (_, idx) => idx + start);
+      };
 
-        this.setState({
-            ...this.state,
-            meta:{
-                ...this.state.meta,
-                data:this.props.schema,
-                totalcnt: this.props.schema.length,
-                currentTableData:this.props.schema.slice(firstPageIndex, lastPageIndex)
+    pagination = () => {
+        const siblingCount = 1;
+        const pageSize = this.props.schema.size;
+        const currentPage = this.props.schema.current;
+        const totalCount = this.props.schema.count;
+        const totalPageCount = Math.ceil(totalCount / pageSize);
+        // const firstPageIndex = (this.state.meta.activePage - 1) * this.state.meta.pageSize;
+        // const lastPageIndex = firstPageIndex + this.state.meta.pageSize;
+        
+        // Pages count is determined as siblingCount + firstPage + lastPage + currentPage + 2*DOTS
+        const totalPageNumbers = siblingCount + 5;
+
+        /*
+            Case 1:
+            If the number of pages is less than the page numbers we want to show in our
+            paginationComponent, we return the range [1..totalPageCount]
+            */
+            if (totalPageNumbers >= totalPageCount) {
+                return this.range(1, totalPageCount);
             }
+      
+         /*
+    	Calculate left and right sibling index and make sure they are within range 1 and totalPageCount
+    */
+    const leftSiblingIndex = Math.max(currentPage - siblingCount, 1);
+    const rightSiblingIndex = Math.min(
+      currentPage + siblingCount,
+      totalPageCount
+    );
+
+    /*
+      We do not show dots just when there is just one page number to be inserted between the extremes of sibling and the page limits i.e 1 and totalPageCount. Hence we are using leftSiblingIndex > 2 and rightSiblingIndex < totalPageCount - 2
+    */
+    const shouldShowLeftDots = leftSiblingIndex > 2;
+    const shouldShowRightDots = rightSiblingIndex < totalPageCount - 2;
+
+    const firstPageIndex = 1;
+    const lastPageIndex = totalPageCount;
+
+    /*
+    	Case 2: No left dots to show, but rights dots to be shown
+    */
+    if (!shouldShowLeftDots && shouldShowRightDots) {
+      let leftItemCount = 3 + 2 * siblingCount;
+      let leftRange = this.range(1, leftItemCount);
+
+      return [...leftRange, "DOTS", totalPageCount];
+    }
+
+    /*
+    	Case 3: No right dots to show, but left dots to be shown
+    */
+    if (shouldShowLeftDots && !shouldShowRightDots) {
+      
+      let rightItemCount = 3 + 2 * siblingCount;
+      let rightRange = this.range(
+        totalPageCount - rightItemCount + 1,
+        totalPageCount
+      );
+      return [firstPageIndex, "DOTS", ...rightRange];
+    }
+     
+    /*
+    	Case 4: Both left and right dots to be shown
+    */
+    if (shouldShowLeftDots && shouldShowRightDots) {
+      let middleRange = this.range(leftSiblingIndex, rightSiblingIndex);
+      return [firstPageIndex, "DOTS", ...middleRange, "DOTS", lastPageIndex];
+    }
+    }
+    fetchMetaData = () => {  
+        axios.post(process.env.REACT_APP_API+"/schema/getschema",{size:5,page:this.state.meta.current})
+        .then(res => {
+            this.setState({
+                ...this.state,
+                meta:res.data
+            })
         })
-    } 
+
+
+    }
     
 
     
@@ -154,6 +231,7 @@ export default class Metalist extends Component {
     detailView = (e, idx, topic_name) => {
         e.preventDefault();
         axios.post(process.env.REACT_APP_API+"/meta/getmeta",{keyword:topic_name}).then(res => {
+            console.log(res);
             if(res.data && res.data.length > 0) {
                 this.setState({...this.state, detail:res.data[0],show:true, idx:idx})
             } else {
@@ -259,7 +337,7 @@ export default class Metalist extends Component {
                             </thead>
                             <tbody>
                         {/* {this.props.schema.length > 0 ? this.props.schema.map((item,index) => {  */}
-                        {this.state.meta.currentTableData.length > 0 ? this.state.meta.currentTableData.map((item,index) => {
+                        {this.state.meta.dataList.length > 0 ? this.state.meta.dataList.map((item,index) => {
                          
                             var temp = {};
                             var mapping = {};
@@ -271,7 +349,7 @@ export default class Metalist extends Component {
                                     <tr data-index={index} className={this.state.idx === index ? "table-active text-center":"text-center"} key={item._id} onClick={(e)=>this.detailView(e, index, item.subject.replace(/(-value|-key)/g, ""))}>
                                         <th scope="row">{index+1}</th>
                                         <td className="value-subject value form-group">
-                                            {item.subject}
+                                            {item.subject.replace(/-value/g, "")}
                                         </td>
                                         <td className="value-version value form-group">
                                             {item.version}
@@ -299,8 +377,10 @@ export default class Metalist extends Component {
                                 <button type="button" className="btn btn-success mr-1" onClick={this.jsonVIEW}>조회</button><button type="button" className="btn btn-info mr-1"><Link to={{pathname:'/metaupdate', data:this.state.detail, type:"update"}}>수정</Link></button><button type="button" className="btn btn-secondary" onClick={(e)=>this.onDel(e,this.state.detail._id)}>삭제</button> {this.state.history && this.state.history.length >0 ? <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.meta.data.topic_name)}>HISTORY</button> : <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.meta.data.topic_name)} disabled={true}>HISTORY</button>}</>                     
                                 :
                                 <>
-                                <p>등록된 Meta가 존재하지 않습니다</p>
+                                <button type="button" className="btn btn-success mr-1" onClick={this.jsonVIEW} disabled={true}>조회</button>
                                 <button type="button" className="btn btn-primary mr-1"><Link to={{pathname:'/metasave', data:this.state.schema, type:"reg"}}>등록</Link></button>
+                                <button type="button" className="btn btn-secondary" onClick={(e)=>this.onDel(e,this.state.detail._id)} disabled={true}>삭제</button> 
+                                <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.meta.data.topic_name)} disabled={true}>HISTORY</button>
                                 </>}
                         </div>
                     </div>
@@ -328,10 +408,20 @@ export default class Metalist extends Component {
                 </div>
                 : <></>}
                 <div className="paging text-center mx-auto py-5">
-                    <Pagination
+                    {/* <Pagination
                         activePage={this.state.meta.activePage}
                         itemsCountPerPage={this.state.meta.pageSize}
                         totalItemsCount={this.state.meta.totalcnt}
+                        pageRangeDisplayed={5}
+                        onChange={this.handleMetaPageChange}
+                        itemClass="page-item"
+                        linkClass="page-link"
+                        innerClass="pagination d-flex justify-content-center"
+                    />  */}
+                    <Pagination
+                        activePage={this.props.schema.current}
+                        itemsCountPerPage={this.props.schema.size}
+                        totalItemsCount={this.props.schema.count}
                         pageRangeDisplayed={5}
                         onChange={this.handleMetaPageChange}
                         itemClass="page-item"

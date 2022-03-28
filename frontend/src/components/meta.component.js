@@ -41,7 +41,7 @@ export default class Meta extends Component {
   }
 
   componentDidMount() {
-    axios.get(process.env.REACT_APP_API+"/schema/getschema")
+    axios.post(process.env.REACT_APP_API+"/schema/getschema",{size:5,page:0})
       .then(res => {
         this.setState({
           schema:res.data
@@ -87,7 +87,7 @@ onHistorySearch = async()=> {
           </div>
         </div>
         <div className="metalist">
-          {this.state.schema.length > 0 ? 
+          {this.state.schema.count > 0 ? 
           <div className="mapping bg-light">
             <Metalist schema={this.state.schema} />
           </div>
@@ -98,4 +98,3 @@ onHistorySearch = async()=> {
     );
   }
 }
-
