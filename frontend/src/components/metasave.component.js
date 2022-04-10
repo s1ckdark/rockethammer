@@ -23,34 +23,21 @@ export default class Metasave extends Component {
         super(props);
         this.state = {
             data:{
-                key:{
-                    topic_name:'',
-                    topic_desc:'',
-                    schema_id:'',
-                    meta_id:'',
-                    schema_version:'',
-                    recycle_pol:'',
-                    op_name:'',
-                    service:'',
-                    related_topics:[],
-                    last_mod_dt:'',
-                    last_mod_id:'',
-                    meta:[]
-                },
-                value:{
-                    topic_name:'',
-                    topic_desc:'',
-                    schema_id:'',
-                    meta_id:'',
-                    schema_version:'',
-                    recycle_pol:'',
-                    op_name:'',
-                    service:'',
-                    related_topics:[],
-                    last_mod_dt:'',
-                    last_mod_id:'',
-                    meta:[]
-                }
+                topic_name:'',
+                topic_desc:'',
+                schema_id:'',
+                meta_id:'',
+                schema_version:'',
+                meta_version:'',
+                recycle_pol:'',
+                op_name:'',
+                service:'',
+                related_topics:[],
+                last_mod_dt:'',
+                last_mod_id:'',
+                is_used: true,
+                key:[],
+                value:[]
             },
           viewmode:'table',
           json:{}
@@ -80,14 +67,15 @@ export default class Metasave extends Component {
                         this.setState(prevState => ({
                             data:{
                                 ...prevState.data,
-                                [whatisit]:{
-                                    topic_name: json.subject.replace(/-value/g, ""),
-                                    schema_id: json.id,
-                                    schema_version: json.version,
-                                    meta:jsons,
-                                    last_mod_dt:(new Date).toISOString(),
-                                    last_mod_id:AuthService.getCurrentUser().userid
-                                }
+                                topic_name: json.subject.replace(/-value/g, ""),
+                                schema_id: 1,
+                                schema_version: 1,
+                                meta_id: 1,
+                                meta_version:1,
+                                last_mod_dt:(new Date).toISOString(),
+                                last_mod_id:AuthService.getCurrentUser().userid,
+                                is_used: true, 
+                                [whatisit]:jsons
                             }
                         }), ()=>{
                             localStorage.setItem('data', JSON.stringify(this.state.data));
@@ -166,24 +154,20 @@ export default class Metasave extends Component {
         return true;
     }
 
-    onChangeValue = (e, fields) =>{
+    onChangeValue = (e, field) =>{
         e.preventDefault();
-        console.log(fields);
         this.setState(prevState => ({
          data: {
              ...prevState.data,
-             [fields]:{
-                 ...this.state.data[fields],
              [e.target.name]:e.target.value
              }
-            }   
         }))
       }
 
-    onChangeValueTemp = (e, index) =>{
+    onChangeValueTemp = (e, index, field) =>{
         e.preventDefault();
         console.log(index, e.target.name, e.target.value)
-        let metas = [...this.state.data.value.meta];
+        let metas = [...this.state.data[field]];
         metas.map((ele, idx) => {
             if(idx === index) {
                 let meta = {...metas[index]};
@@ -196,10 +180,7 @@ export default class Metasave extends Component {
             ...this.state,
             data: {
                 ...this.state.data,
-                value:{
-                    ...this.state.data.value,
-                    meta:metas
-                }
+                [field]:metas
             }   
         })
     }
@@ -232,10 +213,13 @@ export default class Metasave extends Component {
             viewmode:type})
     }
 
-    readonly = (name) => {
-        var tmp = ["p_name","p_type","topic_name","schema_id","schema_version","_id","is_null","default"];
-        let result = tmp.filter(ele => ele === name)
-        return result.length > 0 ? true : false
+    readonly = (name, schema=null) => {
+        console.log(schema);
+        if(schema !== 'key') { 
+            var tmp = ["p_name","p_type","topic_name","schema_id","schema_version","_id","is_null","default"];
+            let result = tmp.filter(ele => ele === name)
+            return result.length > 0 ? true : false } else { return true; }
+
     }
 
     replaceKey = (data)=>{
@@ -276,8 +260,8 @@ export default class Metasave extends Component {
         let fields="key";
         return (
             <div className="metalist bg-light p-5">
-            <div className="meta">
-            <div className="mode d-flex justify-content-end">
+                <div className="meta">
+                    <div className="mode d-flex justify-content-end">
                         <button type="button" className={this.state.viewmode === "json" ? "btn btn-success" : "btn btn-dark mr-1"} onClick={(e)=>this.viewMode(e,"json")}>JSON</button>
                         <button type="button" className={this.state.viewmode === "table" ? "btn btn-success" : "btn btn-dark"} onClick={(e)=>this.viewMode(e,"table")}>TABLE</button>
                     </div>
@@ -298,93 +282,88 @@ export default class Metasave extends Component {
                         </div>
                     </div>
                     <div className={this.state.viewmode === "table" ? "d-block type-table" : "d-none type-table"}>  
-                    {Object.keys(this.state.data).map(fields => {
-                        return (
-                            <section className={fields+"_schema mb-5"}>
-                                <h3 className="mb-5">{fields} Schema</h3>
-                        {Object.keys(this.state.data[fields]).map(field => {
-                            let data = this.state.data;
-                            console.log(field,data[fields][field],typeof(data[fields][field]))
-                            if(typeof(data[fields][field]) !== "object"){
-                                if(field !== "_id") {
+                        {Object.keys(this.state.data).map(field => {
+                            // common field
+                            const data = this.state.data;
+                            // console.log(field, data[field]);
+                            if(typeof(data[field]) !== "object"){
                                 return (
-                                    <div className="d-flex">
+                                    <div className={"form-group field d-flex"}>
                                         <div className={field+" col-md-2"}>{this.trans(field)}</div>
                                         <div className={"value-"+field+" value form-group"}>
-                                            <input type="text" name={field} className={"input-"+field+" input-value"} value={data[fields][field]} onChange={(e)=> this.onChangeValue(e, fields)} readOnly={this.readonly(field)}/>
+                                            <input type="text" name={field} className={"input-"+field+" input-value"} value={data[field]} onChange={(e)=> this.onChangeValue(e, field)} readOnly={this.readonly(field)}/>
                                         </div>
                                     </div>
-                                );
-                                } else {
-                                    return(
-                                        <input type="hidden" name={field} className={"input-"+field+" input-value"} value={data[fields][field]} onChange={(e)=> this.onChangeValue(e, fields)} readOnly={this.readonly(field)}/>
-                                    )
-                                }
+                                )
                             } else {
                                 if(field === 'related_topics'){
-                                    return(
-                                    <div className="d-flex">
-                                        <div className={field+" col-md-2"}>{this.trans(field)}</div>
-                                        <div className={"value-"+field+" value form-group"}>
-                                            <input type="text" name={field} className={"input-"+field+" input-value"} value={data[fields][field]} onChange={(e)=> this.onChangeValue(e, fields)} readOnly={this.readonly(field)}/>
-                                        </div>
-                                    </div>
-                                    )
-                                } else if(field === 'meta') {
                                     return (
-                                        <table className="table my-5">
-                                            {data[fields][field].map((ele, index) => {
-                                                return (
-                                                    <>
-                                                    {index === 0 ? 
-                                                        <thead>
-                                                            <tr>
-                                                                <th scope="col">#</th>
-                                                                {Object.keys(ele).map((field2) => {
-                                                                    return (
-                                                                        <>
-                                                                            <th scope="col" className="text-center">{this.trans(field2)}</th>
-                                                                        </>
-                                                                    );
-                                                                }) 
-                                                                }   
-                                                            </tr>
-                                                        </thead>
-                                                    : <></>}
-                                                        <tbody>
-                                                            <tr>
-                                                                <th scope="row">{index+1}</th>
-                                                                {Object.keys(ele).map((field2) => {
-                                                                        return (
-                                                                            <td><input type="text" name={field2} className={"field-input "+field2} value={data[fields][field][index][field2]} onChange={(e)=>this.onChangeValueTemp(e,index, fields)} readOnly={this.readonly(field2)} /></td>
-                                                                        );
-                                                                        
-                                                                    }) 
-                                                                }   
-                                                            </tr>
-                                                        </tbody>
-                                                    </>
-                                                )
-                                            })}
-                                        </table>
-                                    )
+                                        <div className="d-flex">
+                                                <div className={field+" col-md-2"}>{this.trans(field)}</div>
+                                                <div className={"value-"+field+" value form-group"}>
+                                                    <input type="text" name={field} className={"input-"+field+" input-value"} value={data[field]} onChange={(e)=> this.onChangeValue(e, field)} readOnly={this.readonly(field)}/>
+                                                </div>
+                                            </div>
+                                        )
+                                    } else {
+                                        // console.log(meta_field, data[field][meta_field])
+                                        if(data[field] && data[field].length > 0 ){
+                                            return(
+                                                <>
+                                                <h3 className="h3 my-5">{field} Schema</h3>
+                                                <table className="table my-5">
+                                                    {data[field].map((meta_field, index) => {
+                                                        return (
+                                                            <>
+                                                            {index === 0 ? 
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th scope="col">#</th>
+                                                                        {Object.keys(meta_field).map((field2) => {
+                                                                            return (
+                                                                                <>
+                                                                                    <th scope="col" className="text-center">{this.trans(field2)}</th>
+                                                                                </>
+                                                                            );
+                                                                        }) 
+                                                                        }   
+                                                                    </tr>
+                                                                </thead>
+                                                            : <></>}
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <th scope="row">{index+1}</th>
+                                                                        {Object.keys(meta_field).map((field2) => {
+                                                                                return (
+                                                                                    <td><input type="text" name={field2} className={"field-input "+field2} value={data[field][index][field2]} onChange={(e)=>this.onChangeValueTemp(e, index, field)} readOnly={this.readonly(field2, field)} /></td>
+                                                                                );
+                                                                                
+                                                                            }) 
+                                                                        }   
+                                                                    </tr>
+                                                                </tbody>
+                                                            </>
+                                                        )
+                                                    })}
+                                                </table>
+                                                </>
+                                            )
+                                        } else {
+                                            return (
+                                                <><h3 className="h3 my-5">등록된 {field} schema가 없습니다</h3></>
+                                            )
+                                        }
+                                    }
                                 }
-                            }                            
-                        
-                        }) }
-                        </section>
-                    
-                        );
-                    })
-                    }    
-                    <div className="action text-center">
-                        <button type="button" className="btn btn-primary mr-3" onClick={this.onSubmit}>저장</button>
-                        <button type="button" className="btn btn-secondary" onClick={this.goBack}>돌아가기</button>
-                    </div>
+                            })
+                        }
+                        <div className="action text-center">
+                            <button type="button" className="btn btn-primary mr-3" onClick={this.onSubmit}>저장</button>
+                            <button type="button" className="btn btn-secondary" onClick={this.goBack}>돌아가기</button>
+                        </div>
                     </div>
                 </div>
-   
-                </div>
+            </div>
         );
     }
-}
+}  
