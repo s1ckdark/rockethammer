@@ -170,7 +170,12 @@ label {
 }
 
 .select {background-color:#6c757d}
-
+.meta .layer {position: absolute; transform: translate(-50%,-50%);top: 50%; left: 50%;width: 50%;height: 50%; z-index: 999;background: #fff;}
+.meta table input[readonly] {background-color:transparent;border:none;text-align: center;}
+.meta table input[readonly]:focus {  background-color:transparent; border-color: transparent; box-shadow: none; }
+.meta table input[readonly]::selection { background:none; color: #000; }
+.meta table input[readonly]::-moz-selection { background: none; color: #000; }
+.meta input[name="is_null"] {text-transform: uppercase;}
 .viewHistory {
   position: absolute;
   top: 0;
@@ -180,5 +185,6 @@ label {
   z-index: 100;
   background-color: #fff;
 }
+
 
 .paging ul li {list-style-type: none;}

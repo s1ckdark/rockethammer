@@ -29,61 +29,63 @@ export default class Metasave extends Component {
                 meta_id:'',
                 schema_version:'',
                 meta_version:'',
-                recycle_pol:'',
+                revision:'',
                 op_name:'',
                 service:'',
                 related_topics:[],
                 last_mod_dt:'',
                 last_mod_id:'',
                 is_used: true,
-                key:[],
-                value:[]
+                key:{},
+                value:{}
             },
-          viewmode:'table',
-          json:{}
+            viewmode:'table',
+            json:{}
         };
-      }
-    componentDidMount(){
-        // console.log(this.props.location)
-        const {schema, type, data} = this.props.location;
-            if(data) {
-                data.map( json => {
-                    // console.log(json);
-                let whatisit = json.subject.split("-").pop();
-                let toJson = JSON.parse(json.schema);
-                let jsons = [];
-                    toJson.fields.map((item, idx) => {
-                        let json = {};
-                        json.p_name = item.name;
-                        json.p_type = item.type;
-                        json.l_name = '';
-                        json.l_def = '';
-                        //null허용여부 분기 default값 지정
-                        json.is_null = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'y': 'n' 
-                        json.default = item.default ? item.default : ''
-                        json.memo = '';
-                        jsons[idx] = json;
-                    })
-                        this.setState(prevState => ({
-                            data:{
-                                ...prevState.data,
-                                topic_name: json.subject.replace(/-value/g, ""),
-                                schema_id: 1,
-                                schema_version: 1,
-                                meta_id: 1,
-                                meta_version:1,
-                                last_mod_dt:(new Date).toISOString(),
-                                last_mod_id:AuthService.getCurrentUser().userid,
-                                is_used: true, 
-                                [whatisit]:jsons
-                            }
-                        }), ()=>{
-                            localStorage.setItem('data', JSON.stringify(this.state.data));
-                            console.log("set ok props "+whatisit,this.state.data[whatisit]);
-                        })
-                })
+    }
 
-          
+    componentDidMount(){
+        const {type, data} = this.props.location;
+        if(data) {
+            Object.keys(data).map( whatisit => {
+                let toJson = JSON.parse(data[whatisit].schema);
+                let jsons = [];
+                toJson.fields.map((item, idx) => {
+                    let json = {};
+                    json.p_name = item.name;
+                    json.p_type = item.type;
+                    if(whatisit === 'value') json.l_name = '';
+                    if(whatisit === 'value') json.l_def = '';
+                    //null허용여부 분기 default값 지정
+                    json.is_null = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'y': 'n' 
+                    json.default = item.default ? item.default : ''
+                    if(whatisit === 'value') json.memo = '';
+                    jsons[idx] = json;
+                })
+                this.setState(prevState => ({
+                    data:{
+                        ...prevState.data,
+                        schema_id: 1,
+                        schema_version: 1,
+                        meta_id: 1,
+                        meta_version:1,
+                        revision:1,
+                        last_mod_dt:(new Date).toISOString(),
+                        last_mod_id:AuthService.getCurrentUser().userid,
+                        is_used: true, 
+                        [whatisit]:jsons
+                    }
+                }), ()=>{
+                    localStorage.setItem('data', JSON.stringify(this.state.data));
+                    console.log("set ok props "+whatisit,this.state.data[whatisit]);
+                })
+            }) 
+        this.setState(prevState => ({
+            data:{
+                ...prevState.data,
+                topic_name: data['value'].subject
+            }
+        }))       
         } else {
             this.setState({
                 data: JSON.parse(localStorage.getItem('data')),
@@ -91,9 +93,7 @@ export default class Metasave extends Component {
                 console.log("set ok noprops ",this.state.data);
             })
         }
-
-
-     }
+    }
 
     trans = (name) => {
         var defineName = {
@@ -103,7 +103,6 @@ export default class Metasave extends Component {
             "meta_id":"메타ID",
             "schema_version":"스키마버전",
             "meta_version":"메타버전",
-            "recycle_pol":"데이터삭제주기",
             "op_name":"관리부서",
             "service":"업무시스템",
             "related_topics":"연관토픽",
@@ -187,7 +186,7 @@ export default class Metasave extends Component {
 
     onSubmit = async(e) => {
         e.preventDefault();
-	    await axios.post(process.env.REACT_APP_API+"/meta/insert", this.state.data.value).then( res => {
+	    await axios.post(process.env.REACT_APP_API+"/meta/insert", this.state.data).then( res => {
             if(res.status===200) {alert("등록 완료");setTimeout(() => { 
                 this.goBack();
             }, 500);}
@@ -218,11 +217,11 @@ export default class Metasave extends Component {
         if(schema !== 'key') { 
             var tmp = ["p_name","p_type","topic_name","schema_id","schema_version","_id","is_null","default"];
             let result = tmp.filter(ele => ele === name)
-            return result.length > 0 ? true : false } else { return true; }
-
+            return result.length > 0 ? true : false 
+        } else { return true; }
     }
 
-    replaceKey = (data)=>{
+    replaceKey = (data) => {
         const swaps = {
             "_id":"_id",
             "topic_name":"토픽명",
@@ -246,14 +245,17 @@ export default class Metasave extends Component {
             "memo":"메모",
             "topic_desc":"토픽설명"
         };
+
         const pattern = new RegExp(
-        Object.keys(swaps).map(e => `(?:"(${e})":)`).join("|"), "g"
+            Object.keys(swaps).map(e => `(?:"(${e})":)`).join("|"), "g"
         );
+
         const result = JSON.parse(
-        JSON.stringify(data).replace(pattern, m => `"${swaps[m.slice(1,-2)]}":`)
+            JSON.stringify(data).replace(pattern, m => `"${swaps[m.slice(1,-2)]}":`)
         );
         return result;
     }
+
     render()
     {
         this.replaceKey(this.state.data);
@@ -306,7 +308,6 @@ export default class Metasave extends Component {
                                             </div>
                                         )
                                     } else {
-                                        // console.log(meta_field, data[field][meta_field])
                                         if(data[field] && data[field].length > 0 ){
                                             return(
                                                 <>
@@ -366,4 +367,4 @@ export default class Metasave extends Component {
             </div>
         );
     }
-}  
+} 

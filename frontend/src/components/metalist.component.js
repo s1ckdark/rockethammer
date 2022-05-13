@@ -39,7 +39,12 @@ export default class Metalist extends Component {
           showHistory:false,
           json:{},
           jsonVIEW:false,
-          detail:{}
+          detail:{},
+          changeVIEW:false,
+          changed:{
+              before:'',
+              after:''
+          }
         };
         this.handleMetaPageChange = this._handleMetaPageChange.bind(this);
         this.handleHistoryPageChange = this._handleHistoryPageChange.bind(this);
@@ -128,56 +133,58 @@ export default class Metalist extends Component {
       
          /*
     	Calculate left and right sibling index and make sure they are within range 1 and totalPageCount
-    */
-    const leftSiblingIndex = Math.max(currentPage - siblingCount, 1);
-    const rightSiblingIndex = Math.min(
-      currentPage + siblingCount,
-      totalPageCount
-    );
+        */
+        const leftSiblingIndex = Math.max(currentPage - siblingCount, 1);
+        const rightSiblingIndex = Math.min(
+            currentPage + siblingCount,
+            totalPageCount
+        );
 
-    /*
-      We do not show dots just when there is just one page number to be inserted between the extremes of sibling and the page limits i.e 1 and totalPageCount. Hence we are using leftSiblingIndex > 2 and rightSiblingIndex < totalPageCount - 2
-    */
-    const shouldShowLeftDots = leftSiblingIndex > 2;
-    const shouldShowRightDots = rightSiblingIndex < totalPageCount - 2;
+        /*
+            We do not show dots just when there is just one page number to be inserted between the extremes of sibling and the page limits i.e 1 and totalPageCount. Hence we are using leftSiblingIndex > 2 and rightSiblingIndex < totalPageCount - 2
+        */
+        const shouldShowLeftDots = leftSiblingIndex > 2;
+        const shouldShowRightDots = rightSiblingIndex < totalPageCount - 2;
 
-    const firstPageIndex = 1;
-    const lastPageIndex = totalPageCount;
+        const firstPageIndex = 1;
+        const lastPageIndex = totalPageCount;
 
-    /*
-    	Case 2: No left dots to show, but rights dots to be shown
-    */
-    if (!shouldShowLeftDots && shouldShowRightDots) {
-      let leftItemCount = 3 + 2 * siblingCount;
-      let leftRange = this.range(1, leftItemCount);
+        /*
+            Case 2: No left dots to show, but rights dots to be shown
+        */
+        if (!shouldShowLeftDots && shouldShowRightDots) {
+            let leftItemCount = 3 + 2 * siblingCount;
+            let leftRange = this.range(1, leftItemCount);
 
-      return [...leftRange, "DOTS", totalPageCount];
+            return [...leftRange, "DOTS", totalPageCount];
+        }
+
+        /*
+            Case 3: No right dots to show, but left dots to be shown
+        */
+        if (shouldShowLeftDots && !shouldShowRightDots) {
+            
+            let rightItemCount = 3 + 2 * siblingCount;
+            let rightRange = this.range(
+            totalPageCount - rightItemCount + 1,
+            totalPageCount
+            );
+            return [firstPageIndex, "DOTS", ...rightRange];
+        }
+            
+        /*
+            Case 4: Both left and right dots to be shown
+        */
+        if (shouldShowLeftDots && shouldShowRightDots) {
+            let middleRange = this.range(leftSiblingIndex, rightSiblingIndex);
+            return [firstPageIndex, "DOTS", ...middleRange, "DOTS", lastPageIndex];
+        }
     }
 
-    /*
-    	Case 3: No right dots to show, but left dots to be shown
-    */
-    if (shouldShowLeftDots && !shouldShowRightDots) {
-      
-      let rightItemCount = 3 + 2 * siblingCount;
-      let rightRange = this.range(
-        totalPageCount - rightItemCount + 1,
-        totalPageCount
-      );
-      return [firstPageIndex, "DOTS", ...rightRange];
-    }
-     
-    /*
-    	Case 4: Both left and right dots to be shown
-    */
-    if (shouldShowLeftDots && shouldShowRightDots) {
-      let middleRange = this.range(leftSiblingIndex, rightSiblingIndex);
-      return [firstPageIndex, "DOTS", ...middleRange, "DOTS", lastPageIndex];
-    }
-    }
     fetchMetaData = () => {  
-        axios.post(process.env.REACT_APP_API+"/schema/getschema",{size:5,page:this.state.meta.current})
+        axios.post(process.env.REACT_APP_API+"/schema/getallschema",{size:5,page:this.state.meta.current})
         .then(res => {
+            // console.log(res.data);
             this.setState({
                 ...this.state,
                 meta:res.data
@@ -226,7 +233,13 @@ export default class Metalist extends Component {
 
     detailView = (e, idx, topic_name) => {
         e.preventDefault();
-        axios.post(process.env.REACT_APP_API+"/meta/getmeta",{keyword:topic_name}).then(res => {
+        const tn = topic_name;
+        // const tn = topic_name.replace(/(-value|-key)/g, "");
+        // this.setState({
+        //     ...this.state,
+        //     currentIndex: idx
+        // })
+        axios.post(process.env.REACT_APP_API+"/meta/getmeta",{keyword:tn}).then(res => {
             console.log(res);
             if(res.data && res.data.length > 0) {
                 this.setState({...this.state, detail:res.data[0],show:true, idx:idx})
@@ -234,16 +247,17 @@ export default class Metalist extends Component {
                 this.setState({...this.state, detail:{},idx:idx,show:true})
             }
         })
-        axios.post(process.env.REACT_APP_API+"/history/gethistory",{keyword:topic_name}).then(res => {
+        axios.post(process.env.REACT_APP_API+"/history/gethistory",{keyword:tn}).then(res => {
             if(res.data && res.data.length > 0) {
                 this.setState({...this.state, history:res.data, idx:idx})
             } else {
                 this.setState({...this.state, history:{},idx:idx})
             }
         })
-        axios.post(process.env.REACT_APP_API+"/schema/search",{keyword:topic_name}).then(res => {
+        axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:tn}).then(res => {
+            console.log(res);
             if(res.data && res.data.length > 0) {
-                this.setState({...this.state, schema:res.data.filter(f=> f[`subject`].includes(topic_name)), idx:idx})
+                this.setState({...this.state, schema:res.data[0], idx:idx})
             } else {
                 this.setState({...this.state, schema:[],idx:idx})
             }
@@ -271,10 +285,12 @@ export default class Metalist extends Component {
             jsonVIEW:true
         })
     }
+
     changeView = (e, type) => {
         e.preventDefault();
         console.log(type);
     }
+
     closeVIEW = () => {
         this.setState({
             ...this.state,
@@ -290,7 +306,7 @@ export default class Metalist extends Component {
             "meta_id":"메타ID",
             "schema_version":"스키마버전",
             "meta_version":"메타버전",
-            "recycle_pol":"데이터삭제주기",
+            "reviseon":"리비젼",
             "op_name":"관리부서",
             "service":"업무시스템",
             "related_topics":"연관토픽",
@@ -320,38 +336,98 @@ export default class Metalist extends Component {
         console.log(e, act, id);
     }
 
+    notiforchange = async (e, subject) => {
+        e.preventDefault();
+        //schemas의 before, after를 api call로 가져와야한다. 
+        // api call limit(2), sort(reg_dt, -1)
+        await axios.post(process.env.REACT_APP_API+"/schema/changed", {"keyword":subject}).then(
+            res => {
+                let temp = [];
+                res.data.map((item,index) => {
+                    temp[index] = item;
+                    temp[index]['schema']= JSON.parse(item.schema);
+                })
+                this.setState({
+                    ...this.state,
+                    changeVIEW:true,
+                    changed:{
+                      ...this.state.changed,
+                      before: temp[1],
+                      after: temp[0]
+                    }
+                  })
+            }
+        )
+    }
+
+    closeChanged = (e) => {
+        e.preventDefault();
+        this.setState({
+            ...this.state,
+            changeVIEW: false,
+            changed:{
+                ...this.state.changed,
+                before: "",
+                after: ""
+            }
+        })
+    }
+
     render()
     {
         return (
             <div className="result">
+                {this.state.changeVIEW ? 
+                <div className="layer" >
+                    <div className="closeCHanged closeBtn"><button type="button" onClick={this.closeChanged} className="btn btn-warning">CLOSE</button></div>
+                    <div className="d-flex py-5">
+                        <div className="before col-md-6 p-5 border-right">
+                            {this.state.changed.before ? <pre>{JSON.stringify(this.state.changed.before, null, 4)}</pre> : null }
+                        </div>
+                        <div className="after col-md-6 p-5">
+                            {this.state.changed.after ? <pre>{JSON.stringify(this.state.changed.after, null, 4)}</pre> : null } 
+                        </div>
+                    </div>
+                    <div className="btnArea d-flex justify-content-center">
+                        <Link to={{pathname:'/metasave', data:this.state.meta.after, type:"reg"}}><button type="button" className="btn btn-primary mr-1">등록</button></Link>
+                        <Link to={{pathname:'/metasave', data:this.state.schema, type:"reg"}}><button type="button" className="btn btn-primary mr-1">취소</button></Link>
+                    </div>
+                </div>
+                : <></>}
                 <div className="d-flex">
                     <div className="schemaList col-md-7 p-5">
                         <table className="metalist bg-light table table-hover">
                             <thead>
                                 <tr className="text-center p-3">
                                     <th scope="col" className="col-md-1">#</th>
-                                    <th scope="col" className="col-md-5">토픽명</th>
+                                    <th scope="col" className="col-md-2">변경</th>
+                                    <th scope="col" className="col-md-4">토픽명</th>
                                     <th scope="col" className="col-md-2">등록일시</th>
+                                    <th scope="col" className="col-md-3">pschema삭제</th>
                                 </tr>
                             </thead>
                             <tbody>
                         {/* {this.props.schema.length > 0 ? this.props.schema.map((item,index) => {  */}
                         {this.state.meta.dataList.length > 0 ? this.state.meta.dataList.map((item,index) => {
-                         
                             var temp = {};
                             var mapping = {};
-                            var schema = JSON.parse(item.schema);
-                            Object.keys(item).map((res,index) => {
+                            var schema = JSON.parse(item.schema), meta_join = JSON.parse(item.meta_join);       
+                            Object.keys(item.schema).map((res,index) => {
                                     this.IsJsonString(item[res]) ? temp[res] = JSON.parse(item[res]): temp[res]=item[res]
                             })
                             return(
-                                    <tr data-index={index} className={this.state.idx === index ? "table-active text-center":"text-center"} key={item._id} onClick={(e)=>this.detailView(e, index, item.subject.replace(/(-value|-key)/g, ""))}>
+                                    <tr data-index={index} className={this.state.idx === index ? "table-active text-center":"text-center"} key={item.schema._id}>
                                         <th scope="row">{index+1}</th>
-                                        <td className="value-subject value form-group">
-                                            {item.subject.replace(/-value/g, "")}
+                                        <td className="modified">{item.meta_join ? <p onClick={(e)=> this.notiforchange(e, schema.subject)}>O</p> : "X"}</td>
+                                        <td className="value-subject value form-group" onClick={(e)=>this.detailView(e, index, schema.subject)}>
+                                            {schema.subject}
                                         </td>
                                         <td className="value-id value form-group">
-                                            {new Date(item.reg_dt).toISOString().substring(0,10)}
+                                            {schema.reg_dt}
+                                            {/* {new Date(schemas.reg_dt).toISOString().substring(0,10)} */}
+                                        </td>
+                                        <td className="value-id value form-group">
+                                            {schema ? "N":"Y"}
                                         </td>
                                     </tr>
                                 );
@@ -393,8 +469,8 @@ export default class Metalist extends Component {
                 : <></>}
 		        {this.state.jsonVIEW ?
                 <div className="viewJSON">
-                    <div className="keySchemaJson schemaTypeBtn"><button type="button" onClick={(e)=> this.changeView(e,"key")} className="btn btn-outline-info">KEY</button></div>
-                    <div className="valueSchemaJson schemaTypeBtn"><button type="button" onClick={(e)=> this.changeView(e,"value")} className="btn btn-outline-info">VALUE</button></div>
+                    <div className="keySchemaJson schemaTypeBtn"><button type="button" onClick={(e)=> this.changeView(e, "key")} className="btn btn-outline-info">KEY</button></div>
+                    <div className="valueSchemaJson schemaTypeBtn"><button type="button" onClick={(e)=> this.changeView(e, "value")} className="btn btn-outline-info">VALUE</button></div>
                     <div className="closeJSON closeBtn"><button type="button" onClick={this.closeVIEW} className="btn btn-warning">CLOSE</button></div>
                     <AceEditor
                         mode="json"
@@ -421,7 +497,6 @@ export default class Metalist extends Component {
                     />
                     </div>
             </div>
-
         );
     }
 }

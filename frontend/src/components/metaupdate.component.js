@@ -6,7 +6,6 @@ import UserService from "../services/user.service";
 import { Redirect, Link } from "react-router-dom";
 
 import axios from "axios"
-import PropTypes from 'prop-types';
 import Pagination from "react-js-pagination";
 import locale from 'react-json-editor-ajrm/locale/en';
 import AceEditor from "react-ace";
@@ -14,6 +13,7 @@ import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/ext-language_tools"
+import { parse } from "path";
 window.React = React;
 
 
@@ -78,7 +78,7 @@ export default class Metaupdate extends Component {
     }
 
     readonly = (name) => {
-        var tmp = ["p_name","p_type","topic_name","schema_id","schema_version","_id","is_null","default"];
+        var tmp = ["revision","p_name","p_type","topic_name","schema_id","schema_version","_id","is_null","default"];
         let result = tmp.filter(ele => ele === name)
         return result.length > 0 ? true : false
     }
@@ -127,9 +127,9 @@ export default class Metaupdate extends Component {
 
     onChangeValueTemp = (e, index) =>{
         // console.log(index, e.target.name, e.target.value)
-        console.log(this.state.prevData.meta[index][e.target.name], e.target.value);
-       if(this.state.prevData.meta[index][e.target.name] !== e.target.value) {
-        let metas = [...this.state.updateData.meta];
+        // console.log(this.state.prevData.meta[index][e.target.name], e.target.value);
+       if(this.state.prevData.value[index][e.target.name] !== e.target.value) {
+        let metas = [...this.state.updateData.value];
         metas.map((ele, idx) => {
             if(idx === index) {
                 let meta = {...metas[index]};
@@ -142,7 +142,7 @@ export default class Metaupdate extends Component {
             ...this.state,
             updateData: {
                 ...this.state.updateData,
-                meta:metas
+                value:metas
             }   
         }) } 
     }
@@ -156,16 +156,18 @@ export default class Metaupdate extends Component {
 
     onSubmit = async(e,_id, mode) => {
         e.preventDefault();
+        console.log(parseInt(this.state.updateData.revision)+1);
         this.setState({
             ...this.state,
             updateData:{
-                    ...this.state.data,
+                    ...this.state.updateData,
+                    revision:parseInt(this.state.updateData.revision)+1,
                     last_mod_dt:(new Date).toISOString(),
                     last_mod_id:AuthService.getCurrentUser().userid
                 }
             })
 
-        //history state
+        // history state
         this.setState({
 		...this.state,
         history:{
@@ -328,18 +330,16 @@ export default class Metaupdate extends Component {
             return result;
     }
 
-
     viewMode = (e, type) => {
         e.preventDefault();
         this.setState({...this.state, 
             json:this.replaceKey(this.state.updateData, "entokr"),
             viewmode:type})
     }
+
     goBack = ()=>{
         this.props.history.goBack();
     }
-
-    
 
     render()
     {
@@ -383,84 +383,88 @@ export default class Metaupdate extends Component {
                               highlightActiveLine
                         />
                     </div>
-                    <div className={this.state.viewmode === "table" ? "d-block type-table" : "d-none type-table"}>
-                        <div className="d-flex flex-wrap">
-                    {Object.keys(this.state.updateData).map((fields) => {
-                            if(typeof(this.state.updateData[fields]) !== "object"){
-                                if(fields !== "_id") {
-                                    return (
-                                        <div className="d-flex w-50 justify-content-center">
-                                            <div className={fields+" col-md-4 text-left"}>{this.trans(fields)}</div>
-                                            <div className={"value-"+fields+" value form-group col-md-6"}>
-                                            <input type="text" name={fields} className={"input-"+fields+" input-value w-100"} value={this.state.updateData[fields]} onChange={this.onChangeValue} readOnly={this.readonly(fields)}/>
-                                            </div>
-                                        </div>
-                                    );
-                                    } else {
-                                        return(
-                                            <input type="hidden" name={fields} className={"input-"+fields+" input-value"} value={this.state.updateData[fields]} onChange={this.onChangeValue} readOnly={this.readonly(fields)}/>
-                                        )
-                                    }
-                            } else {
-                                if(fields === 'related_topics'){
-                                    return(
-                                    <div className="d-flex">
-                                        <div className={fields+" col-md-2"}>{this.trans(fields)}</div>
-                                        <div className={"value-"+fields+" value form-group"}>
-                                            <input type="text" name={fields} className={"input-"+fields+" input-value"} value={this.state.updateData[fields]} onChange={this.onChangeValue} readOnly={this.readonly(fields)}/>
+                <div className={this.state.viewmode === "table" ? "d-block type-table" : "d-none type-table"}>  
+                        {Object.keys(this.state.updateData).map(field => {
+                            // common field
+                            const data = this.state.updateData;
+                            // console.log(field, data[field]);
+                            if(typeof(data[field]) !== "object"){
+                                return (
+                                    <div className={"form-group field d-flex"}>
+                                        <div className={field+" col-md-2"}>{this.trans(field)}</div>
+                                        <div className={"value-"+field+" value form-group"}>
+                                            <input type="text" name={field} className={"input-"+field+" input-value"} value={data[field]} onChange={(e)=> this.onChangeValue(e, field)} readOnly={this.readonly(field)}/>
                                         </div>
                                     </div>
-                                    )
-                                } else if(fields === 'meta') {
+                                )
+                            } else {
+                                if(field === 'related_topics'){
                                     return (
-                                        <table className="table my-5">
-                                            {this.state.updateData[fields].map((ele, index) => {
-                                                return (
-                                                    <>
-                                                    {index === 0 ? 
-                                                        <thead>
-                                                            <tr>
-                                                                <th scope="col">#</th>
-                                                                {Object.keys(ele).map((fields2) => {
-                                                                    return (
-                                                                        <>
-                                                                            <th scope="col" className="text-center">{this.trans(fields2)}</th>
-                                                                        </>
-                                                                    );
-                                                                }) 
-                                                                }   
-                                                            </tr>
-                                                        </thead>
-                                                    : <></>}
-                                                        <tbody>
-                                                            <tr>
-                                                                <th scope="row">{index+1}</th>
-                                                                {Object.keys(ele).map((fields2) => {
-                                                                        return (
-                                                                            <td><input type="text" name={fields2} className={"fields-input "+fields2} value={this.state.updateData[fields][index][fields2]} onChange={(e)=>this.onChangeValueTemp(e,index)}  readOnly={this.readonly(fields2)}/></td>
-                                                                        );
-                                                                        
-                                                                    }) 
-                                                                }   
-                                                            </tr>
-                                                        </tbody>
-                                                    </>
-                                                )
-                                            })}
-                                        </table>
-                                    )
+                                        <div className="d-flex">
+                                                <div className={field+" col-md-2"}>{this.trans(field)}</div>
+                                                <div className={"value-"+field+" value form-group"}>
+                                                    <input type="text" name={field} className={"input-"+field+" input-value"} value={data[field]} onChange={(e)=> this.onChangeValue(e, field)} readOnly={this.readonly(field)}/>
+                                                </div>
+                                            </div>
+                                        )
+                                    } else {
+                                        if(data[field] && data[field].length > 0 ){
+                                            return(
+                                                <>
+                                                <h3 className="h3 my-5">{field} Schema</h3>
+                                                <table className="table my-5">
+                                                    {data[field].map((meta_field, index) => {
+                                                        return (
+                                                            <>
+                                                            {index === 0 ? 
+                                                                <thead>
+                                                                    <tr>
+                                                                        <th scope="col">#</th>
+                                                                        {Object.keys(meta_field).map((field2) => {
+                                                                            return (
+                                                                                <>
+                                                                                    <th scope="col" className="text-center">{this.trans(field2)}</th>
+                                                                                </>
+                                                                            );
+                                                                        }) 
+                                                                        }   
+                                                                    </tr>
+                                                                </thead>
+                                                            : <></>}
+                                                                <tbody>
+                                                                    <tr>
+                                                                        <th scope="row">{index+1}</th>
+                                                                        {Object.keys(meta_field).map((field2) => {
+                                                                                return (
+                                                                                    <td><input type="text" name={field2} className={"field-input "+field2} value={data[field][index][field2]} onChange={(e)=>this.onChangeValueTemp(e, index, field)} readOnly={this.readonly(field2, field)} /></td>
+                                                                                );
+                                                                                
+                                                                            }) 
+                                                                        }   
+                                                                    </tr>
+                                                                </tbody>
+                                                            </>
+                                                        )
+                                                    })}
+                                                </table>
+                                                </>
+                                            )
+                                        } else {
+                                            return (
+                                                <><h3 className="h3 my-5">등록된 {field} schema가 없습니다</h3></>
+                                            )
+                                        }
+                                    }
                                 }
-                            }                            
-                        }) 
-                    }    
+                            })
+                        }
+                        <div className="action text-center">
+                            <button type="button" className="btn btn-primary mr-3" onClick={this.onSubmit}>저장</button>
+                            <button type="button" className="btn btn-secondary" onClick={this.goBack}>돌아가기</button>
+                        </div>
                     </div>
                 </div>
-                    <div className={this.state.viewmode === 'table' ? "action visible text-center mx-auto my-5" : "action invisible text-center mx-auto my-5"}>
-                        <button type="button" className="btn btn-primary mr-3" onClick={(e)=>this.onSubmit(e,this.state.updateData._id)}>수정</button>
-                        <button type="button" className="btn btn-secondary" onClick={this.goBack}>돌아가기</button>
-                    </div>
-                </div>
-                </div>
+            </div>
         );
     }
 }

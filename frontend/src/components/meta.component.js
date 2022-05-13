@@ -41,7 +41,7 @@ export default class Meta extends Component {
   }
 
   componentDidMount() {
-    axios.post(process.env.REACT_APP_API+"/schema/getschema",{size:5,page:0})
+    axios.post(process.env.REACT_APP_API+"/schema/getallschema",{size:5,page:0})
       .then(res => {
         this.setState({
           schema:res.data
