@@ -26,6 +26,7 @@ import KafkaMonitor from "./components/kafkamonitor.component";
 import K8Monitor from "./components/k8monitor.component";
 import Metric from "./components/metric.component";
 import Admin from "./components/admin.component";
+import MetaWrite from "./components/metaWrite.component";
 
 class App extends Component {
   constructor(props) {
@@ -178,6 +179,7 @@ onMouseLeave = (e) => {
             <Route exact path="/meta" component={Meta} />
             <Route exact path="/metaupdate" component={Metaupdate} />
             <Route exact path="/metasave" component={Metasave} />
+            <Route exact path="/metawrite" component={MetaWrite} />
             <Route exact path="/connector" component={Connector} />
             <Route exact path="/kafkaadmin" component={KafkaMonitor} />
             <Route exact path="/kafkamonitor" component={KafkaMonitor} />

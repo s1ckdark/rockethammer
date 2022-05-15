@@ -221,44 +221,75 @@ export default class Metasave extends Component {
         } else { return true; }
     }
 
-    replaceKey = (data) => {
-        const swaps = {
-            "_id":"_id",
-            "topic_name":"토픽명",
-            "schema_id":"스키마ID",
-            "meta_id":"메타ID",
-            "schema_version":"스키마버전",
-            "meta_version":"메타버전",
-            "recycle_pol":"데이터삭제주기",
-            "op_name":"관리부서",
-            "service":"업무시스템",
-            "related_topics":"연관토픽",
-            "last_mod_dt":"최종수정시간",
-            "last_mod_id":"최종수정자",
-            "schema":"",
-            "p_name":"물리명",
-            "p_type":"데이터 타입",
-            "l_name":"논리명",
-            "l_def":"설명",
-            "is_null":"Null허용여부",
-            "default":"기본값",
-            "memo":"메모",
-            "topic_desc":"토픽설명"
-        };
+    replaceKey = (data, mode)=>{
+        let swaps;
+        switch(mode) {
+            case "entokr":
+                swaps = {
+                    "_id":"_id",
+                    "topic_name":"토픽명",
+                    "schema_id":"스키마ID",
+                    "meta_id":"메타ID",
+                    "schema_version":"스키마버전",
+                    "meta_version":"메타버전",
+                    "recycle_pol":"데이터삭제주기",
+                    "op_name":"관리부서",
+                    "service":"업무시스템",
+                    "related_topics":"연관토픽",
+                    "last_mod_dt":"최종수정시간",
+                    "last_mod_id":"최종수정자",
+                    "schema":"",
+                    "p_name":"물리명",
+                    "p_type":"데이터 타입",
+                    "l_name":"논리명",
+                    "l_def":"설명",
+                    "is_null":"Null허용여부",
+                    "default":"기본값",
+                    "memo":"메모",
+                    "topic_desc":"토픽설명"
+                };
+                break;
+            case "krtoen":
+                swaps = {
+                    "_id":"_id",
+                    "토픽명":"topic_name",
+                    "스키마ID":"schema_id",
+                    "메타ID":"meta_id",
+                    "스키마버전":"schema_version",
+                    "메타버전":"meta_version",
+                    "데이터삭제주기":"recycle_pol",
+                    "관리부서":"op_name",
+                    "업무시스템":"service",
+                    "연관토픽":"related_topics",
+                    "최종수정시간":"last_mod_dt",
+                    "최종수정자":"last_mod_id",
+                    "schema":"schema",               
+                    "물리명":"p_name",
+                    "데이터 타입":"p_type",
+                    "논리명":"l_name",
+                    "설명":"l_def",
+                    "Null허용여부":"is_null",
+                    "기본값":"default",
+                    "메모":"memo",
+                    "토픽설명":"topic_desc"
+                };
+                break;
+            default:
+                break;
+            }
 
-        const pattern = new RegExp(
+            const pattern = new RegExp(
             Object.keys(swaps).map(e => `(?:"(${e})":)`).join("|"), "g"
-        );
-
-        const result = JSON.parse(
+            );
+            const result = JSON.parse(
             JSON.stringify(data).replace(pattern, m => `"${swaps[m.slice(1,-2)]}":`)
-        );
-        return result;
+            );
+            return result;
     }
 
     render()
     {
-        this.replaceKey(this.state.data);
+        this.replaceKey(this.state.data, "krtoen");
         let fields="key";
         return (
             <div className="metalist bg-light p-5">

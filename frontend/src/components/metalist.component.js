@@ -39,6 +39,7 @@ export default class Metalist extends Component {
           showHistory:false,
           json:{},
           jsonVIEW:false,
+          detailVIEW:false,
           detail:{},
           changeVIEW:false,
           changed:{
@@ -74,7 +75,7 @@ export default class Metalist extends Component {
     }
       
     componentDidMount(){
-        console.log(this.pagination());
+        // console.log(this.pagination());
         this.fetchMetaData();
     }
 
@@ -184,7 +185,7 @@ export default class Metalist extends Component {
     fetchMetaData = () => {  
         axios.post(process.env.REACT_APP_API+"/schema/getallschema",{size:5,page:this.state.meta.current})
         .then(res => {
-            // console.log(res.data);
+            console.log(res.data);
             this.setState({
                 ...this.state,
                 meta:res.data
@@ -233,14 +234,13 @@ export default class Metalist extends Component {
 
     detailView = (e, idx, topic_name) => {
         e.preventDefault();
-        const tn = topic_name;
-        // const tn = topic_name.replace(/(-value|-key)/g, "");
-        // this.setState({
-        //     ...this.state,
-        //     currentIndex: idx
-        // })
+        // const tn = topic_name;
+        const tn = topic_name.replace(/(-value|-key)/g, "");
+        this.setState({
+            ...this.state,
+            detailVIEW: true
+        })
         axios.post(process.env.REACT_APP_API+"/meta/getmeta",{keyword:tn}).then(res => {
-            console.log(res);
             if(res.data && res.data.length > 0) {
                 this.setState({...this.state, detail:res.data[0],show:true, idx:idx})
             } else {
@@ -255,11 +255,11 @@ export default class Metalist extends Component {
             }
         })
         axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:tn}).then(res => {
-            console.log(res);
-            if(res.data && res.data.length > 0) {
-                this.setState({...this.state, schema:res.data[0], idx:idx})
+            console.log(res.data);
+            if(res.data && res.data.value.length > 0) {
+                this.setState({...this.state, schema:res.data, idx:idx})
             } else {
-                this.setState({...this.state, schema:[],idx:idx})
+                this.setState({...this.state, schema:{},idx:idx})
             }
         })
     }
@@ -395,7 +395,7 @@ export default class Metalist extends Component {
                 </div>
                 : <></>}
                 <div className="d-flex">
-                    <div className="schemaList col-md-7 p-5">
+                    <div className={ this.state.detailVIEW ? "schemaList col-md-7 p-5 transition":"schemaList col-md-12 p-5 transition"}>
                         <table className="metalist bg-light table table-hover">
                             <thead>
                                 <tr className="text-center p-3">
@@ -407,7 +407,6 @@ export default class Metalist extends Component {
                                 </tr>
                             </thead>
                             <tbody>
-                        {/* {this.props.schema.length > 0 ? this.props.schema.map((item,index) => {  */}
                         {this.state.meta.dataList.length > 0 ? this.state.meta.dataList.map((item,index) => {
                             var temp = {};
                             var mapping = {};
@@ -447,12 +446,13 @@ export default class Metalist extends Component {
                                 <p>{this.state.detail.last_mod_id}</p>
                                 <p>{this.state.detail.last_mod_dt}</p>
                                 <div className="d-flex">
-                                <button type="button" className="btn btn-success mr-1" onClick={this.jsonVIEW}>조회</button><Link to={{pathname:'/metaupdate', data:this.state.detail, type:"update"}}><button type="button" className="btn btn-info mr-1">수정</button></Link><button type="button" className="btn btn-secondary" onClick={(e)=>this.onDel(e,this.state.detail._id)}>삭제</button> {this.state.history && this.state.history.length >0 ? <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.detail.topic_name)}>HISTORY</button> : <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.detail.topic_name)} disabled={true}>HISTORY</button>}</div></>                     
+                                <button type="button" className="btn btn-success mr-1" onClick={this.jsonVIEW}>조회</button><Link to={{pathname:'/metawrite', data:this.state.detail, type:"update"}}><button type="button" className="btn btn-info mr-1">수정</button></Link><button type="button" className="btn btn-secondary" onClick={(e)=>this.onDel(e,this.state.detail._id)}>삭제</button> {this.state.history && this.state.history.length >0 ? <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.detail.topic_name)}>HISTORY</button> : <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.detail.topic_name)} disabled={true}>HISTORY</button>}</div></>                     
                                 :
                                 <>
+                                <h3>{this.state.meta.dataList[this.state.idx].schema.subject}</h3>
                                 <div className="d-flex">
                                 <button type="button" className="btn btn-success mr-1" onClick={this.jsonVIEW} disabled={true}>조회</button>
-                                <Link to={{pathname:'/metasave', data:this.state.schema, type:"reg"}}><button type="button" className="btn btn-primary mr-1">등록</button></Link>
+                                <Link to={{pathname:'/metawrite', data:this.state.schema, type:"reg"}}><button type="button" className="btn btn-primary mr-1">등록</button></Link>
                                 <button type="button" className="btn btn-secondary" onClick={(e)=>this.onDel(e,this.state.detail._id)} disabled={true}>삭제</button> 
                                 <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.meta.data.topic_name)} disabled={true}>HISTORY</button>
                                 </div>
