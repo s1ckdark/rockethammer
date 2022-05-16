@@ -32,28 +32,157 @@ export default class Meta extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      schema:[],
+      schema:{
+        totalcnt:0,
+        current:0,
+        activePage: 1,
+        pageSize:10,
+        dataList:[]
+      },
       data:[],
       keyword:'',
       save:false,
-      update:false
+      update:false,
+
     };
+  this.handleMetaPageChange = this._handleMetaPageChange.bind(this);
+}
+
+_handleMetaPageChange(pageNumber) {
+  console.log(`active page is ${pageNumber}`);
+  this.setState({
+      ...this.state,
+      schema:{
+          ...this.state.schema,
+          current: pageNumber-1
+      }
+  }, ()=>{this.fetchMetaData();})
+}
+
+range = (start, end) => {
+  let length = end - start + 1;
+  /*
+      Create an array of certain length and set the elements within it from
+    start value to end value.
+  */
+  return Array.from({ length }, (_, idx) => idx + start);
+};
+
+pagination = () => {
+  const siblingCount = 1;
+  const pageSize = this.state.schema.size;
+  const currentPage = this.state.schema.current;
+  const totalCount = this.state.schema.count;
+  const totalPageCount = Math.ceil(totalCount / pageSize);
+  // const firstPageIndex = (this.state.meta.activePage - 1) * this.state.meta.pageSize;
+  // const lastPageIndex = firstPageIndex + this.state.meta.pageSize;
+  
+  // Pages count is determined as siblingCount + firstPage + lastPage + currentPage + 2*DOTS
+  const totalPageNumbers = siblingCount + 5;
+
+  /*
+      Case 1:
+      If the number of pages is less than the page numbers we want to show in our
+      paginationComponent, we return the range [1..totalPageCount]
+      */
+      if (totalPageNumbers >= totalPageCount) {
+          return this.range(1, totalPageCount);
+      }
+
+   /*
+Calculate left and right sibling index and make sure they are within range 1 and totalPageCount
+  */
+  const leftSiblingIndex = Math.max(currentPage - siblingCount, 1);
+  const rightSiblingIndex = Math.min(
+      currentPage + siblingCount,
+      totalPageCount
+  );
+
+  /*
+      We do not show dots just when there is just one page number to be inserted between the extremes of sibling and the page limits i.e 1 and totalPageCount. Hence we are using leftSiblingIndex > 2 and rightSiblingIndex < totalPageCount - 2
+  */
+  const shouldShowLeftDots = leftSiblingIndex > 2;
+  const shouldShowRightDots = rightSiblingIndex < totalPageCount - 2;
+
+  const firstPageIndex = 1;
+  const lastPageIndex = totalPageCount;
+
+  /*
+      Case 2: No left dots to show, but rights dots to be shown
+  */
+  if (!shouldShowLeftDots && shouldShowRightDots) {
+      let leftItemCount = 3 + 2 * siblingCount;
+      let leftRange = this.range(1, leftItemCount);
+
+      return [...leftRange, "DOTS", totalPageCount];
   }
 
+  /*
+      Case 3: No right dots to show, but left dots to be shown
+  */
+  if (shouldShowLeftDots && !shouldShowRightDots) {
+      
+      let rightItemCount = 3 + 2 * siblingCount;
+      let rightRange = this.range(
+      totalPageCount - rightItemCount + 1,
+      totalPageCount
+      );
+      return [firstPageIndex, "DOTS", ...rightRange];
+  }
+      
+  /*
+      Case 4: Both left and right dots to be shown
+  */
+  if (shouldShowLeftDots && shouldShowRightDots) {
+      let middleRange = this.range(leftSiblingIndex, rightSiblingIndex);
+      return [firstPageIndex, "DOTS", ...middleRange, "DOTS", lastPageIndex];
+  }
+}
+
   componentDidMount() {
-    axios.post(process.env.REACT_APP_API+"/schema/getallschema",{size:5,page:0})
-      .then(res => {
-        this.setState({
-          schema:res.data
-        })
-      })
+    this.fetchMetaData();
   }
   
+  // componentWillMount() {
+  //   console.log('componentWillMount');
+  // }
+
+
+  // componentWillReceiveProps(nextProps) {
+  //   console.log('componentWillReceiveProps');
+  // }
+
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   console.log('shouldComponentUpdate');
+  //   return true / false;
+  // }
+
+  // componentWillUpdate(nextProps, nextState) {
+  //   console.log('componentWillUpdate');
+  // }
+
+  componentDidUpdate(prevProps, prevState) {
+    this.onMetaSearch();
+  }
+
+  // componentWillUnmount() {
+  //   console.log('componentWillUnmount');
+  // }
+
   onChangeKeyword = (e,index) =>{
     this.setState({
       ...this.state,
       keyword:e.target.value+"-value"
     }) 
+  }
+
+fetchMetaData = async() => {
+  axios.post(process.env.REACT_APP_API+"/schema/getallschema",{size:5,page:this.state.schema.current})
+      .then(res => {
+        this.setState({
+          schema:res.data
+        })
+      })
   }
 
 onMetaSearch = async()=> {
@@ -89,7 +218,19 @@ onHistorySearch = async()=> {
         <div className="metalist">
           {this.state.schema.count > 0 ? 
           <div className="mapping bg-light">
-            <Metalist schema={this.state.schema} />
+            <Metalist schema={this.state.schema}/>
+            <div className="paging text-center mx-auto py-5">
+                    <Pagination
+                        activePage={this.state.schema.current+1}
+                        itemsCountPerPage={this.state.schema.size}
+                        totalItemsCount={this.state.schema.count}
+                        pageRangeDisplayed={5}
+                        onChange={this.handleMetaPageChange}
+                        itemClass="page-item"
+                        linkClass="page-link"
+                        innerClass="pagination d-flex justify-content-center"
+                    />
+                    </div>
           </div>
           : <></>
           }

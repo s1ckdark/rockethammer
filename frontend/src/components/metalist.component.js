@@ -19,7 +19,6 @@ export default class Metalist extends Component {
         super(props);
         this.state = {
           meta:{
-              data:[],
               totalcnt:0,
               current:0,
               activePage: 1,
@@ -75,8 +74,11 @@ export default class Metalist extends Component {
     }
       
     componentDidMount(){
-        // console.log(this.pagination());
-        this.fetchMetaData();
+        const schema = this.props.schema;
+        this.setState({
+            ...this.state,
+            meta: schema
+        })     
     }
 
     onEdit = (e,item) => {
@@ -111,6 +113,7 @@ export default class Metalist extends Component {
         return Array.from({ length }, (_, idx) => idx + start);
       };
 
+      
     pagination = () => {
         const siblingCount = 1;
         const pageSize = this.props.schema.size;
@@ -415,11 +418,11 @@ export default class Metalist extends Component {
                                     this.IsJsonString(item[res]) ? temp[res] = JSON.parse(item[res]): temp[res]=item[res]
                             })
                             return(
-                                    <tr data-index={index} className={this.state.idx === index ? "table-active text-center":"text-center"} key={item.schema._id}>
+                                    <tr data-index={index} className={this.state.idx === index ? "table-active text-center":"text-center"} key={index}>
                                         <th scope="row">{index+1}</th>
                                         <td className="modified">{item.meta_join ? <p onClick={(e)=> this.notiforchange(e, schema.subject)}>O</p> : "X"}</td>
                                         <td className="value-subject value form-group" onClick={(e)=>this.detailView(e, index, schema.subject)}>
-                                            {schema.subject}
+                                            {schema.subject.replace(/(-value|-key)/g, "")}
                                         </td>
                                         <td className="value-id value form-group">
                                             {schema.reg_dt}
@@ -484,18 +487,6 @@ export default class Metalist extends Component {
                     />
                 </div>
                 : <></>}
-                <div className="paging text-center mx-auto py-5">
-                    <Pagination
-                        activePage={this.state.meta.current+1}
-                        itemsCountPerPage={this.props.schema.size}
-                        totalItemsCount={this.props.schema.count}
-                        pageRangeDisplayed={5}
-                        onChange={this.handleMetaPageChange}
-                        itemClass="page-item"
-                        linkClass="page-link"
-                        innerClass="pagination d-flex justify-content-center"
-                    />
-                    </div>
             </div>
         );
     }
