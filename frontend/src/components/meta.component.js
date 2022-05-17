@@ -45,10 +45,10 @@ export default class Meta extends Component {
       update:false,
 
     };
-  this.handleMetaPageChange = this._handleMetaPageChange.bind(this);
+  this.handleSchemaPageChange = this._handleSchemaPageChange.bind(this);
 }
 
-_handleMetaPageChange(pageNumber) {
+_handleSchemaPageChange(pageNumber) {
   console.log(`active page is ${pageNumber}`);
   this.setState({
       ...this.state,
@@ -56,7 +56,7 @@ _handleMetaPageChange(pageNumber) {
           ...this.state.schema,
           current: pageNumber-1
       }
-  }, ()=>{this.fetchMetaData();})
+  }, ()=>{this.fetchMetaData(pageNumber-1);})
 }
 
 range = (start, end) => {
@@ -140,34 +140,35 @@ Calculate left and right sibling index and make sure they are within range 1 and
 }
 
   componentDidMount() {
-    this.fetchMetaData();
+    this.fetchMetaData(0);
   }
   
-  // componentWillMount() {
-  //   console.log('componentWillMount');
-  // }
-
-
-  // componentWillReceiveProps(nextProps) {
-  //   console.log('componentWillReceiveProps');
-  // }
-
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   console.log('shouldComponentUpdate');
-  //   return true / false;
-  // }
-
-  // componentWillUpdate(nextProps, nextState) {
-  //   console.log('componentWillUpdate');
-  // }
-
-  componentDidUpdate(prevProps, prevState) {
-    this.onMetaSearch();
+  componentWillMount() {
+    console.log('componentWillMount');
   }
 
-  // componentWillUnmount() {
-  //   console.log('componentWillUnmount');
-  // }
+
+  componentWillReceiveProps(nextProps) {
+    console.log('componentWillReceiveProps');
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log('shouldComponentUpdate');
+    return true / false;
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    console.log('componentWillUpdate');
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    console.log(prevState);
+    // if(this.state.schema.current != prevProps.schema.current) this.fetchMetaData();
+  }
+
+  componentWillUnmount() {
+    console.log('componentWillUnmount');
+  }
 
   onChangeKeyword = (e,index) =>{
     this.setState({
@@ -176,8 +177,8 @@ Calculate left and right sibling index and make sure they are within range 1 and
     }) 
   }
 
-fetchMetaData = async() => {
-  axios.post(process.env.REACT_APP_API+"/schema/getallschema",{size:5,page:this.state.schema.current})
+fetchMetaData = async(page) => {
+  await axios.post(process.env.REACT_APP_API+"/schema/getallschema",{size:5,page:page})
       .then(res => {
         this.setState({
           schema:res.data
@@ -225,7 +226,7 @@ onHistorySearch = async()=> {
                         itemsCountPerPage={this.state.schema.size}
                         totalItemsCount={this.state.schema.count}
                         pageRangeDisplayed={5}
-                        onChange={this.handleMetaPageChange}
+                        onChange={this.handleSchemaPageChange}
                         itemClass="page-item"
                         linkClass="page-link"
                         innerClass="pagination d-flex justify-content-center"

@@ -46,40 +46,29 @@ export default class Metalist extends Component {
               after:''
           }
         };
-        this.handleMetaPageChange = this._handleMetaPageChange.bind(this);
-        this.handleHistoryPageChange = this._handleHistoryPageChange.bind(this);
-    }
-
-    _handleMetaPageChange(pageNumber) {
-        console.log(`active page is ${pageNumber}`);
-        this.setState({
-            ...this.state,
-            meta:{
-                ...this.state.meta,
-                current: pageNumber-1
-            }
-        }, ()=>{this.fetchMetaData();})
-    }
-
-    _handleHistoryPageChange(pageNumber) {
-        console.log(`active page is ${pageNumber}`);
-        this.setState({
-        ...this.state,
-            historyPage:{
-                ...this.state.history,
-                activePage:pageNumber
-            }
-        });
-        this.fetchHistoryData();
     }
       
     componentDidMount(){
         const schema = this.props.schema;
+        console.log(schema);
         this.setState({
             ...this.state,
             meta: schema
         })     
     }
+    componentDidUpdate(prevProps, prevState) {
+        console.log(prevState);
+        // if(this.state.schema.current != prevProps.schema.current) this.fetchMetaData();
+      }
+
+  componentWillReceiveProps(nextProps) {
+    // console.log('componentWillReceiveProps');
+    // console.log(nextProps);
+    this.setState({
+        ...this.state,
+        meta: nextProps.schema
+    })  
+  }
 
     onEdit = (e,item) => {
         e.preventDefault();
@@ -102,98 +91,6 @@ export default class Metalist extends Component {
         //         }, 1000);
         //     }) 
         // }       
-    }
-
-    range = (start, end) => {
-        let length = end - start + 1;
-        /*
-            Create an array of certain length and set the elements within it from
-          start value to end value.
-        */
-        return Array.from({ length }, (_, idx) => idx + start);
-      };
-
-      
-    pagination = () => {
-        const siblingCount = 1;
-        const pageSize = this.props.schema.size;
-        const currentPage = this.props.schema.current;
-        const totalCount = this.props.schema.count;
-        const totalPageCount = Math.ceil(totalCount / pageSize);
-        // const firstPageIndex = (this.state.meta.activePage - 1) * this.state.meta.pageSize;
-        // const lastPageIndex = firstPageIndex + this.state.meta.pageSize;
-        
-        // Pages count is determined as siblingCount + firstPage + lastPage + currentPage + 2*DOTS
-        const totalPageNumbers = siblingCount + 5;
-
-        /*
-            Case 1:
-            If the number of pages is less than the page numbers we want to show in our
-            paginationComponent, we return the range [1..totalPageCount]
-            */
-            if (totalPageNumbers >= totalPageCount) {
-                return this.range(1, totalPageCount);
-            }
-      
-         /*
-    	Calculate left and right sibling index and make sure they are within range 1 and totalPageCount
-        */
-        const leftSiblingIndex = Math.max(currentPage - siblingCount, 1);
-        const rightSiblingIndex = Math.min(
-            currentPage + siblingCount,
-            totalPageCount
-        );
-
-        /*
-            We do not show dots just when there is just one page number to be inserted between the extremes of sibling and the page limits i.e 1 and totalPageCount. Hence we are using leftSiblingIndex > 2 and rightSiblingIndex < totalPageCount - 2
-        */
-        const shouldShowLeftDots = leftSiblingIndex > 2;
-        const shouldShowRightDots = rightSiblingIndex < totalPageCount - 2;
-
-        const firstPageIndex = 1;
-        const lastPageIndex = totalPageCount;
-
-        /*
-            Case 2: No left dots to show, but rights dots to be shown
-        */
-        if (!shouldShowLeftDots && shouldShowRightDots) {
-            let leftItemCount = 3 + 2 * siblingCount;
-            let leftRange = this.range(1, leftItemCount);
-
-            return [...leftRange, "DOTS", totalPageCount];
-        }
-
-        /*
-            Case 3: No right dots to show, but left dots to be shown
-        */
-        if (shouldShowLeftDots && !shouldShowRightDots) {
-            
-            let rightItemCount = 3 + 2 * siblingCount;
-            let rightRange = this.range(
-            totalPageCount - rightItemCount + 1,
-            totalPageCount
-            );
-            return [firstPageIndex, "DOTS", ...rightRange];
-        }
-            
-        /*
-            Case 4: Both left and right dots to be shown
-        */
-        if (shouldShowLeftDots && shouldShowRightDots) {
-            let middleRange = this.range(leftSiblingIndex, rightSiblingIndex);
-            return [firstPageIndex, "DOTS", ...middleRange, "DOTS", lastPageIndex];
-        }
-    }
-
-    fetchMetaData = () => {  
-        axios.post(process.env.REACT_APP_API+"/schema/getallschema",{size:5,page:this.state.meta.current})
-        .then(res => {
-            console.log(res.data);
-            this.setState({
-                ...this.state,
-                meta:res.data
-            })
-        })
     }
     
       fetchHistoryData = () => {
@@ -376,6 +273,10 @@ export default class Metalist extends Component {
         })
     }
 
+    goBack = ()=>{
+        this.props.history.goBack();
+    }
+
     render()
     {
         return (
@@ -392,8 +293,8 @@ export default class Metalist extends Component {
                         </div>
                     </div>
                     <div className="btnArea d-flex justify-content-center">
-                        <Link to={{pathname:'/metasave', data:this.state.meta.after, type:"reg"}}><button type="button" className="btn btn-primary mr-1">등록</button></Link>
-                        <Link to={{pathname:'/metasave', data:this.state.schema, type:"reg"}}><button type="button" className="btn btn-primary mr-1">취소</button></Link>
+                        <button type="button" className="btn btn-primary  mr-1"><Link to={{pathname:'/metawrite', data:this.state.meta.after, type:"reg"}}>등록</Link></button>
+                        <button type="button" className="btn btn-secondary" onClick={this.goBack}>돌아가기</button>
                     </div>
                 </div>
                 : <></>}

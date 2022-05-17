@@ -37,8 +37,8 @@ export default class Metawrite extends Component {
                 last_mod_dt:'',
                 last_mod_id:'',
                 is_used: true,
-                key:{},
-                value:{}
+                key:[],
+                value:[]
             },
             history:{},
             prevData:{},
@@ -51,7 +51,8 @@ export default class Metawrite extends Component {
 
     componentDidMount(){
         const {type, data} = this.props.location;
-        console.log(data);
+        // console.log(this.props);
+        // console.log(data);
         this.setState({
             ...this.state,
             type: type
@@ -92,6 +93,7 @@ export default class Metawrite extends Component {
                     }
                 }), ()=>{
                     localStorage.setItem('data', JSON.stringify(this.state.data));
+                    localStorage.setItem('type', type);
                     console.log("reg - set ok props "+whatisit,this.state.data[whatisit]);
                 })
             }  
@@ -102,6 +104,7 @@ export default class Metawrite extends Component {
         data['revision'] = parseInt(data['revision']) + 1;
         data['meta_version'] = parseInt(data['meta_version']) + 1; 
         localStorage.setItem('data', JSON.stringify(data));
+        localStorage.setItem('type', type);
         this.setState({
             data: data,
             prevData:data
@@ -110,6 +113,8 @@ export default class Metawrite extends Component {
         console.log("type",type);
         this.setState({
             data: JSON.parse(localStorage.getItem('data')),
+            prevData:JSON.parse(localStorage.getItem('data')),
+            type: localStorage.getItem('type'),
         }, ()=>{
             console.log("set ok noprops ",this.state.data);
         })
@@ -208,39 +213,41 @@ export default class Metawrite extends Component {
     onSubmit = async(e, type) => {
         e.preventDefault();
         console.log(type);
-        if(type == 'reg' ||  type =='change'){
+        let temp = this.state.data;
+        if(type === 'reg' || type ==='update'){
+            temp.revision = 1;
+              if(type === 'reg') {
+                temp.meta_version = parseInt(this.state.data);             
+            } else {
+                temp.meta_version = parseInt(this.state.data.version) + 1;
+            }
             await axios.post(process.env.REACT_APP_API+"/meta/insert", this.state.data).then( res => {
                 if(res.status===200) {alert("등록 완료");setTimeout(() => { 
                     this.goBack();
                 }, 500);}
             })
-        } else if(type == 'update'){
-            this.setState({
-                ...this.state,
-                data:{
-                        ...this.state.data,
-                        // revision: parseInt(this.state.data.revision)+1,
-                        // meta_version: parseInt(this.state.data.meta_version)+1,
-                        last_mod_dt:(new Date).toISOString(),
-                        last_mod_id:AuthService.getCurrentUser().userid
-                    }
-                })
-    
-            // history state
-            this.setState({
-            ...this.state,
-            history:{
-                    topic_name:this.state.prevData.topic_name,
-                    before:JSON.stringify(this.state.prevData),
-                    after:JSON.stringify(this.state.data),
-                    last_mod_dt:(new Date).toISOString(),
-                    last_mod_id:AuthService.getCurrentUser().userid
+        } else if(type === 'update'){
+            temp.revision = parseInt(this.state.data.revision)+1;
+            temp.last_mod_dt = (new Date).toISOString();
+            temp.last_mod_id = AuthService.getCurrentUser().userid;
+            this.setState(prevState => ({
+                    data: temp
+                }),()=>{
+                this.setState({
+                    ...this.state,
+                    history:{
+                            topic_name:this.state.prevData.topic_name,
+                            before:JSON.stringify(this.state.prevData),
+                            after:JSON.stringify(this.state.data),
+                            last_mod_dt:(new Date).toISOString(),
+                            last_mod_id:AuthService.getCurrentUser().userid
+                        }
+                    })
                 }
-            })
-    
+            )
+
             const prevData = this.replaceKey(this.state.prevData, "entokr");
-    
-            if(JSON.stringify(prevData) === JSON.stringify(this.state.json)){ 
+            if(JSON.stringify(prevData) === JSON.stringify(temp)){ 
                 alert("변경된 내용이 없습니다.");
                 this.goBack();
             } else {
@@ -260,13 +267,13 @@ export default class Metawrite extends Component {
                 // })
                 // if(this.state.data.hasOwnProperty('물리명')){alert("있다!")} else {alert("없다")}
                 // await axios.post(process.env.REACT_APP_API+"/meta/update/"+_id, this.state.data).then( res => {
-                // await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
-                //     axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
-                //     if(res.status===200) {alert("수정 완료");setTimeout(() => { 
-                //         this.goBack();
-                //     }, 1000);}
-                //     })
-                // })
+                await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
+                    axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
+                    if(res.status===200) {alert("수정 완료");setTimeout(() => { 
+                        this.goBack();
+                    }, 1000);}
+                    })
+                })
             }
         }
     }
@@ -292,7 +299,7 @@ export default class Metawrite extends Component {
 
     readonly = (name, schema=null) => {
         if(schema !== 'key') { 
-            var tmp = ["p_name","p_type","topic_name","schema_id","schema_version","_id","is_null","default","revision","schema_id","meta_id"];
+            var tmp = ["p_name","p_type","topic_name","schema_id","schema_version","_id","is_null","default","revision","schema_id","meta_id","meta_version"];
             let result = tmp.filter(ele => ele === name)
             return result.length > 0 ? true : false 
         } else { return true; }
@@ -394,8 +401,8 @@ export default class Metawrite extends Component {
                         {Object.keys(this.state.data).map(field => {
                             // common field
                             const data = this.state.data;
-                            console.log(field, data[field]);
-                            if(typeof(data[field]) !== "object"){
+                            // console.log(field, data[field]);
+                            if(typeof(data[field]) !== "object" || data[field] === null){
                                 return (
                                     <div className={"form-group field d-flex col-md-6"}>
                                         <div className={field+" col-md-3"}>{this.trans(field)}</div>
