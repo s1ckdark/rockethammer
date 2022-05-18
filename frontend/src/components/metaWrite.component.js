@@ -27,7 +27,6 @@ export default class Metawrite extends Component {
                 topic_name:'',
                 topic_desc:'',
                 schema_id:'',
-                meta_id:'',
                 schema_version:'',
                 meta_version:'',
                 revision:'',
@@ -51,13 +50,13 @@ export default class Metawrite extends Component {
 
     componentDidMount(){
         const {type, data} = this.props.location;
-        // console.log(this.props);
-        // console.log(data);
+        console.log(this.props);
+        console.log(data);
         this.setState({
             ...this.state,
             type: type
         })
-        if(data && type ==='reg') {
+        if(data && type ==='reg' || type === 'change') {
             console.log("type",type);
             Object.keys(data).map( whatisit => {
                 console.log(whatisit,data[whatisit].length);
@@ -83,9 +82,8 @@ export default class Metawrite extends Component {
                         topic_name: data['value'][0].subject.replace(/(-value|-key)/g, ""),
                         schema_id: data['value'][0].id,
                         schema_version: data['value'][0].version,
-                        meta_id: 1,
-                        meta_version:1,
-                        revision:1, 
+                        meta_version:"1",
+                        revision:"1", 
                         last_mod_dt:(new Date).toISOString(),
                         last_mod_id:AuthService.getCurrentUser().userid,
                         is_used: true, 
@@ -103,6 +101,8 @@ export default class Metawrite extends Component {
         delete data['_id'];
         data['revision'] = parseInt(data['revision']) + 1;
         data['meta_version'] = parseInt(data['meta_version']) + 1; 
+        data['last_mod_dt'] = (new Date).toISOString();
+        data['last_mod_id'] = AuthService.getCurrentUser().userid;
         localStorage.setItem('data', JSON.stringify(data));
         localStorage.setItem('type', type);
         this.setState({
@@ -126,7 +126,6 @@ export default class Metawrite extends Component {
             "_id":"_id",
             "topic_name":"토픽명",
             "schema_id":"스키마ID",
-            "meta_id":"메타ID",
             "schema_version":"스키마버전",
             "meta_version":"메타버전",
             "op_name":"관리부서",
@@ -191,7 +190,7 @@ export default class Metawrite extends Component {
 
     onChangeValueTemp = (e, index, field) =>{
         e.preventDefault();
-        console.log(index, e.target.name, e.target.value)
+        // console.log(index, e.target.name, e.target.value)
         let metas = [...this.state.data[field]];
         metas.map((ele, idx) => {
             if(idx === index) {
@@ -214,17 +213,40 @@ export default class Metawrite extends Component {
         e.preventDefault();
         console.log(type);
         let temp = this.state.data;
-        if(type === 'reg' || type ==='update'){
+        if(type === 'reg' || type ==='change'){
             temp.revision = 1;
               if(type === 'reg') {
-                temp.meta_version = parseInt(this.state.data);             
+                temp.meta_version = 1;             
             } else {
                 temp.meta_version = parseInt(this.state.data.version) + 1;
             }
-            await axios.post(process.env.REACT_APP_API+"/meta/insert", this.state.data).then( res => {
-                if(res.status===200) {alert("등록 완료");setTimeout(() => { 
+            temp.last_mod_dt = (new Date).toISOString();
+            temp.last_mod_id = AuthService.getCurrentUser().userid;
+            this.setState(prevState => ({
+                    data: temp
+                }),()=>{
+                this.setState({
+                    ...this.state,
+                    history:{
+                            topic_name:this.state.prevData.topic_name,
+                            before:JSON.stringify(this.state.data),
+                            after:JSON.stringify(this.state.data),
+                            last_mod_dt:(new Date).toISOString(),
+                            last_mod_id:AuthService.getCurrentUser().userid
+                        }
+                    })
+                }
+            )
+            await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
+                axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
+                if(res.status===200) {
+                    localStorage.removeItem('type');
+                    localStorage.removeItem('data');
+                    alert("등록 완료");
+                setTimeout(() => { 
                     this.goBack();
-                }, 500);}
+                }, 1000);}
+                })
             })
         } else if(type === 'update'){
             temp.revision = parseInt(this.state.data.revision)+1;
@@ -245,9 +267,14 @@ export default class Metawrite extends Component {
                     })
                 }
             )
+            console.log(this.state.prevData);
+            let prevData = this.state.prevData, nextData= this.state.data;
+            let compare = ["revision","meta_version","schema_id","schema_version","last_mod_dt","last_mod_id"];
 
-            const prevData = this.replaceKey(this.state.prevData, "entokr");
+            // const prevData = this.replaceKey(this.state.prevData, "entokr");
             if(JSON.stringify(prevData) === JSON.stringify(temp)){ 
+                localStorage.removeItem('type');
+                localStorage.removeItem('data');
                 alert("변경된 내용이 없습니다.");
                 this.goBack();
             } else {
@@ -269,7 +296,11 @@ export default class Metawrite extends Component {
                 // await axios.post(process.env.REACT_APP_API+"/meta/update/"+_id, this.state.data).then( res => {
                 await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
                     axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
-                    if(res.status===200) {alert("수정 완료");setTimeout(() => { 
+                    if(res.status===200) {
+                        localStorage.removeItem('type');
+                        localStorage.removeItem('data');
+                        alert("수정 완료");
+                        setTimeout(() => { 
                         this.goBack();
                     }, 1000);}
                     })
@@ -299,7 +330,7 @@ export default class Metawrite extends Component {
 
     readonly = (name, schema=null) => {
         if(schema !== 'key') { 
-            var tmp = ["p_name","p_type","topic_name","schema_id","schema_version","_id","is_null","default","revision","schema_id","meta_id","meta_version"];
+            var tmp = ["p_name","p_type","topic_name","schema_id","schema_version","_id","is_null","default","revision","schema_id","meta_version"];
             let result = tmp.filter(ele => ele === name)
             return result.length > 0 ? true : false 
         } else { return true; }
@@ -313,7 +344,6 @@ export default class Metawrite extends Component {
                     "_id":"_id",
                     "topic_name":"토픽명",
                     "schema_id":"스키마ID",
-                    "meta_id":"메타ID",
                     "schema_version":"스키마버전",
                     "meta_version":"메타버전",
                     "recycle_pol":"데이터삭제주기",
@@ -338,7 +368,6 @@ export default class Metawrite extends Component {
                     "_id":"_id",
                     "토픽명":"topic_name",
                     "스키마ID":"schema_id",
-                    "메타ID":"meta_id",
                     "스키마버전":"schema_version",
                     "메타버전":"meta_version",
                     "데이터삭제주기":"recycle_pol",

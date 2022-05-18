@@ -236,11 +236,12 @@ export default class Metalist extends Component {
         console.log(e, act, id);
     }
 
-    notiforchange = async (e, subject) => {
+    notiforchange = async (e, topic_name) => {
         e.preventDefault();
         //schemas의 before, after를 api call로 가져와야한다. 
         // api call limit(2), sort(reg_dt, -1)
-        await axios.post(process.env.REACT_APP_API+"/schema/changed", {"keyword":subject}).then(
+        const tn = topic_name.replace(/(-value|-key)/g, "");
+        await axios.post(process.env.REACT_APP_API+"/schema/changed", {"keyword":topic_name}).then(
             res => {
                 let temp = [];
                 res.data.map((item,index) => {
@@ -258,6 +259,14 @@ export default class Metalist extends Component {
                   })
             }
         )
+        axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:tn}).then(res => {
+            console.log(res.data);
+            if(res.data && res.data.value.length > 0) {
+                this.setState({...this.state, schema:res.data})
+            } else {
+                this.setState({...this.state, schema:{}})
+            }
+        })
     }
 
     closeChanged = (e) => {
@@ -293,8 +302,8 @@ export default class Metalist extends Component {
                         </div>
                     </div>
                     <div className="btnArea d-flex justify-content-center">
-                        <button type="button" className="btn btn-primary  mr-1"><Link to={{pathname:'/metawrite', data:this.state.meta.after, type:"reg"}}>등록</Link></button>
-                        <button type="button" className="btn btn-secondary" onClick={this.goBack}>돌아가기</button>
+                        <button type="button" className="btn btn-primary  mr-1"><Link to={{pathname:'/metawrite', data:this.state.schema, type:"change"}}>등록</Link></button>
+                        <button type="button" className="btn btn-secondary" onClick={this.closeChanged}>돌아가기</button>
                     </div>
                 </div>
                 : <></>}
