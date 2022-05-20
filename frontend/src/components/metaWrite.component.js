@@ -211,7 +211,6 @@ export default class Metawrite extends Component {
 
     onSubmit = async(e, type) => {
         e.preventDefault();
-        console.log(type);
         let temp = this.state.data;
         if(type === 'reg' || type ==='change'){
             temp.revision = 1;
@@ -222,6 +221,7 @@ export default class Metawrite extends Component {
             }
             temp.last_mod_dt = (new Date).toISOString();
             temp.last_mod_id = AuthService.getCurrentUser().userid;
+            console.log(temp);
             this.setState(prevState => ({
                     data: temp
                 }),()=>{
