@@ -25,17 +25,18 @@ export default class Metawrite extends Component {
         this.state = {
             data:{
                 topic_name:'',
-                topic_desc:'',
+                subject:'',
                 schema_id:'',
                 schema_version:'',
                 meta_version:'',
                 revision:'',
+                last_mod_id:'',
+                last_mod_dt:'',
+                is_used: true,
+                topic_desc:'',
                 op_name:'',
                 service:'',
                 related_topics:[],
-                last_mod_dt:'',
-                last_mod_id:'',
-                is_used: true,
                 key:[],
                 value:[]
             },
@@ -80,10 +81,11 @@ export default class Metawrite extends Component {
                     data:{
                         ...prevState.data,
                         topic_name: data['value'][0].subject.replace(/(-value|-key)/g, ""),
+                        subject:data['value'][0].subject,
                         schema_id: data['value'][0].id,
                         schema_version: data['value'][0].version,
-                        meta_version:"1",
-                        revision:"1", 
+                        meta_version:1,
+                        revision:1, 
                         last_mod_dt:(new Date).toISOString(),
                         last_mod_id:AuthService.getCurrentUser().userid,
                         is_used: true, 
@@ -99,8 +101,8 @@ export default class Metawrite extends Component {
     } else if(data && type ==='update') {
         console.log("type",type);
         delete data['_id'];
-        data['revision'] = parseInt(data['revision']) + 1;
-        data['meta_version'] = parseInt(data['meta_version']) + 1; 
+        data['revision'] = data['revision'] + 1;
+        data['meta_version'] = data['meta_version'] + 1; 
         data['last_mod_dt'] = (new Date).toISOString();
         data['last_mod_id'] = AuthService.getCurrentUser().userid;
         localStorage.setItem('data', JSON.stringify(data));
@@ -213,11 +215,12 @@ export default class Metawrite extends Component {
         e.preventDefault();
         let temp = this.state.data;
         if(type === 'reg' || type ==='change'){
-            temp.revision = 1;
               if(type === 'reg') {
                 temp.meta_version = 1;             
             } else {
-                temp.meta_version = parseInt(this.state.data.version) + 1;
+                let meta_versionInt = this.state.data.meta_version + 1;
+                console.log(meta_versionInt, meta_versionInt);
+                temp.meta_version = meta_versionInt;
             }
             temp.last_mod_dt = (new Date).toISOString();
             temp.last_mod_id = AuthService.getCurrentUser().userid;
@@ -237,17 +240,17 @@ export default class Metawrite extends Component {
                     })
                 }
             )
-            await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
-                axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
-                if(res.status===200) {
-                    localStorage.removeItem('type');
-                    localStorage.removeItem('data');
-                    alert("등록 완료");
-                setTimeout(() => { 
-                    this.goBack();
-                }, 1000);}
-                })
-            })
+            // await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
+            //     axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
+            //     if(res.status===200) {
+            //         localStorage.removeItem('type');
+            //         localStorage.removeItem('data');
+            //         alert("등록 완료");
+            //     setTimeout(() => { 
+            //         this.goBack();
+            //     }, 1000);}
+            //     })
+            // })
         } else if(type === 'update'){
             temp.revision = parseInt(this.state.data.revision)+1;
             temp.last_mod_dt = (new Date).toISOString();
@@ -267,9 +270,9 @@ export default class Metawrite extends Component {
                     })
                 }
             )
-            console.log(this.state.prevData);
+            // console.log(this.state.prevData);
             let prevData = this.state.prevData, nextData= this.state.data;
-            let compare = ["revision","meta_version","schema_id","schema_version","last_mod_dt","last_mod_id"];
+            // let compare = ["revision","meta_version","schema_id","schema_version","last_mod_dt","last_mod_id"];
 
             // const prevData = this.replaceKey(this.state.prevData, "entokr");
             if(JSON.stringify(prevData) === JSON.stringify(temp)){ 
@@ -329,8 +332,9 @@ export default class Metawrite extends Component {
     }
 
     readonly = (name, schema=null) => {
+        // console.log(name, schema);
         if(schema !== 'key') { 
-            var tmp = ["p_name","p_type","topic_name","schema_id","schema_version","_id","is_null","default","revision","schema_id","meta_version"];
+            var tmp = ["p_name","p_type","topic_name","schema_id","schema_version","_id","is_null","default","revision","schema_id","meta_version","last_mod_id","last_mod_dt","subject"];
             let result = tmp.filter(ele => ele === name)
             return result.length > 0 ? true : false 
         } else { return true; }
@@ -433,9 +437,9 @@ export default class Metawrite extends Component {
                             // console.log(field, data[field]);
                             if(typeof(data[field]) !== "object" || data[field] === null){
                                 return (
-                                    <div className={"form-group field d-flex col-md-6"}>
-                                        <div className={field+" col-md-3"}>{this.trans(field)}</div>
-                                        <div className={"value-"+field+" value form-group col-md-8"}>
+                                    <div className={"form-group field col-md-6"}>
+                                        <div className={field}><p className="field-label">{this.trans(field)}</p></div>
+                                        <div className={"value-"+field+" value"}>
                                             <input type="text" name={field} className={"input-"+field+" input-value w-100"} value={data[field]} onChange={(e)=> this.onChangeValue(e, field)} readOnly={this.readonly(field)}/>
                                         </div>
                                     </div>
@@ -443,9 +447,9 @@ export default class Metawrite extends Component {
                             } else {
                                 if(field === 'related_topics'){
                                     return (
-                                        <div className="form-group field d-flex col-md-6">
-                                                <div className={field+" col-md-3"}>{this.trans(field)}</div>
-                                                <div className={"value-"+field+" value form-group col-md-8"}>
+                                        <div className="form-group field col-md-6">
+                                                <div className={field}><p className="field-label">{this.trans(field)}</p></div>
+                                                <div className={"value-"+field+" value"}>
                                                     <input type="text" name={field} className={"input-"+field+" input-value w-100"} value={data[field]} onChange={(e)=> this.onChangeValue(e, field)} readOnly={this.readonly(field)}/>
                                                 </div>
                                             </div>
@@ -454,8 +458,8 @@ export default class Metawrite extends Component {
                                         if(data[field] && data[field].length > 0 ){
                                             return(
                                                 <div className="col-md-12">
-                                                <h3 className="h3 my-5">{field} Schema</h3>
-                                                <table className="table my-5">
+                                                <h3 className="h3 schema-field mt-5">{field} Schema</h3>
+                                                <table className="table my-1">
                                                     {data[field].map((meta_field, index) => {
                                                         return (
                                                             <>
@@ -473,19 +477,18 @@ export default class Metawrite extends Component {
                                                                         }   
                                                                     </tr>
                                                                 </thead>
-                                                            : <></>}
-                                                                <tbody>
-                                                                    <tr>
-                                                                        <th scope="row">{index+1}</th>
-                                                                        {Object.keys(meta_field).map((field2) => {
-                                                                                return (
-                                                                                    <td><input type="text" name={field2} className={"field-input "+field2} value={data[field][index][field2]} onChange={(e)=>this.onChangeValueTemp(e, index, field)} readOnly={this.readonly(field2, field)} /></td>
-                                                                                );
-                                                                                
-                                                                            }) 
-                                                                        }   
-                                                                    </tr>
-                                                                </tbody>
+                                                            : <tr>
+                                                                <th scope="row">{index+1}</th>
+                                                                {Object.keys(meta_field).map((field2) => {
+                                                                        return (
+                                                                            <td><input type="text" name={field2} className={"field-input "+field2} value={data[field][index][field2]} onChange={(e)=>this.onChangeValueTemp(e, index, field)} readOnly={this.readonly(field2, field)} /></td>
+                                                                        );
+                                                                        
+                                                                    }) 
+                                                                }   
+                                                            </tr>
+                                                        }
+                                                           
                                                             </>
                                                         )
                                                     })}
@@ -495,9 +498,9 @@ export default class Metawrite extends Component {
                                         } else {
                                             return (
                                                 <>
-                                                    <div className="col-md-12">
-                                                    <h3 className="h3 my-5">등록된 {field} schema가 없습니다</h3>
-                                                    </div>
+                                                    {/* <div className="col-md-12">
+                                                    <h3 className="h3 schema-field mt-5 mb-2">등록된 {field} schema가 없습니다</h3>
+                                                    </div> */}
                                                 </>
                                             )
                                         }
