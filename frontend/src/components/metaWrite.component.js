@@ -240,17 +240,17 @@ export default class Metawrite extends Component {
                     })
                 }
             )
-            // await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
-            //     axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
-            //     if(res.status===200) {
-            //         localStorage.removeItem('type');
-            //         localStorage.removeItem('data');
-            //         alert("등록 완료");
-            //     setTimeout(() => { 
-            //         this.goBack();
-            //     }, 1000);}
-            //     })
-            // })
+            await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
+                axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
+                if(res.status===200) {
+                    localStorage.removeItem('type');
+                    localStorage.removeItem('data');
+                    alert("등록 완료");
+                setTimeout(() => { 
+                    this.goBack();
+                }, 1000);}
+                })
+            })
         } else if(type === 'update'){
             temp.revision = parseInt(this.state.data.revision)+1;
             temp.last_mod_dt = (new Date).toISOString();
@@ -339,7 +339,11 @@ export default class Metawrite extends Component {
             return result.length > 0 ? true : false 
         } else { return true; }
     }
-
+    hideField = (name) =>{
+        let tmp = ["last_mod_dt","last_mod_id","subject","is_used"];
+        let result = tmp.filter(ele => ele === name )
+        return result.length > 0 ? "d-none" : "d-block"
+    }
     replaceKey = (data, mode)=>{
         let swaps;
         switch(mode) {
@@ -437,7 +441,7 @@ export default class Metawrite extends Component {
                             // console.log(field, data[field]);
                             if(typeof(data[field]) !== "object" || data[field] === null){
                                 return (
-                                    <div className={"form-group field col-md-6"}>
+                                    <div className={this.hideField(field)+" form-group col-md-6 "+field}>
                                         <div className={field}><p className="field-label">{this.trans(field)}</p></div>
                                         <div className={"value-"+field+" value"}>
                                             <input type="text" name={field} className={"input-"+field+" input-value w-100"} value={data[field]} onChange={(e)=> this.onChangeValue(e, field)} readOnly={this.readonly(field)}/>
