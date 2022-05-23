@@ -142,38 +142,11 @@ Calculate left and right sibling index and make sure they are within range 1 and
   componentDidMount() {
     this.fetchMetaData(0);
   }
-  
-  componentWillMount() {
-    console.log('componentWillMount');
-  }
-
-
-  componentWillReceiveProps(nextProps) {
-    console.log('componentWillReceiveProps');
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    console.log('shouldComponentUpdate');
-    return true / false;
-  }
-
-  componentWillUpdate(nextProps, nextState) {
-    console.log('componentWillUpdate');
-  }
-
-  componentDidUpdate(prevProps, prevState) {
-    console.log(prevState);
-    // if(this.state.schema.current != prevProps.schema.current) this.fetchMetaData();
-  }
-
-  componentWillUnmount() {
-    console.log('componentWillUnmount');
-  }
 
   onChangeKeyword = (e,index) =>{
     this.setState({
       ...this.state,
-      keyword:e.target.value+"-value"
+      keyword:e.target.value
     }) 
   }
 

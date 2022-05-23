@@ -56,14 +56,8 @@ export default class Metalist extends Component {
             meta: schema
         })     
     }
-    componentDidUpdate(prevProps, prevState) {
-        console.log(prevState);
-        // if(this.state.schema.current != prevProps.schema.current) this.fetchMetaData();
-      }
 
   componentWillReceiveProps(nextProps) {
-    // console.log('componentWillReceiveProps');
-    // console.log(nextProps);
     this.setState({
         ...this.state,
         meta: nextProps.schema
@@ -236,6 +230,12 @@ export default class Metalist extends Component {
         console.log(e, act, id);
     }
 
+    // shownotiforchange = (topic_name) => {
+    //     // console.log(topic_name);
+    //    return axios.post(process.env.REACT_APP_API+"/schema/changed", {"keyword":topic_name});
+        
+    // }
+
     notiforchange = async (e, topic_name) => {
         e.preventDefault();
         //schemas의 before, after를 api call로 가져와야한다. 
@@ -243,6 +243,7 @@ export default class Metalist extends Component {
         const tn = topic_name.replace(/(-value|-key)/g, "");
         await axios.post(process.env.REACT_APP_API+"/schema/changed", {"keyword":topic_name}).then(
             res => {
+                if(res.data.length > 1) {
                 let temp = [];
                 res.data.map((item,index) => {
                     temp[index] = item;
@@ -257,7 +258,7 @@ export default class Metalist extends Component {
                       after: temp[0]
                     }
                   })
-            }
+                }}
         )
         axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:tn}).then(res => {
             console.log(res.data);
@@ -327,10 +328,11 @@ export default class Metalist extends Component {
                             Object.keys(item.schema).map((res,index) => {
                                     this.IsJsonString(item[res]) ? temp[res] = JSON.parse(item[res]): temp[res]=item[res]
                             })
+                            console.log(schema,meta_join);
                             return(
                                     <tr data-index={index} className={this.state.idx === index ? "table-active text-center":"text-center"} key={index}>
                                         <th scope="row">{index+1}</th>
-                                        <td className="modified">{item.meta_join ? <p onClick={(e)=> this.notiforchange(e, schema.subject)}>O</p> : "X"}</td>
+                                        <td className="modified">{meta_join && schema.version > meta_join.schema_version ? <p onClick={(e)=> this.notiforchange(e, schema.subject)}>O</p> : <p>X</p>}</td>
                                         <td className="value-subject value form-group" onClick={(e)=>this.detailView(e, index, schema.subject)}>
                                             {schema.subject.replace(/(-value|-key)/g, "")}
                                         </td>
