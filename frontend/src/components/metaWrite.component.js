@@ -502,9 +502,9 @@ export default class Metawrite extends Component {
                                         } else {
                                             return (
                                                 <>
-                                                    {/* <div className="col-md-12">
+                                                    <div className="col-md-12 d-none">
                                                     <h3 className="h3 schema-field mt-5 mb-2">등록된 {field} schema가 없습니다</h3>
-                                                    </div> */}
+                                                    </div>
                                                 </>
                                             )
                                         }
