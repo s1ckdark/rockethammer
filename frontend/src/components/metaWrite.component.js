@@ -15,9 +15,8 @@ import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/ext-language_tools"
-import { ThemeConsumer } from "react-bootstrap/esm/ThemeProvider";
+// import { ThemeConsumer } from "react-bootstrap/esm/ThemeProvider";
 window.React = React;
-
 
 export default class Metawrite extends Component {
     constructor(props) {
