@@ -13,20 +13,14 @@ import Profile from "./components/profile.component";
 // import BoardModerator from "./components/board-moderator.component";
 // import BoardAdmin from "./components/board-admin.component";
 import Confluent from "./components/confluent.component";
-// import Grafana from "./components/grafana.component";
-// import Gitlab from "./components/gitlab.component";
 import Meta from "./components/meta.component";
-import Metaupdate from "./components/metaupdate.component";
-import Metasave from "./components/metasave.component";
-// import Portainer from "./components/portainer.component";
-// import Airflow from "./components/airflow.component";
 import Seo from "./components/seo.component";
 import Connector from "./components/connector.component";
 import KafkaMonitor from "./components/kafkamonitor.component";
 import K8Monitor from "./components/k8monitor.component";
 import Metric from "./components/metric.component";
 import Admin from "./components/admin.component";
-import MetaWrite from "./components/metaWrite.component";
+import Metawrite from "./components/metawrite.component";
 
 class App extends Component {
   constructor(props) {
@@ -117,12 +111,6 @@ onMouseLeave = (e) => {
                 </Link>
               </li>
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
-                <Link to={"/connector"} className="nav-link">
-                  <img alt="Connector" src={'./img/connector-white.png'} />
-                <p>커넥터<br/>관리</p>
-                </Link>
-              </li>
-              <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
                 <Link to={"/kafkadmin"} className="nav-link">
                   <img alt="kafkadmin" src={'./img/kafkamonitor.png'} />
                 <p>카프카<br/>어드민</p>
@@ -135,12 +123,6 @@ onMouseLeave = (e) => {
                 </Link>
               </li>              
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
-                <Link to={"/k8monitor"} className="nav-link">
-                  <img alt="k8monitor" src={'./img/k8monitor.png'} />
-                <p>쿠버네티스<br/>모니터링</p>
-                </Link>
-              </li>
-              <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
                 <Link to={"/metric"} className="nav-link">
                   <img alt="metric" src={'./img/metric.png'} />
                 <p>메트릭<br/>수집기</p>
@@ -149,7 +131,7 @@ onMouseLeave = (e) => {
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
                 <Link to={"/admin"} className="nav-link">
                   <img alt="service" src={'./img/admin-white.png'} />
-                <p>관리자</p>
+                <p>설정</p>
                 </Link>
               </li>             
             </div>
@@ -177,10 +159,7 @@ onMouseLeave = (e) => {
             <Route exact path="/profile" component={Profile} />
             <Route exact path="/confluent" component={Confluent} />
             <Route exact path="/meta" component={Meta} />
-            <Route exact path="/metaupdate" component={Metaupdate} />
-            <Route exact path="/metasave" component={Metasave} />
-            <Route exact path="/metawrite" component={MetaWrite} />
-            <Route exact path="/connector" component={Connector} />
+            <Route exact path="/metawrite" component={Metawrite} />
             <Route exact path="/kafkaadmin" component={KafkaMonitor} />
             <Route exact path="/kafkamonitor" component={KafkaMonitor} />
             <Route exact path="/k8monitor" component={K8Monitor} />

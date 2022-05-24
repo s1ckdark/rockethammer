@@ -11,6 +11,7 @@ import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/ext-language_tools";
 import Pagination from "react-js-pagination";
+import Metawrite from "./metawrite.component";
 import Historylist from "./historylist.component";
 window.React = React;
 

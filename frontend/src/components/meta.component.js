@@ -22,9 +22,7 @@ import { Button,Modal } from 'react-bootstrap'
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
 import Metalist from './metalist.component';
-import Historylist from './historylist.component';
-import Metaupdate from './metaupdate.component';
-import Metasave from './metasave.component';
+
 
 window.React = React;
 
