@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
-import { Redirect } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import AuthService from "../services/auth.service";
 
 const required = value => {
@@ -44,7 +44,7 @@ export default class Login extends Component {
 
   renderRedirect = () => {
     if (this.state.redirect) {
-      return <Redirect to='/profile' />
+      return <Navigate to='/profile' />
     }
   }
 

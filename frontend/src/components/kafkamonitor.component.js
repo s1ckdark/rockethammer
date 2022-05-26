@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import Iframe from 'react-iframe'
-import UserService from "../services/user.service";
-
+// import UserService from "../services/user.service";
 
 export default class Kafkamonitor extends Component {
   constructor(props) {

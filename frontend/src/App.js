@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, Component } from 'react'
 import { TimelineMax, Expo } from "gsap/all";
-import { Switch, Route, Link } from "react-router-dom";
+import { Routes, Route, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
@@ -19,7 +19,7 @@ import Connector from "./components/connector.component";
 import KafkaMonitor from "./components/kafkamonitor.component";
 import K8Monitor from "./components/k8monitor.component";
 import Metric from "./components/metric.component";
-import Admin from "./components/admin.component";
+import Admin from "./components/admin.component.js";
 import Metawrite from "./components/metawrite.component";
 
 class App extends Component {
@@ -153,19 +153,20 @@ onMouseLeave = (e) => {
       : null
     }
         <div className="container mt-3">
-          <Switch>
-            <Route exact path={["/", "/home"]} component={Home} />
-            <Route exact path="/register" component={Register} />
-            <Route exact path="/profile" component={Profile} />
-            <Route exact path="/confluent" component={Confluent} />
-            <Route exact path="/meta" component={Meta} />
-            <Route exact path="/metawrite" component={Metawrite} />
-            <Route exact path="/kafkaadmin" component={KafkaMonitor} />
-            <Route exact path="/kafkamonitor" component={KafkaMonitor} />
-            <Route exact path="/k8monitor" component={K8Monitor} />
-            <Route exact path="/metric" component={Metric} />
-            <Route exact path="/admin" component={Admin} />
-          </Switch>
+          <Routes>
+            <Route exact path="/" element={<Home />} />
+            <Route exact path="/home" element={<Home />} />
+            <Route exact path="/register" element={<Register />} />
+            <Route exact path="/profile" element={<Profile />} />
+            <Route exact path="/confluent" element={<Confluent />} />
+            <Route exact path="/meta" element={<Meta />} />
+            <Route exact path="/metawrite" element={<Metawrite />} />
+            <Route exact path="/kafkaadmin" element={<KafkaMonitor />} />
+            <Route exact path="/kafkamonitor" element={<KafkaMonitor />} />
+            <Route exact path="/k8monitor" element={<K8Monitor />} />
+            <Route exact path="/metric" element={<Metric />} />
+            <Route exact path="/admin" element={<Admin />} />
+          </Routes>
         </div>
       </div>
     );
