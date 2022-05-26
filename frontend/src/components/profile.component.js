@@ -40,6 +40,22 @@ export default class Profile extends Component {
 
     return (
      <div className="profile col-md-12">
+       <div className="terminal">
+       <div className="fakeMenu">
+        <div className="fakeButtons fakeClose"></div>
+        <div className="fakeButtons fakeMinimize"></div>
+        <div className="fakeButtons fakeZoom"></div>
+      </div>
+      <div className="fakeScreen">
+      {this.state.userReady ?
+        <> 
+        <p className="line1">&nbsp;&nbsp;&ldquo;<label>이 름</label>&ldquo;:{" "}&ldquo;{currentUser.name}&rdquo;,<span className="cursor1">_</span></p>
+        <p className="line2">&nbsp;&nbsp;&ldquo;<label>소 속</label>&ldquo;:{" "}&ldquo;{currentUser.dept}&rdquo;,<span className="cursor2">_</span></p>
+        <p className="line3">&nbsp;&nbsp;&ldquo;<label>Authorities</label>&ldquo;:{" "}&ldquo;{currentUser.group && currentUser.group ? currentUser.group : null}&rdquo;&nbsp;<span className="cursor3">_</span></p>
+        <p className="line4">><span className="cursor4">_</span></p>
+      </>: null}
+      </div>
+      </div>
            <div className="card card-container">
             {(this.state.userReady) ?
               <div className="card-body">
