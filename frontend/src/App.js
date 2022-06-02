@@ -154,18 +154,18 @@ onMouseLeave = (e) => {
     }
         <div className="container mt-3">
           <Routes>
-            <Route exact path="/" element={<Home />} />
-            <Route exact path="/home" element={<Home />} />
-            <Route exact path="/register" element={<Register />} />
-            <Route exact path="/profile" element={<Profile />} />
-            <Route exact path="/confluent" element={<Confluent />} />
-            <Route exact path="/meta" element={<Meta />} />
-            <Route exact path="/metawrite" element={<Metawrite />} />
-            <Route exact path="/kafkaadmin" element={<KafkaMonitor />} />
-            <Route exact path="/kafkamonitor" element={<KafkaMonitor />} />
-            <Route exact path="/k8monitor" element={<K8Monitor />} />
-            <Route exact path="/metric" element={<Metric />} />
-            <Route exact path="/admin" element={<Admin />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/confluent" element={<Confluent />} />
+            <Route path="/meta" element={<Meta />} />
+            <Route path="/metawrite" element={<Metawrite />} />
+            <Route path="/kafkaadmin" element={<KafkaMonitor />} />
+            <Route path="/kafkamonitor" element={<KafkaMonitor />} />
+            <Route path="/k8monitor" element={<K8Monitor />} />
+            <Route path="/metric" element={<Metric />} />
+            <Route path="/admin" element={<Admin />} />
           </Routes>
         </div>
       </div>

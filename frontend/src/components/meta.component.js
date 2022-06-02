@@ -24,6 +24,7 @@ import locale from 'react-json-editor-ajrm/locale/en';
 import Metalist from './metalist.component';
 
 
+
 window.React = React;
 
 export default class Meta extends Component {
@@ -102,29 +103,31 @@ onHistorySearch = async()=> {
     return (
       <div className="meta">
         <div className="find mx-auto my-5 text-center d-block">
-          <div className="form-inline justify-content-center">
-            <input className="search form-control p-3" name="search" value={this.state.search} onChange = {this.onChangeKeyword} />
-            <button type="button" className="btn btn-danger ml-1 searchbtn" onClick={this.onMetaSearch}>SEARCH</button>
+          <div className="d-flex justify-content-center col-md-3 mx-auto">
+            <input className="search form-control px-3" name="search" value={this.state.search} onChange = {this.onChangeKeyword} />
+            <button type="button" className="btn btn-danger ms-1 searchbtn" onClick={this.onMetaSearch}>SEARCH</button>
           </div>
         </div>
         <div className="metalist">
           {this.state.schema.count > 0 ? 
+          <>
           <div className="mapping bg-light">
             <Metalist schema={this.state.schema}/>
             <div className="paging text-center mx-auto py-5">
-                    <Pagination
-                        activePage={this.state.schema.current+1}
-                        itemsCountPerPage={this.state.schema.size}
-                        totalItemsCount={this.state.schema.count}
-                        pageRangeDisplayed={5}
-                        onChange={this.handleSchemaPageChange}
-                        itemClass="page-item"
-                        activeLinkClass="page-active"
-                        linkClass="page-link"
-                        innerClass="pagination d-flex justify-content-center"
-                    />
-                    </div>
+              <Pagination
+                  activePage={this.state.schema.current+1}
+                  itemsCountPerPage={this.state.schema.size}
+                  totalItemsCount={this.state.schema.count}
+                  pageRangeDisplayed={5}
+                  onChange={this.handleSchemaPageChange}
+                  itemClass="page-item"
+                  activeLinkClass="page-active"
+                  linkClass="page-link"
+                  innerClass="pagination d-flex justify-content-center"
+              />
+              </div>
           </div>
+          </>
           : <></>
           }
         </div>

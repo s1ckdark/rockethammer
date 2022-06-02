@@ -1,9 +1,8 @@
 import React, { Component } from "react";
 import { isCompositeComponent } from "react-dom/test-utils";
-import {useHistory, withRouter} from 'react-router-dom';
+import {useNavigate, withRouter,  Redirect, Link, useLocation } from 'react-router-dom';
 import AuthService from "../services/auth.service";
 import UserService from "../services/user.service";
-import { Redirect, Link } from "react-router-dom";
 
 import axios from "axios"
 import PropTypes from 'prop-types';
@@ -49,9 +48,8 @@ export default class Metawrite extends Component {
     }
 
     componentDidMount(){
-        const {type, data} = this.props.location;
-        console.log(this.props);
-        console.log(data);
+        console.log(this);
+        const {type, data, navigate} = this.props;
         this.setState({
             ...this.state,
             type: type
@@ -246,7 +244,7 @@ export default class Metawrite extends Component {
                     localStorage.removeItem('data');
                     alert("등록 완료");
                 setTimeout(() => { 
-                    this.goBack();
+                    this.propsr.closeWrite();
                 }, 1000);}
                 })
             })
@@ -278,7 +276,7 @@ export default class Metawrite extends Component {
                 localStorage.removeItem('type');
                 localStorage.removeItem('data');
                 alert("변경된 내용이 없습니다.");
-                this.goBack();
+                this.props.closeWrite(e);
             } else {
                 console.log("changed");
                 // this.exist(prevData, this.state.json);
@@ -302,8 +300,8 @@ export default class Metawrite extends Component {
                         localStorage.removeItem('type');
                         localStorage.removeItem('data');
                         alert("수정 완료");
-                        setTimeout(() => { 
-                        this.goBack();
+                        setTimeout((e) => { 
+                        this.props.closeWrite(e);
                     }, 1000);}
                     })
                 })
@@ -319,9 +317,9 @@ export default class Metawrite extends Component {
         })
     }
 
-    goBack = ()=>{
-        this.props.history.goBack();
-    }
+    // goBack = ()=>{
+    //     this.props.navigate(-1);
+    // }
 
     viewMode = (e, type) => {
         e.preventDefault();
@@ -410,12 +408,12 @@ export default class Metawrite extends Component {
     render()
     {
         return (
-            <div className="metalist bg-light p-5">
-                <div className="meta">
-                    <div className="mode d-flex justify-content-end">
+            <div className="metawrite bg-light p-5">
+                <div className="container">
+                    {/* <div className="mode d-flex justify-content-end">
                         <button type="button" className={this.state.viewmode === "json" ? "btn btn-success" : "btn btn-dark mr-1"} onClick={(e)=>this.viewMode(e,"json")}>JSON</button>
                         <button type="button" className={this.state.viewmode === "table" ? "btn btn-success" : "btn btn-dark"} onClick={(e)=>this.viewMode(e,"table")}>TABLE</button>
-                    </div>
+                    </div> */}
                     <div className={this.state.viewmode === "json" ? "d-block type-json" : "d-none type-json"}>
                         <AceEditor
                             mode="json"
@@ -429,7 +427,7 @@ export default class Metawrite extends Component {
                         />
                         <div className="action text-right my-5">
                             <button type="button" className="btn btn-primary mr-3" onClick={this.onSubmit}>저장</button>
-                            <button type="button" className="btn btn-secondary" onClick={this.goBack}>돌아가기</button>
+                            <button type="button" className="btn btn-secondary" onClick={(e)=> this.props.closeWrite(e)}>돌아가기</button>
                         </div>
                     </div>
                     <div className={this.state.viewmode === "table" ? "d-block type-table" : "d-none type-table"}> 
@@ -513,8 +511,8 @@ export default class Metawrite extends Component {
                         }
                         </div>
                         <div className="action text-center">
-                            <button type="button" className="btn btn-primary mr-3" onClick={(e)=>this.onSubmit(e, this.state.type)}>{ this.state.type === 'reg' ? "등록":"저장"}</button>
-                            <button type="button" className="btn btn-secondary" onClick={this.goBack}>돌아가기</button>
+                            <button type="button" className="btn btn-primary me-1" onClick={(e)=>this.onSubmit(e, this.state.type)}>{ this.state.type === 'reg' ? "등록":"저장"}</button>
+                            <button type="button" className="btn btn-secondary" onClick={(e)=>this.props.closeWrite(e)}>돌아가기</button>
                         </div>
                     </div>
                 </div>
