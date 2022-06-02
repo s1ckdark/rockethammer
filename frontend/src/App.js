@@ -92,7 +92,7 @@ onMouseLeave = (e) => {
           <span className="navbar-brand">
             <img src={'./img/rh_logo.png'} alt="ROCKETHAMMER" className="logo"/>
           </span>
-          <div className="navbar-nav mr-auto">
+          <div className="navbar-nav mx-auto">
             <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
               <Link to={"/home"} className="nav-link">
                   <img alt="Home" src={'./img/home.png'} />

@@ -244,7 +244,7 @@ export default class Metawrite extends Component {
                     localStorage.removeItem('data');
                     alert("등록 완료");
                 setTimeout(() => { 
-                    this.propsr.closeWrite();
+                    this.props.closeWrite();
                 }, 1000);}
                 })
             })
@@ -300,7 +300,7 @@ export default class Metawrite extends Component {
                         localStorage.removeItem('type');
                         localStorage.removeItem('data');
                         alert("수정 완료");
-                        setTimeout((e) => { 
+                        setTimeout(() => { 
                         this.props.closeWrite(e);
                     }, 1000);}
                     })
@@ -438,20 +438,20 @@ export default class Metawrite extends Component {
                             // console.log(field, data[field]);
                             if(typeof(data[field]) !== "object" || data[field] === null){
                                 return (
-                                    <div className={this.hideField(field)+" form-group col-md-6 "+field}>
+                                    <div className={this.hideField(field)+" form-group col-md-3 mb-5 "+field}>
                                         <div className={field}><p className="field-label">{this.trans(field)}</p></div>
                                         <div className={"value-"+field+" value"}>
-                                            <input type="text" name={field} className={"input-"+field+" input-value w-100"} value={data[field]} onChange={(e)=> this.onChangeValue(e, field)} readOnly={this.readonly(field)}/>
+                                            <input type="text" name={field} className={"input-"+field+" input-value w-75"} value={data[field]} onChange={(e)=> this.onChangeValue(e, field)} readOnly={this.readonly(field)}/>
                                         </div>
                                     </div>
                                 )
                             } else {
                                 if(field === 'related_topics'){
                                     return (
-                                        <div className="form-group field col-md-6">
+                                        <div className="form-group field col-md-3 mb-5">
                                                 <div className={field}><p className="field-label">{this.trans(field)}</p></div>
                                                 <div className={"value-"+field+" value"}>
-                                                    <input type="text" name={field} className={"input-"+field+" input-value w-100"} value={data[field]} onChange={(e)=> this.onChangeValue(e, field)} readOnly={this.readonly(field)}/>
+                                                    <input type="text" name={field} className={"input-"+field+" input-value w-75"} value={data[field]} onChange={(e)=> this.onChangeValue(e, field)} readOnly={this.readonly(field)}/>
                                                 </div>
                                             </div>
                                         )
@@ -464,20 +464,33 @@ export default class Metawrite extends Component {
                                                     {data[field].map((meta_field, index) => {
                                                         return (
                                                             <>
-                                                            {index === 0 ? 
+                                                            {index === 0 ?
+                                                            <> 
                                                                 <thead>
                                                                     <tr>
-                                                                        <th scope="col">#</th>
-                                                                        {Object.keys(meta_field).map((field2) => {
+                                                                        <th scope="col" class="col-1">#</th>
+                                                                        {Object.keys(meta_field).map((field2, index) => {
+                                                                           var tmp = [1, 1, 2, 3, 1, 1, 2]
                                                                             return (
                                                                                 <>
-                                                                                    <th scope="col" className="text-center">{this.trans(field2)}</th>
+                                                                                    <th scope="col" className={"text-center col-"+tmp[index]}>{this.trans(field2)}</th>
                                                                                 </>
                                                                             );
                                                                         }) 
                                                                         }   
                                                                     </tr>
                                                                 </thead>
+                                                                <tr>
+                                                                <th scope="row">{index+1}</th>
+                                                                {Object.keys(meta_field).map((field2) => {
+                                                                        return (
+                                                                            <td><input type="text" name={field2} className={"field-input "+field2} value={data[field][index][field2]} onChange={(e)=>this.onChangeValueTemp(e, index, field)} readOnly={this.readonly(field2, field)} /></td>
+                                                                        );
+                                                                        
+                                                                    }) 
+                                                                }   
+                                                            </tr>
+                                                            </>
                                                             : <tr>
                                                                 <th scope="row">{index+1}</th>
                                                                 {Object.keys(meta_field).map((field2) => {

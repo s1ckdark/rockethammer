@@ -335,9 +335,9 @@ export default class Metalist extends Component {
                     </div>
                 </div>
                 : <></>}
-                <div className="d-flex">
+                <div className="d-flex justify-content-around">
                     <div className={ this.state.detailVIEW ? "schemaList col-md-7 p-5 transition":"schemaList col-md-12 p-5 transition"}>
-                        <table className="metalist bg-light table table-hover">
+                        <table className="metalist table table-hover">
                             <thead>
                                 <tr className="text-center p-3">
                                     <th scope="col" className="col-md-1">#</th>
@@ -378,7 +378,7 @@ export default class Metalist extends Component {
                         </table>
                     </div>
                    {this.state.show ? 
-                    <div className="detailview col-md-5 p-5 m-5 border-left">
+                    <div className="detailview col-md-5 p-5 m-5 border-left bg-light">
                         <div className="detail">
                             {Object.keys(this.state.detail).length > 0 ? 
                                 <>

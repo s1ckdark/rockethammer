@@ -14,7 +14,16 @@
   color: inherit;
 }
 
+.profile {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+}
+
 .profile .card-container.card {
+  border-radius: 50%;
   max-width: 400px !important;
   padding: 30px;
   position: relative;
@@ -30,7 +39,16 @@
 .profile .card-container.card .card-body {
   width: 100%;
   height: 100%;
-  background-color: #000;
+  background-color: #ccc;
+}
+
+.profile .card-container.card .card-body .jumbotron {
+  padding: 30px 0;
+}
+
+.profile .card-container.card .card-text {
+  padding: 15px 0;
+  text-align: right;
 }
 
 .profile .card-container.card .card-text p {
@@ -228,13 +246,14 @@
 }
 
 .meta .metawrite {
-  position: absolute;
-  top: 0;
+  position: fixed;
+  top: 60px;
   right: 0;
   bottom: 0;
   left: 0;
-  background-color: #fff;
   z-index: 999;
+  width: 100vw;
+  height: 100vh;
 }
 
 .meta .viewJSON {
@@ -340,20 +359,24 @@
   text-transform: uppercase;
 }
 
-.meta table td, .meta table th {
+.meta table tr td, .meta table tr th {
   vertical-align: middle;
+  text-align: center;
+  padding: 15px 0;
+  margin: 10px auto;
 }
 
-.meta table p {
+.meta table tr p {
   margin: 0;
 }
 
-.meta table input {
+.meta table tr input {
   text-align: center;
-  width: 100%;
+  width: 80%;
+  margin: 0 auto;
 }
 
-.meta table input[readonly] {
+.meta table tr input[readonly] {
   text-align: center;
 }
 

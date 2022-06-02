@@ -111,7 +111,6 @@ onHistorySearch = async()=> {
         <div className="metalist">
           {this.state.schema.count > 0 ? 
           <>
-          <div className="mapping bg-light">
             <Metalist schema={this.state.schema}/>
             <div className="paging text-center mx-auto py-5">
               <Pagination
@@ -126,7 +125,6 @@ onHistorySearch = async()=> {
                   innerClass="pagination d-flex justify-content-center"
               />
               </div>
-          </div>
           </>
           : <></>
           }
