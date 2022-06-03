@@ -3,6 +3,7 @@ import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
 import { Navigate } from "react-router-dom";
+import { WithRouter } from "./withRouter.component";
 import AuthService from "../services/auth.service";
 
 const required = value => {
@@ -15,7 +16,7 @@ const required = value => {
   }
 };
 
-export default class Login extends Component {
+class Login extends Component {
   constructor(props) {
     super(props);
     this.handleLogin = this.handleLogin.bind(this);
@@ -73,7 +74,7 @@ export default class Login extends Component {
     if (this.checkBtn.context._errors.length === 0) {
       AuthService.login(this.state.userid, this.state.password).then(
         () => {
-          this.props.history.push("/profile");
+          this.props.navigate("/profile");
           window.location.reload();
         },
         error => {
@@ -138,9 +139,9 @@ export default class Login extends Component {
               />
             </div>
 
-            <div className="form-group">
+            <div className="form-group my-3">
               <button
-                className="btn btn-primary btn-block"
+                className="btn btn-primary btn-block mx-auto w-100"
                 disabled={this.state.loading}
               >
                 {this.state.loading && (
@@ -164,15 +165,6 @@ export default class Login extends Component {
               }}
             />
           </Form>
-        <div className="serviceIcon">
-          <div className="icon icon-1"><img src={'./img/confluent.png'} alt="confluent"/></div>
-          <div className="icon icon-2"><img src={'./img/meta.png'} alt="meta"/></div>
-          <div className="icon icon-3"><img src={'./img/connector.png'} alt="connector"/></div>
-          <div className="icon icon-6"><img src={'./img/kafkamonitor.png'} alt="kafka monitor"/></div>
-          <div className="icon icon-7"><img src={'./img/k8monitor.png'} alt="k8monitor"/></div>
-          <div className="icon icon-8"><img src={'./img/metric.png'} alt="metric"/></div>
-          <div className="icon icon-10"><img src={'./img/admin.png'} alt="admin"/></div> 
-        </div>
         </div>
 
       </div>
@@ -180,3 +172,4 @@ export default class Login extends Component {
   }
 }
 
+export default WithRouter(Login);

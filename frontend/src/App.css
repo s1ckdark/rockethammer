@@ -14,7 +14,7 @@
   color: inherit;
 }
 
-.profile {
+.profile, .login {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -22,7 +22,7 @@
           transform: translate(-50%, -50%);
 }
 
-.profile .card-container.card {
+.profile .card-container.card, .login .card-container.card {
   border-radius: 50%;
   max-width: 400px !important;
   padding: 30px;
@@ -36,33 +36,33 @@
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.3);
 }
 
-.profile .card-container.card .card-body {
+.profile .card-container .card-body, .login .card-container .card-body {
   width: 100%;
   height: 100%;
   background-color: #ccc;
 }
 
-.profile .card-container.card .card-body .jumbotron {
+.profile .card-container .card-body .jumbotron, .login .card-container .card-body .jumbotron {
   padding: 30px 0;
 }
 
-.profile .card-container.card .card-text {
+.profile .card-container .card-text, .login .card-container .card-text {
   padding: 15px 0;
   text-align: right;
 }
 
-.profile .card-container.card .card-text p {
+.profile .card-container .card-text p, .login .card-container .card-text p {
   font-size: 1rem;
   margin-bottom: 0;
   line-height: 1.6;
 }
 
-.profile .card-container.card .card-text label {
+.profile .card-container .card-text label, .login .card-container .card-text label {
   margin-top: 10px;
   margin-right: 15px;
 }
 
-.profile .card-container.card .profile-img-card {
+.profile .card-container .profile-img-card, .login .card-container .profile-img-card {
   width: 96px;
   height: 96px;
   margin: 0 auto 10px;
