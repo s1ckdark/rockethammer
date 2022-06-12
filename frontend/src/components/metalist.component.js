@@ -300,6 +300,15 @@ export default class Metalist extends Component {
         })
     }
 
+    closeHisotryDetail = (e) => {
+        this.setState({
+            ...this.state,
+            show:false,
+            after:{},
+            before:{}
+        })
+    }
+
     // goBack = ()=>{
     //     this.props.history.goBack();
     // }
@@ -396,9 +405,10 @@ export default class Metalist extends Component {
                 {this.state.historyVIEW ? 
                 <div className="viewHistory">
                     {/* <div className="closeHistory closeBtn"><button type="button" onClick={this.closeHistory} className="btn btn-warning">CLOSE</button></div> */}
-                    <Historylist data={this.state.history} />
-                    <div className="closeHistoryView col-12 px-5 mx-auto d-flex justify-content-end">
-                        <button type="button" onClick={this.closeHistory} className="btn btn-warning">전 단계로 돌아가기</button>
+                    <Historylist data={this.state.history} closeHistoryDetail={this.closeHistoryDetail} />
+                    <div className="closeHistoryView d-flex col-12 px-5 mx-auto d-flex justify-content-end">
+                        <button type="button" onClick={this.closeHistory} className="btn btn-warning me-2">돌아가기</button>
+                        <button type="button" onClick={this.closeHistoryDetail} className="btn btn-warning">리스트보기</button>
                     </div>
                 </div>
                 : <></>}

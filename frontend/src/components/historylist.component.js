@@ -193,7 +193,7 @@ export default class Historylist extends Component {
                         <div className="detailView mx-auto">
                             <ReactDiffViewer leftTitle="Before" rightTitle="After" oldValue={JSON.stringify(this.state.before, null, 2)} newValue={JSON.stringify(this.state.after, null, 2)} splitView={true} />
                             <div className="closeHistoryDetail d-flex justify-content-end my-3">
-                                <button type="button" onClick={this.closeHisotryDetail} className="btn btn-warning">전단계로 돌아가기</button>
+                                <button type="button" onClick={this.closeHisotryDetail} className="btn btn-warning">리스트로 돌아가기</button>
                             </div>
                         </div>
                         : <></>}
