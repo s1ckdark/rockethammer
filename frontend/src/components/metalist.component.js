@@ -15,16 +15,6 @@ import Metawrite from "./metawrite.component";
 import Historylist from "./historylist.component";
 window.React = React;
 
-// export const withRouter = (Component: Component) => {
-//     const WithRouter = (props) => {
-//       const location = useLocation();
-//       const navigate = useNavigate();
-//       const params = useParams();
-//       return <Component {...props} location={location} navigate={navigate} params={params} />;
-//     }
-//     return WithRouter;
-//   }
-  
 export default class Metalist extends Component {
     constructor(props) {
         super(props);
@@ -46,7 +36,7 @@ export default class Metalist extends Component {
           schema:[],
           idx:'',
 		  show:false,
-          showHistory:false,
+          historyVIEW:false,
           json:{},
           jsonVIEW:false,
           detailVIEW:false,
@@ -186,14 +176,14 @@ export default class Metalist extends Component {
         e.preventDefault();
         this.setState({
             ...this.state,
-            showHistory:true
+            historyVIEW:true
         })
     }
 
     closeHistory = ()=>{
         this.setState({
             ...this.state,
-            showHistory: false
+            historyVIEW: false
         })
     }
 
@@ -317,10 +307,10 @@ export default class Metalist extends Component {
     render()
     {
         return (
-            <div className="result">
+            <>
                 {this.state.changeVIEW ? 
                 <div className="layer" >
-                    <div className="closeCHanged closeBtn"><button type="button" onClick={this.closeChanged} className="btn btn-warning">CLOSE</button></div>
+                    {/* <div className="closeCHanged closeBtn"><button type="button" onClick={this.closeChanged} className="btn btn-warning">CLOSE</button></div> */}
                     <div className="d-flex py-5">
                         <div className="before col-md-6 p-5 border-right">
                             {this.state.changed.before ? <pre>{JSON.stringify(this.state.changed.before, null, 4)}</pre> : null }
@@ -336,7 +326,7 @@ export default class Metalist extends Component {
                 </div>
                 : <></>}
                 <div className="d-flex justify-content-around">
-                    <div className={ this.state.detailVIEW ? "schemaList col-md-7 p-5 transition":"schemaList col-md-12 p-5 transition"}>
+                    <div className={ this.state.detailVIEW ? "schemaList col-md-7 transition":"schemaList col-md-12 p-5 transition"}>
                         <table className="metalist table table-hover">
                             <thead>
                                 <tr className="text-center p-3">
@@ -403,10 +393,13 @@ export default class Metalist extends Component {
                     </div>
                     : <></>}
                 </div>
-                {this.state.showHistory ? 
+                {this.state.historyVIEW ? 
                 <div className="viewHistory">
-                    <div className="closeHistory closeBtn"><button type="button" onClick={this.closeHistory} className="btn btn-warning">CLOSE</button></div>
+                    {/* <div className="closeHistory closeBtn"><button type="button" onClick={this.closeHistory} className="btn btn-warning">CLOSE</button></div> */}
                     <Historylist data={this.state.history} />
+                    <div className="closeHistoryView col-12 px-5 mx-auto d-flex justify-content-end">
+                        <button type="button" onClick={this.closeHistory} className="btn btn-warning">전 단계로 돌아가기</button>
+                    </div>
                 </div>
                 : <></>}
 		        {this.state.jsonVIEW ?
@@ -425,10 +418,10 @@ export default class Metalist extends Component {
                 </div>
                 : <></>}
                  {this.state.typeVIEW ?
-                    this.state.detail && this.state.type ==='update' ? <><Metawrite key={this.state.detail._id} closeWrite={this.closeWrite} type={this.state.type} data={this.state.detail}/><div className="close closeWrite" onClick={this.closeWrite}>&times;</div></>
-                    :<><Metawrite key={Math.random()} closeWrite={this.closeWrite} type={this.state.type} data={this.state.schema} /><div className="close closeWrite" onClick={this.closeWrite}>&times;</div></>:<></>
+                    this.state.detail && this.state.type ==='update' ? <><Metawrite key={this.state.detail._id} closeWrite={this.closeWrite} type={this.state.type} data={this.state.detail}/></>
+                    :<><Metawrite key={Math.random()} closeWrite={this.closeWrite} type={this.state.type} data={this.state.schema} /></>:<></>
                  }
-            </div>
+            </>
         );
     }
 }

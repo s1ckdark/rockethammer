@@ -102,22 +102,26 @@
   opacity: 0.2;
 }
 
-.nav-item {
+.navbar {
+  z-index: 999;
+}
+
+.navbar .nav-item {
   position: relative;
   padding: 0 5px;
   text-align: center;
 }
 
-.nav-item .nav-link {
+.navbar .nav-item .nav-link {
   margin: 0 5px;
 }
 
-.nav-item img {
+.navbar .nav-item img {
   width: 20px;
   opacity: .8;
 }
 
-.nav-item p {
+.navbar .nav-item p {
   -webkit-transition: all .3s ease-out;
   transition: all .3s ease-out;
   font-weight: 700;
@@ -135,7 +139,7 @@
 }
 
 .counter {
-  z-index: 999;
+  z-index: 998;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -226,23 +230,34 @@
   white-space: pre-wrap;
 }
 
-.meta {
-  position: relative;
-}
-
 .meta .separate-line {
   width: 1px;
 }
 
 .meta .close {
-  position: absolute;
+  position: fixed;
   top: 30px;
   right: 30px;
-  z-index: 999;
+  z-index: 998;
 }
 
 .meta .close.closeWrite {
   font-size: 45px;
+}
+
+.meta .closeBtn {
+  position: relative;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+}
+
+.meta .closeBtn .btn {
+  position: fixed;
+  top: 80px;
+  right: 30px;
 }
 
 .meta .metawrite {
@@ -251,28 +266,29 @@
   right: 0;
   bottom: 0;
   left: 0;
-  z-index: 999;
+  z-index: 998;
   width: 100vw;
   height: 100vh;
 }
 
 .meta .viewJSON {
-  top: 50%;
-  left: 50%;
-  -webkit-transform: translate(-50%, -50%);
-          transform: translate(-50%, -50%);
-  position: fixed;
+  top: 60px;
+  left: 0;
+  position: absolute;
   width: 100%;
   height: 100%;
   background-color: #c8c8c8;
-  z-index: 999;
+  z-index: 998;
 }
 
-.meta .closeBtn {
-  position: fixed;
-  top: 30px;
-  right: 30px;
+.meta .viewHistory {
+  position: absolute;
+  top: 60px;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 100;
+  background-color: #fff;
 }
 
 .meta .schemaTypeBtn {
@@ -313,7 +329,7 @@
   left: 50%;
   width: 100%;
   height: 100%;
-  z-index: 999;
+  z-index: 998;
   background: #fff;
 }
 
@@ -390,16 +406,6 @@
   text-transform: uppercase;
   padding: 0 0 1rem;
   display: inline-block;
-}
-
-.meta .viewHistory {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 100;
-  background-color: #fff;
 }
 
 /* animaton */

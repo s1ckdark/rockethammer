@@ -112,7 +112,7 @@ onHistorySearch = async()=> {
           {this.state.schema.count > 0 ? 
           <>
             <Metalist schema={this.state.schema}/>
-            <div className="paging text-center mx-auto py-5">
+            <div className="paging text-center mx-auto py-1">
               <Pagination
                   activePage={this.state.schema.current+1}
                   itemsCountPerPage={this.state.schema.size}

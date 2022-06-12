@@ -159,10 +159,9 @@ export default class Historylist extends Component {
     render()
     {
         return (
-            <div className="result">
-                <div className="container">
-                    <div className="history col-md-7 p-5">
-                        <table className="historylist bg-light table table-hover">
+            <>
+                    <div className="history col-md-12 px-5 pt-5">
+                        <table className={ this.state.show ? "historylist bg-light table table-hover d-none" : "historylist bg-light table table-hover"}>
                             <thead>
                                 <tr className="text-center p-3">
                                     <th scope="col" className="col-md-1">번호</th>
@@ -190,21 +189,22 @@ export default class Historylist extends Component {
                                 }): <h3 className="p-3 m-3 text-center">검색된 history data가 없습니다</h3>}
                             </tbody>
                         </table>
-                    </div>
-                    {this.state.show ? 
-                    <div className="detailView">
-                        <div className="closeHistoryDetail closeBtn"><button type="button" onClick={this.closeHisotryDetail} className="btn btn-warning">CLOSE</button></div>
-                        <ReactDiffViewer leftTitle="Before" rightTitle="After" oldValue={JSON.stringify(this.state.before, null, 2)} newValue={JSON.stringify(this.state.after, null, 2)} splitView={true} />
-                    </div>
-                    : <></>}
+                        {this.state.show ? 
+                        <div className="detailView mx-auto">
+                            <ReactDiffViewer leftTitle="Before" rightTitle="After" oldValue={JSON.stringify(this.state.before, null, 2)} newValue={JSON.stringify(this.state.after, null, 2)} splitView={true} />
+                            <div className="closeHistoryDetail d-flex justify-content-end my-3">
+                                <button type="button" onClick={this.closeHisotryDetail} className="btn btn-warning">전단계로 돌아가기</button>
+                            </div>
+                        </div>
+                        : <></>}
                     {/* <Pagination
                         activePage={this.state.user.currentPage}
                         itemsCountPerPage={this.state.user.pageSize}
                         totalItemsCount={this.state.user.totalcnt}
                         onChange={this.handleUserPageChange}
                     /> */}
-                </div>
-                </div>
+                    </div>
+        </>
 
 
         );
