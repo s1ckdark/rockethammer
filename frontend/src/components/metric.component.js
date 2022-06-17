@@ -17,13 +17,13 @@ export default class Metric extends Component {
   }
 
   test = async() => {
-    await axios.post("http://10.20.19.62/api/grafana/user").then( res => console.log(res))
+    await axios.post("http://localhost/api/grafana/user").then( res => console.log(res))
 }
   render() {
     return (
       <div className="metric">
       <div className="container">
-        <Iframe url="http://10.20.19.62:8081"
+        <Iframe url="http://localhost:8081"
         id="metric"
         className="cors-iframe"/>
       </div>
