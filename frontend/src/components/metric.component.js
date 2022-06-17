@@ -17,31 +17,13 @@ export default class Metric extends Component {
   }
 
   test = async() => {
-    await axios({
-      "method": "POST",
-      "url": "http://10.20.19.76:3000/api/admin/users",
-      "headers": {
-        "Authorization": "Basic YWRtaW46c2VjcmV0",
-        "Access-Control-Allow-Origin": "http://localhost:3000",
-        "Content-Type": "application/json; charset=utf-8"
-      },
-      "auth": {
-        "username": "admin",
-        "password": "secret"
-      },
-      "data": {
-        "email": "user1@test.com",
-        "login": "user1",
-        "password": "password",
-        "name": "test1"
-      }
-    })
+    await axios.post("http://10.20.19.62:8080/api/grafana/user").then( res => console.log(res))
 }
   render() {
     return (
       <div className="metric">
       <div className="container">
-        <Iframe url="http://10.20.19.109:8080"
+        <Iframe url="http://10.20.19.62:8081"
         id="metric"
         className="cors-iframe"/>
       </div>
