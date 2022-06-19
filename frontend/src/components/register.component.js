@@ -117,6 +117,14 @@ export default class Register extends Component {
             message: response.data.message,
             successful: true
           });
+          axios.post(process.env.REACT_APP_API+"/grafana/adduser",
+          {
+            name: this.state.name,
+            email: this.state.userid,
+            login: this.state.name,
+            password: this.state.password
+          }
+          ).then(res => console.log(res));
           axios.post(process.env.REACT_APP_API+"/user/upthistory",
             {
               userid: this.state.userid,

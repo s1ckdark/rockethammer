@@ -17,7 +17,7 @@ export default class Metric extends Component {
   }
 
   test = async() => {
-    await axios.post("http://localhost/api/grafana/user").then( res => console.log(res))
+    await axios.post("http://localhost:8080/api/grafana/user").then( res => console.log(res))
 }
   render() {
     return (
