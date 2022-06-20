@@ -151,6 +151,7 @@ export default class Register extends Component {
 
   render() {
     return (
+      <div className="register">
       <div className="col-md-12">
         <div className="card card-container">
           <img
@@ -221,12 +222,10 @@ export default class Register extends Component {
                     value={this.state.group}
                     onChange={this.onChangeValue}
                   />
-
-               <div className="form-group">
-                  <button className="btn btn-primary btn-block">Sign Up</button>
-                </div>
-                <div className="form-group">
-                  <button type="button" className="btn btn-primary btn-block" onClick={this.handleCancelClick}>Cancel</button>
+  
+                <div className="action-btn mt-3">
+                    <button className="btn btn-primary btn-block me-2">Sign Up</button>
+                    <button type="button" className="btn btn-primary btn-block" onClick={this.handleCancelClick}>Cancel</button>
                   </div>
               </div>
             )}
@@ -253,6 +252,7 @@ export default class Register extends Component {
             />
           </Form>
         </div>
+      </div>
       </div>
     );
   }
