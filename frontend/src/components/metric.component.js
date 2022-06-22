@@ -23,7 +23,7 @@ export default class Metric extends Component {
     return (
       <div className="metric">
       <div className="container">
-        <Iframe url="http://10.29.62.76:9090"
+        <Iframe url="http://10.20.19.76:9090/graph?g0.expr=&g0.tab=1&g0.stacked=0&g0.show_exemplars=0&g0.range_input=1h"
         id="metric"
         className="cors-iframe"/>
       </div>
