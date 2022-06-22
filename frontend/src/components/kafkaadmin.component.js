@@ -3,7 +3,7 @@ import Iframe from 'react-iframe'
 import UserService from "../services/user.service";
 
 
-export default class Kafkadmin extends Component {
+export default class Kafkaadmin extends Component {
   constructor(props) {
     super(props);
 
@@ -14,9 +14,9 @@ export default class Kafkadmin extends Component {
 
   render() {
     return (
-      <div className="kafkamonitor">
+      <div className="kafkadmin">
       <div className="container">
-        <Iframe url="http://10.20.19.109:9000/"
+        <Iframe url="http://10.20.19.62:8081/"
         id="KafkaAdmin"
         className="cors-iframe"/>
       </div>

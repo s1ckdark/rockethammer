@@ -16,6 +16,7 @@ import Confluent from "./components/confluent.component";
 import Meta from "./components/meta.component";
 import Seo from "./components/seo.component";
 import Connector from "./components/connector.component";
+import KafkaAdmin from "./components/kafkaadmin.component";
 import KafkaMonitor from "./components/kafkamonitor.component";
 import K8Monitor from "./components/k8monitor.component";
 import Metric from "./components/metric.component";
@@ -161,7 +162,7 @@ onMouseLeave = (e) => {
             <Route path="/confluent" element={<Confluent />} />
             <Route path="/meta" element={<Meta />} />
             <Route path="/metawrite" element={<Metawrite />} />
-            <Route path="/kafkaadmin" element={<KafkaMonitor />} />
+            <Route path="/kafkaadmin" element={<KafkaAdmin />} />
             <Route path="/kafkamonitor" element={<KafkaMonitor />} />
             <Route path="/k8monitor" element={<K8Monitor />} />
             <Route path="/metric" element={<Metric />} />
