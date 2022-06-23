@@ -112,20 +112,20 @@ onMouseLeave = (e) => {
                 </Link>
               </li>
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
-                <Link to={"/kafkadmin"} className="nav-link">
-                  <img alt="kafkadmin" src={'./img/kafkamonitor.png'} />
+                <Link to={"/kafkaadmin"} className="nav-link">
+                  <img alt="kafkadmin" src={'./img/kafka-ui.png'} />
                 <p>카프카<br/>어드민</p>
                 </Link>
               </li> 
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
                 <Link to={"/kafkamonitor"} className="nav-link">
-                  <img alt="kafkamonitor" src={'./img/kafkamonitor.png'} />
+                  <img alt="kafkamonitor" src={'./img/grafana.png'} />
                 <p>카프카<br/>모니터링</p>
                 </Link>
               </li>              
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
                 <Link to={"/metric"} className="nav-link">
-                  <img alt="metric" src={'./img/metric.png'} />
+                  <img alt="metric" src={'./img/promethus.png'} />
                 <p>메트릭<br/>수집기</p>
                 </Link>
               </li>
