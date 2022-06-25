@@ -35,7 +35,7 @@ export default class Meta extends Component {
         totalcnt:0,
         current:0,
         activePage: 1,
-        pageSize:10,
+        pageSize:5,
         dataList:[]
       },
       data:[],
@@ -103,9 +103,9 @@ onHistorySearch = async()=> {
     return (
       <div className="meta">
         <div className="find mx-auto my-5 text-center d-block">
-          <div className="d-flex justify-content-center col-md-3 mx-auto">
-            <input className="search form-control px-3" name="search" value={this.state.search} onChange = {this.onChangeKeyword} />
-            <button type="button" className="btn btn-danger ms-1 searchbtn" onClick={this.onMetaSearch}>SEARCH</button>
+          <div className="d-flex justify-content-center col-md-12 mx-auto">
+            <input className="search px-3 col-md-3" name="search" value={this.state.search} onChange = {this.onChangeKeyword} />
+            <button type="button" className="btn btn-danger col-md-1 ms-1 searchbtn" onClick={this.onMetaSearch}>검색</button>
           </div>
         </div>
         <div className="metalist">

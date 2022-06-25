@@ -14,6 +14,8 @@ export default class Metric extends Component {
 
   componentDidMount(){
     // this.test()
+    // document.querySelector("nav[role='navigation']").style.display="none"
+    // document.querySelector("main").style.marginTop=0
   }
 
   // test = async() => {

@@ -1,3 +1,15 @@
+  /* animaton */
+  .transition{
+    -webkit-transition: all 0.5s ease-in-out;
+    -moz-transition:all 0.5s ease-in-out;
+    -o-transition:all 0.5s ease-in-out;
+    transition:all 0.5s ease-in-out;
+  }
+
+  .clickable {
+    cursor: pointer;
+  }
+
 .paging {
     ul {
       &.pagination {
@@ -151,6 +163,7 @@
   }
   
   .meta {
+      // position: relative;
       //metawrite
       .separate-line {width: 1px;}
       .close {
@@ -175,6 +188,27 @@
           right: 30px;
         }
       }
+      .metalist {
+        margin:0 auto;
+        overflow: hidden;
+        table {
+          th {
+            position: relative;
+            span {
+              position: absolute;
+              visibility: hidden;
+            }
+          }
+          tr {
+            td {
+
+            }
+          }
+        }
+        .detailview {
+
+      }
+    }
       .metawrite {
         position: fixed;
         top: 60px;
@@ -182,8 +216,9 @@
         bottom:0;
         left:0;
         z-index:998;
-        width: 100vw;
-        height: 100vh;
+        width: 100%;
+        height: 100%;
+        overflow-y: scroll;
       }
       .viewJSON {
         top: 60px;
@@ -233,7 +268,7 @@
       }
     .select {background-color:#6c757d}
     .layer {position: absolute; transform: translate(-50%,-50%);top: 50%; left: 50%;width: 100%;height: 100%; z-index: 998;background: #fff;}
-    input {border-radius: 10px;border:1px solid #eee;padding: 0.5em; background: #fff;}
+    input {border-radius: 10px;border:1px solid #ccc;padding: 0.5em; background: #fff;}
     input[readonly] {background-color:transparent;border:none;outline: none;}
     input[readonly]:focus {  background-color:transparent; border-color: transparent; box-shadow: none;outline: none; }
     input[readonly]::selection { background:none; color: #000; outline: none;}
@@ -255,10 +290,6 @@
     
   }
 
-  /* animaton */
-  .transition{
-    -webkit-transition: all 0.5s ease-in-out;
-    -moz-transition:all 0.5s ease-in-out;
-    -o-transition:all 0.5s ease-in-out;
-    transition:all 0.5s ease-in-out;
-  }
+.kafkaadmin {
+  nav {display: none;}
+}

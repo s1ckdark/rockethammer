@@ -12,11 +12,25 @@ export default class Kafkaadmin extends Component {
     };
   }
 
+  componentDidMount(){
+
+  }
+
+  runAfterRender = () => {
+    const navi = document.querySelector("nav[role='navigation']")
+    if(navi)
+    {
+      navi.style.display="none"
+      document.querySelector("main").style.marginTop=0
+    }
+  }
+
   render() {
+    this.runAfterRender()
     return (
-      <div className="kafkadmin">
+      <div className="kafkadmin" onLoad={this.runAfterRender}>
       <div className="container">
-        <Iframe url="http://10.20.19.62:8081/"
+        <Iframe url="http://10.20.19.62:8084/"
         id="KafkaAdmin"
         className="cors-iframe"/>
       </div>

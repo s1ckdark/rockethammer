@@ -23,14 +23,14 @@ export default class Metalist extends Component {
               totalcnt:0,
               current:0,
               activePage: 1,
-              pageSize:10,
+              pageSize:5,
               dataList:[]
           },
           history:{
               data:[],
               totalcnt:0,
               activePage: 1,
-              pageSize:10,
+              pageSize:5,
               currentTableData:[]
           },
           schema:[],
@@ -335,15 +335,15 @@ export default class Metalist extends Component {
                 </div>
                 : <></>}
                 <div className="d-flex justify-content-around">
-                    <div className={ this.state.detailVIEW ? "schemaList col-md-7 transition":"schemaList col-md-12 p-5 transition"}>
+                    <div className={ this.state.detailVIEW ? "schemaList col-md-9 my-5 transition":"schemaList col-md-12 my-5 transition"}>
                         <table className="metalist table table-hover">
                             <thead>
                                 <tr className="text-center p-3">
-                                    <th scope="col" className="col-md-1">#</th>
-                                    <th scope="col" className="col-md-2">변경</th>
+                                    <th scope="col" className="col-md-1">번호</th>
+                                    <th scope="col" className="col-md-2">변경(물리)<span className="tooltop">물리 스키마 변경 여부 입니다</span></th>
                                     <th scope="col" className="col-md-4">토픽명</th>
-                                    <th scope="col" className="col-md-2">등록일시</th>
-                                    <th scope="col" className="col-md-3">pschema삭제</th>
+                                    <th scope="col" className="col-md-3">등록일시</th>
+                                    <th scope="col" className="col-md-2">삭제(물리)<span className="tooltop">물리 스키마 삭제 여부 입니다</span></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -356,15 +356,15 @@ export default class Metalist extends Component {
                             })
                             // console.log(schema,meta_join);
                             return(
-                                    <tr data-index={index} className={this.state.idx === index ? "table-active text-center":"text-center"} key={index}>
-                                        <th scope="row">{index+1}</th>
-                                        <td className="modified">{meta_join && schema.version > meta_join.schema_version ? <p onClick={(e)=> this.notiforchange(e, schema.subject)}>O</p> : <p>X</p>}</td>
-                                        <td className="value-subject value form-group" onClick={(e)=>this.detailView(e, index, schema.subject)}>
+                                    <tr data-index={index} className={this.state.idx === index ? "table-active text-center":"text-center"} key={5*parseInt(this.props.schema.current)+index+1}>
+                                        <th scope="row">{5*parseInt(this.props.schema.current)+index+1}</th>
+                                        <td className="modified">{meta_join && schema.version > meta_join.schema_version ? <p className="clickable" onClick={(e)=> this.notiforchange(e, schema.subject)}>O</p> : <p>X</p>}</td>
+                                        <td className="value-subject value form-group clickable" onClick={(e)=>this.detailView(e, index, schema.subject)}>
                                             {schema.subject.replace(/(-value|-key)/g, "")}
                                         </td>
                                         <td className="value-id value form-group">
-                                            {schema.reg_dt}
-                                            {/* {new Date(schemas.reg_dt).toISOString().substring(0,10)} */}
+                                            {schema.reg_dt.substring(0,19)}
+                                            {/* {new Date(schema.reg_dt).toISOString().substring(0,16)} */}
                                         </td>
                                         <td className="value-id value form-group">
                                             {schema ? "N":"Y"}
@@ -377,17 +377,17 @@ export default class Metalist extends Component {
                         </table>
                     </div>
                    {this.state.show ? 
-                    <div className="detailview col-md-5 p-5 m-5 border-left bg-light">
+                    <div className="detailview col-md-3 p-5 ms-3 my-5 border-left bg-light">
                         <div className="detail">
                             {Object.keys(this.state.detail).length > 0 ? 
                                 <>
                                 <h3>{this.state.detail.topic_name}</h3>
                                 <p className="d-inline"><span className="me-2">Schema Version</span>{this.state.detail.schema_id}</p>
-                                <p><span className="me-2">Meta Version</span>{this.state.detail.meta_id}</p>
+                                <p><span className="me-2">Meta Version</span>{this.state.detail.meta_version}</p>
                                 <p>{this.state.detail.last_mod_id}</p>
-                                <p>{this.state.detail.last_mod_dt}</p>
+                                <p>{this.state.detail.last_mod_dt.split('.')[0].replace('T', ' ')}</p>
                                 <div className="d-flex">
-                                <button type="button" className="btn btn-success me-1" onClick={this.jsonVIEW}>조회</button><button type="button" className="btn btn-info me-1" onClick={(e)=>this.write(e,"update")}>수정</button><button type="button" className="btn btn-secondary" onClick={(e)=>this.onDel(e,this.state.detail._id)}>삭제</button> {this.state.history && this.state.history.length >0 ? <button type="button" className="btn btn-danger ms-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.detail.topic_name)}>HISTORY</button> : <button type="button" className="btn btn-danger ms-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.detail.topic_name)} disabled={true}>HISTORY</button>}</div></>                     
+                                <button type="button" className="btn btn-success me-1" onClick={this.jsonVIEW}>조회</button><button type="button" className="btn btn-info me-1" onClick={(e)=>this.write(e,"update")}>수정</button><button type="button" className="btn btn-secondary" onClick={(e)=>this.onDel(e,this.state.detail._id)}>삭제</button> {this.state.history && this.state.history.length >0 ? <button type="button" className="btn btn-danger ms-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.detail.topic_name)}>이력</button> : <button type="button" className="btn btn-danger ms-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.detail.topic_name)} disabled={true}>이력</button>}</div></>                     
                                 :
                                 <>
                                 <h3>{this.state.meta.dataList[this.state.idx].schema.subject}</h3>
@@ -395,7 +395,7 @@ export default class Metalist extends Component {
                                 <button type="button" className="btn btn-success me-1" onClick={this.jsonVIEW} disabled={true}>조회</button>
                                 <button type="button" className="btn btn-primary me-1" onClick={(e)=>this.write(e,"reg")}>등록</button>
                                 <button type="button" className="btn btn-secondary" onClick={(e)=>this.onDel(e,this.state.detail._id)} disabled={true}>삭제</button> 
-                                <button type="button" className="btn btn-danger ms-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.meta.data.topic_name)} disabled={true}>HISTORY</button>
+                                <button type="button" className="btn btn-danger ms-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.meta.data.topic_name)} disabled={true}>이력</button>
                                 </div>
                                 </>}
                         </div>
@@ -414,7 +414,7 @@ export default class Metalist extends Component {
                 : <></>}
 		        {this.state.jsonVIEW ?
                 <div className="viewJSON">
-                    <div className="closeJSON closeBtn"><button type="button" onClick={this.closeVIEW} className="btn btn-warning">CLOSE</button></div>
+                    <div className="closeJSON closeBtn"><button type="button" onClick={this.closeVIEW} className="btn btn-warning">닫기</button></div>
                     <AceEditor
                         mode="json"
                         theme="tomorrow"

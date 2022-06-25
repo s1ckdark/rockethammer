@@ -362,7 +362,7 @@ export default class Metawrite extends Component {
                     "p_type":"데이터 타입",
                     "l_name":"논리명",
                     "l_def":"설명",
-                    "is_null":"Null허용여부",
+                    "is_null":"Null여부",
                     "default":"기본값",
                     "memo":"메모",
                     "topic_desc":"토픽설명"
@@ -386,7 +386,7 @@ export default class Metawrite extends Component {
                     "데이터 타입":"p_type",
                     "논리명":"l_name",
                     "설명":"l_def",
-                    "Null허용여부":"is_null",
+                    "Null여부":"is_null",
                     "기본값":"default",
                     "메모":"memo",
                     "토픽설명":"topic_desc"
@@ -468,7 +468,7 @@ export default class Metawrite extends Component {
                                                             <> 
                                                                 <thead>
                                                                     <tr>
-                                                                        <th scope="col" class="col-1">#</th>
+                                                                        <th scope="col" class="col-1">번호</th>
                                                                         {Object.keys(meta_field).map((field2, index) => {
                                                                            var tmp = [1, 1, 2, 3, 1, 1, 2]
                                                                             return (
