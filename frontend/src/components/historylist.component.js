@@ -106,7 +106,7 @@ export default class Historylist extends Component {
         })
     }
 
-    closeHisotryDetail = (e) => {
+    closeHistoryDetail = (e) => {
         this.setState({
             ...this.state,
             show:false,
@@ -161,6 +161,7 @@ export default class Historylist extends Component {
         return (
             <>
                     <div className="history col-md-12 px-5 pt-5">
+                        <div className="container">
                         <table className={ this.state.show ? "historylist bg-light table table-hover d-none" : "historylist bg-light table table-hover"}>
                             <thead>
                                 <tr className="text-center p-3">
@@ -182,7 +183,7 @@ export default class Historylist extends Component {
                                             {item.last_mod_id}                                     
                                             </td>
                                             <td className="last_mod_id value form-group">
-                                            {item.last_mod_dt}
+                                            {item.last_mod_dt.split('.')[0].replace('T', ' ')}
                                             </td>
                                         </tr>
                                     );
@@ -193,16 +194,22 @@ export default class Historylist extends Component {
                         <div className="detailView mx-auto">
                             <ReactDiffViewer leftTitle="Before" rightTitle="After" oldValue={JSON.stringify(this.state.before, null, 2)} newValue={JSON.stringify(this.state.after, null, 2)} splitView={true} />
                             <div className="closeHistoryDetail d-flex justify-content-end my-3">
-                                <button type="button" onClick={this.closeHisotryDetail} className="btn btn-warning">리스트로 돌아가기</button>
+                                <button type="button" onClick={this.closeHistoryDetail} className="btn btn-warning">내역 리스트</button>
+                                <button type="button" onClick={this.closeHistory} className="btn btn-warning">내역 닫기</button>
                             </div>
                         </div>
-                        : <></>}
+                        : <div className="closeHistoryDetail d-flex justify-content-end my-3">
+                        <button type="button" onClick={(e)=>this.closeHistory(e)} className="btn btn-warning">내역 닫기</button>
+                         </div>}
+                           
+             
                     {/* <Pagination
                         activePage={this.state.user.currentPage}
                         itemsCountPerPage={this.state.user.pageSize}
                         totalItemsCount={this.state.user.totalcnt}
                         onChange={this.handleUserPageChange}
                     /> */}
+                    </div>
                     </div>
         </>
 

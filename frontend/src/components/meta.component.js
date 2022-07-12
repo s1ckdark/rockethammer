@@ -7,7 +7,6 @@ import { Redirect, Link } from "react-router-dom";
 
 import axios from "axios"
 import PropTypes from 'prop-types';
-import Pagination from "react-js-pagination";
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
   faTrashAlt,
@@ -102,29 +101,10 @@ onHistorySearch = async()=> {
   render() {
     return (
       <div className="meta">
-        <div className="find mx-auto my-5 text-center d-block">
-          <div className="d-flex justify-content-center col-md-12 mx-auto">
-            <input className="search px-3 col-md-3" name="search" value={this.state.search} onChange = {this.onChangeKeyword} />
-            <button type="button" className="btn btn-danger col-md-1 ms-1 searchbtn" onClick={this.onMetaSearch}>검색</button>
-          </div>
-        </div>
         <div className="metalist">
           {this.state.schema.count > 0 ? 
           <>
-            <Metalist schema={this.state.schema}/>
-            <div className="paging text-center mx-auto py-1">
-              <Pagination
-                  activePage={this.state.schema.current+1}
-                  itemsCountPerPage={this.state.schema.size}
-                  totalItemsCount={this.state.schema.count}
-                  pageRangeDisplayed={5}
-                  onChange={this.handleSchemaPageChange}
-                  itemClass="page-item"
-                  activeLinkClass="page-active"
-                  linkClass="page-link"
-                  innerClass="pagination d-flex justify-content-center"
-              />
-              </div>
+            <Metalist/>
           </>
           : <></>
           }

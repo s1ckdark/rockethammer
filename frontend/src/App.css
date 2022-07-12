@@ -1,6 +1,17 @@
 /* animaton */
-.transition {
+.transition, .meta .form-group:focus-within .field-label, .meta .metalist table th[data-tooltip]:hover:before, .meta .metalist table th[data-tooltip]:hover:after {
   transition: all 0.5s ease-in-out;
+}
+
+.star_black {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
 }
 
 .clickable {
@@ -27,21 +38,21 @@
   transform: translate(-50%, -50%);
 }
 .profile .card-container.card, .login .card-container.card, .register .card-container.card {
-  border-radius: 50%;
-  max-width: 400px !important;
-  padding: 30px;
   position: relative;
+  width: 500px;
+  height: 500px;
   background-color: #f7f7f7;
-  padding: 20px 25px 30px;
-  margin: 0 auto 25px;
-  margin-top: 50px;
-  border-radius: 5px;
+  padding: 50px;
+  margin: 0 auto;
+  border-radius: 50%;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.3);
 }
 .profile .card-container .card-body, .login .card-container .card-body, .register .card-container .card-body {
-  width: 100%;
-  height: 100%;
+  width: 400px;
+  height: 400px;
   background-color: #ccc;
+  border-radius: 50%;
+  flex: unset !important;
 }
 .profile .card-container .card-body .jumbotron, .login .card-container .card-body .jumbotron, .register .card-container .card-body .jumbotron {
   padding: 30px 0;
@@ -226,14 +237,67 @@
 }
 .meta .metalist {
   margin: 0 auto;
-  overflow: hidden;
 }
 .meta .metalist table th {
   position: relative;
 }
-.meta .metalist table th span {
-  position: absolute;
+.meta .metalist table th[data-tooltip] {
+  z-index: 2;
+  cursor: pointer;
+  /* Hide the tooltip content by default */
+}
+.meta .metalist table th[data-tooltip]:before, .meta .metalist table th[data-tooltip]:after {
   visibility: hidden;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+  opacity: 0;
+  pointer-events: none;
+}
+.meta .metalist table th[data-tooltip]:before {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-bottom: 10px;
+  padding: 7px;
+  width: 100%;
+  transform: translate(-50%, 0);
+  border-radius: 3px;
+  background-color: #000;
+  background-color: hsla(0deg, 0%, 20%, 0.9);
+  color: #fff;
+  content: attr(data-tooltip);
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.2;
+}
+.meta .metalist table th[data-tooltip]:after {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -10px;
+  width: 0;
+  border-top: 10px solid #000;
+  border-top: 10px solid hsla(0deg, 0%, 20%, 0.9);
+  border-right: 10px solid transparent;
+  border-left: 10px solid transparent;
+  content: " ";
+  font-size: 0;
+  line-height: 0;
+}
+.meta .metalist table th[data-tooltip]:hover:before, .meta .metalist table th[data-tooltip]:hover:after {
+  visibility: visible;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+  opacity: 1;
+}
+.meta .metalist table th[data-tooltip].visible {
+  opacity: 1;
+}
+.meta .metalist .detailview .info-group label {
+  font-size: 11px;
+}
+.meta .metalist .detailview .info-group p {
+  margin-bottom: 8px;
 }
 .meta .metawrite {
   position: fixed;
@@ -247,9 +311,6 @@
   overflow-y: scroll;
 }
 .meta .viewJSON {
-  top: 60px;
-  left: 0;
-  position: absolute;
   width: 100%;
   height: 100%;
   background-color: #c8c8c8;
@@ -263,6 +324,18 @@
   bottom: 0;
   z-index: 100;
   background-color: #fff;
+}
+.meta .viewHistory .detailView table tr:first-child td {
+  text-align: center;
+}
+.meta .viewHistory .detailView table tr td {
+  text-align: left;
+}
+.meta .viewHistory .detailView table tr td:first-child {
+  text-align: center;
+}
+.meta .viewHistory .detailView table tr td:nth-child(4) {
+  text-align: center;
 }
 .meta .schemaTypeBtn {
   position: fixed;
@@ -289,20 +362,18 @@
   background-color: #6c757d;
 }
 .meta .layer {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 100%;
+  margin-top: 60px;
   z-index: 998;
   background: #fff;
 }
-.meta input {
+.meta input, .meta textarea {
   border-radius: 10px;
   border: 1px solid #ccc;
   padding: 0.5em;
   background: #fff;
+}
+.meta textarea {
+  min-height: 100px;
 }
 .meta input[readonly] {
   background-color: transparent;
@@ -349,10 +420,14 @@
 .meta table tr input[readonly] {
   text-align: center;
 }
+.meta .form-group:focus-within .field-label {
+  font-size: 14px;
+}
 .meta .form-group p.field-label {
   font-size: 11px;
   font-weight: 500;
   margin-bottom: 0.5rem;
+  height: 20px;
 }
 .meta .schema-field {
   text-transform: uppercase;

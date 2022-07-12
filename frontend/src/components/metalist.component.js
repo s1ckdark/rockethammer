@@ -33,7 +33,15 @@ export default class Metalist extends Component {
               pageSize:5,
               currentTableData:[]
           },
-          schema:[],
+          schema:{
+            totalcnt:0,
+            current:0,
+            activePage: 1,
+            pageSize:5,
+            dataList:[]
+          },
+          data:[],
+          keyword:'',
           idx:'',
 		  show:false,
           historyVIEW:false,
@@ -50,22 +58,30 @@ export default class Metalist extends Component {
           type:''
 
         };
+    this.handleMetaPageChange = this._handleMetaPageChange.bind(this);
+    }
+    
+    _handleMetaPageChange(pageNumber) {
+      console.log(`active page is ${pageNumber}`);
+      this.setState({
+          ...this.state,
+          meta:{
+              ...this.state.meta,
+              current: pageNumber-1
+          }
+      }, ()=>{this.fetchMetaData(pageNumber-1);})
     }
       
     componentDidMount(){
-        const schema = this.props.schema;
-        this.setState({
-            ...this.state,
-            meta: schema
-        })     
+        this.fetchMetaData(0);    
     }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-        ...this.state,
-        meta: nextProps.schema
-    })  
-  }
+//   componentWillReceiveProps(nextProps) {
+//     this.setState({
+//         ...this.state,
+//         meta: nextProps.schema
+//     })  
+//   }
 
     onEdit = (e,item) => {
         e.preventDefault();
@@ -89,7 +105,46 @@ export default class Metalist extends Component {
         //     }) 
         // }       
     }
+    fetchMetaData = async(page) => {
+        await axios.post(process.env.REACT_APP_API+"/schema/getallschema",{size:5,page:page})
+            .then(res => {
+                console.log(res);
+              this.setState({
+                meta: res.data
+              })
+            })
+        }
+
+        onChangeKeyword = (e,index) =>{
+            this.setState({
+              ...this.state,
+              keyword:e.target.value
+            }) 
+          }
     
+        
+        onMetaSearch = async()=> {
+          await axios.post(process.env.REACT_APP_API+"/schema/search",{keyword:this.state.keyword})
+          .then(res => {
+            console.log(res);
+            this.setState({
+              ...this.state,
+              meta:res.data
+            }) 
+          })
+        }
+        
+        onHistorySearch = async()=> {
+          await axios.post(process.env.REACT_APP_API+"/history/search",{keyword:this.state.keyword})
+          .then(res => {
+            console.log(res);
+            this.setState({
+              ...this.state,
+              history:res.data
+            }) 
+          })
+        }
+
       fetchHistoryData = () => {
           const firstPageIndex = (this.state.history.activePage - 1) * this.state.history.pageSize;
           const lastPageIndex = firstPageIndex + this.state.history.pageSize;
@@ -143,10 +198,12 @@ export default class Metalist extends Component {
     detailView = (e, idx, topic_name) => {
         e.preventDefault();
         // const tn = topic_name;
+        if(topic_name) {
         const tn = topic_name.replace(/(-value|-key)/g, "");
         this.setState({
             ...this.state,
-            detailVIEW: true
+            detailVIEW: true,
+            detail:''
         })
         axios.post(process.env.REACT_APP_API+"/meta/getmeta",{keyword:tn}).then(res => {
             if(res.data && res.data.length > 0) {
@@ -170,6 +227,7 @@ export default class Metalist extends Component {
                 this.setState({...this.state, schema:{},idx:idx})
             }
         })
+    }
     }
 
     historyView = (e, topic_name) => {
@@ -220,7 +278,7 @@ export default class Metalist extends Component {
             "related_topics":"연관토픽",
             "last_mod_dt":"최종수정시간",
             "last_mod_id":"최종수정자",
-            "schema":"",
+            "schema":"스키마",
             "p_name":"물리명",
             "p_type":"데이터 타입",
             "l_name":"논리명",
@@ -279,12 +337,14 @@ export default class Metalist extends Component {
     }
     closeWrite = (e) => {
         e.preventDefault();
+        this.detailView(e,this.state.idx, this.state.detail.topic_name);
         this.setState({
             ...this.state,
            type:'',
            typeVIEW:false,
            changeVIEW:false
         })
+        
     }
 
     closeChanged = (e) => {
@@ -309,41 +369,35 @@ export default class Metalist extends Component {
         })
     }
 
-    // goBack = ()=>{
-    //     this.props.history.goBack();
-    // }
-
+    tooltip = (e, action) => {
+        e.preventDefault();
+        const tooltip = e.target.querySelector('span');
+        if(tooltip) { 
+            console.log(action, tooltip);
+            tooltip.classList.toggle("visible")
+        } 
+    }
     render()
     {
         return (
             <>
-                {this.state.changeVIEW ? 
-                <div className="layer" >
-                    {/* <div className="closeCHanged closeBtn"><button type="button" onClick={this.closeChanged} className="btn btn-warning">CLOSE</button></div> */}
-                    <div className="d-flex py-5">
-                        <div className="before col-md-6 p-5 border-right">
-                            {this.state.changed.before ? <pre>{JSON.stringify(this.state.changed.before, null, 4)}</pre> : null }
-                        </div>
-                        <div className="after col-md-6 p-5">
-                            {this.state.changed.after ? <pre>{JSON.stringify(this.state.changed.after, null, 4)}</pre> : null } 
-                        </div>
-                    </div>
-                    <div className="btnArea d-flex justify-content-center">
-                        <button type="button" className="btn btn-primary me-1" onClick={(e)=>this.write(e,"change")}>등록</button>
-                        <button type="button" className="btn btn-secondary" onClick={(e)=>this.closeChanged(e)}>돌아가기</button>
+                <div className="metalist">
+                <div className="find mx-auto my-5 text-center d-block">
+                    <div className="d-flex justify-content-center col-md-12 mx-auto">
+                        <input className="search px-3 col-md-3" name="search" value={this.state.search} onChange = {this.onChangeKeyword} />
+                        <button type="button" className="btn btn-danger col-md-1 ms-1 searchbtn" onClick={this.onMetaSearch}>검색</button>
                     </div>
                 </div>
-                : <></>}
                 <div className="d-flex justify-content-around">
                     <div className={ this.state.detailVIEW ? "schemaList col-md-9 my-5 transition":"schemaList col-md-12 my-5 transition"}>
                         <table className="metalist table table-hover">
                             <thead>
                                 <tr className="text-center p-3">
                                     <th scope="col" className="col-md-1">번호</th>
-                                    <th scope="col" className="col-md-2">변경(물리)<span className="tooltop">물리 스키마 변경 여부 입니다</span></th>
+                                    <th scope="col" className="col-md-2" data-tooltip="물리 스키마 변경 여부 입니다">변경(물리)</th>
                                     <th scope="col" className="col-md-4">토픽명</th>
                                     <th scope="col" className="col-md-3">등록일시</th>
-                                    <th scope="col" className="col-md-2">삭제(물리)<span className="tooltop">물리 스키마 삭제 여부 입니다</span></th>
+                                    <th scope="col" className="col-md-2" data-tooltip="물리 스키마 삭제 여부 입니다">삭제(물리)</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -354,11 +408,12 @@ export default class Metalist extends Component {
                             Object.keys(item.schema).map((res,index) => {
                                     this.IsJsonString(item[res]) ? temp[res] = JSON.parse(item[res]): temp[res]=item[res]
                             })
-                            // console.log(schema,meta_join);
+                            console.log("schema",schema)
+                            console.log("meta_join",meta_join);
                             return(
-                                    <tr data-index={index} className={this.state.idx === index ? "table-active text-center":"text-center"} key={5*parseInt(this.props.schema.current)+index+1}>
-                                        <th scope="row">{5*parseInt(this.props.schema.current)+index+1}</th>
-                                        <td className="modified">{meta_join && schema.version > meta_join.schema_version ? <p className="clickable" onClick={(e)=> this.notiforchange(e, schema.subject)}>O</p> : <p>X</p>}</td>
+                                    <tr data-index={index} className={this.state.idx === index ? "table-active text-center":"text-center"} key={5*parseInt(this.state.meta.current)+index+1}>
+                                        <th scope="row">{5*parseInt(this.state.meta.current)+index+1}</th>
+                                        <td className="modified">{meta_join && parseInt(schema.version.$numberLong) > parseInt(meta_join.schema_version) ? <p className="clickable" onClick={(e)=> this.notiforchange(e, schema.subject)}>O</p> : <p>X</p>}</td>
                                         <td className="value-subject value form-group clickable" onClick={(e)=>this.detailView(e, index, schema.subject)}>
                                             {schema.subject.replace(/(-value|-key)/g, "")}
                                         </td>
@@ -367,7 +422,7 @@ export default class Metalist extends Component {
                                             {/* {new Date(schema.reg_dt).toISOString().substring(0,16)} */}
                                         </td>
                                         <td className="value-id value form-group">
-                                            {schema ? "N":"Y"}
+                                            {schema.schema ? "N":"Y" }
                                         </td>
                                     </tr>
                                 );
@@ -377,23 +432,42 @@ export default class Metalist extends Component {
                         </table>
                     </div>
                    {this.state.show ? 
-                    <div className="detailview col-md-3 p-5 ms-3 my-5 border-left bg-light">
+                    <div className="detailview col-md-3 p-5 ms-3 my-3 border-left bg-light">
                         <div className="detail">
+                            <div className="info-group mb-4">
+                                    <label>토픽명</label>
+                                    <h3>{JSON.parse(this.state.meta.dataList[this.state.idx].schema).subject.replace(/(-value|-key)/g, "")}</h3>
+                                </div>
                             {Object.keys(this.state.detail).length > 0 ? 
                                 <>
-                                <h3>{this.state.detail.topic_name}</h3>
-                                <p className="d-inline"><span className="me-2">Schema Version</span>{this.state.detail.schema_id}</p>
-                                <p><span className="me-2">Meta Version</span>{this.state.detail.meta_version}</p>
-                                <p>{this.state.detail.last_mod_id}</p>
-                                <p>{this.state.detail.last_mod_dt.split('.')[0].replace('T', ' ')}</p>
+                                <div className="info-group">
+                                    <label className="me-2">스키마 버전</label>
+                                    <p>{this.state.detail.schema_id}</p>
+                                </div>
+                                <div className="info-group">
+                                    <label className="me-2">메타 버젼</label>
+                                    <p>{this.state.detail.meta_version}</p>
+                                </div>
+                                <div className="info-group last_mod_info">
+                                    <label className="me-2">마지막 수정자</label>
+                                    <p>{this.state.detail.last_mod_id}</p>
+                                </div>
+                                <div className="info-group">
+                                    <label className="me-2">마지막 수정 일시</label>
+                                    <p>{this.state.detail.last_mod_dt.split('.')[0].replace('T', ' ')}</p>
+                                </div>
                                 <div className="d-flex">
-                                <button type="button" className="btn btn-success me-1" onClick={this.jsonVIEW}>조회</button><button type="button" className="btn btn-info me-1" onClick={(e)=>this.write(e,"update")}>수정</button><button type="button" className="btn btn-secondary" onClick={(e)=>this.onDel(e,this.state.detail._id)}>삭제</button> {this.state.history && this.state.history.length >0 ? <button type="button" className="btn btn-danger ms-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.detail.topic_name)}>이력</button> : <button type="button" className="btn btn-danger ms-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.detail.topic_name)} disabled={true}>이력</button>}</div></>                     
+                                    <button type="button" className="btn btn-success me-1" onClick={this.jsonVIEW}>조회</button>
+                                    <button type="button" className="btn btn-info me-1" onClick={(e)=>this.write(e,"update")} disabled={JSON.parse(this.state.meta['dataList'][this.state.idx].schema).schema ? false:true}>수정</button>
+                                    <button type="button" className="btn btn-secondary" onClick={(e)=>this.onDel(e,this.state.detail.topic_name)}  disabled={JSON.parse(this.state.meta['dataList'][this.state.idx].schema).schema ? false:true}>삭제</button> 
+                                    {this.state.history && this.state.history.length >0 ? <button type="button" className="btn btn-danger ms-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.detail.topic_name)}>이력</button> : <button type="button" className="btn btn-danger ms-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.detail.topic_name)} disabled={true}>이력</button>}
+                                </div>
+                                </>                     
                                 :
                                 <>
-                                <h3>{this.state.meta.dataList[this.state.idx].schema.subject}</h3>
                                 <div className="d-flex">
                                 <button type="button" className="btn btn-success me-1" onClick={this.jsonVIEW} disabled={true}>조회</button>
-                                <button type="button" className="btn btn-primary me-1" onClick={(e)=>this.write(e,"reg")}>등록</button>
+                                <button type="button" className="btn btn-primary me-1" onClick={(e)=>this.write(e,"reg")}  disabled={JSON.parse(this.state.meta['dataList'][this.state.idx].schema).schema ? false:true}>등록</button>
                                 <button type="button" className="btn btn-secondary" onClick={(e)=>this.onDel(e,this.state.detail._id)} disabled={true}>삭제</button> 
                                 <button type="button" className="btn btn-danger ms-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.meta.data.topic_name)} disabled={true}>이력</button>
                                 </div>
@@ -401,19 +475,35 @@ export default class Metalist extends Component {
                         </div>
                     </div>
                     : <></>}
+       
                 </div>
+                <div className="paging text-center mx-auto py-1">
+                        <Pagination
+                            activePage={this.state.meta.current+1}
+                            itemsCountPerPage={this.state.meta.size}
+                            totalItemsCount={this.state.meta.count}
+                            pageRangeDisplayed={5}
+                            onChange={this.handleMetaPageChange}
+                            itemClass="page-item"
+                            activeLinkClass="page-active"
+                            linkClass="page-link"
+                            innerClass="pagination d-flex justify-content-center"
+                        />
+                    </div>
+                    </div>
+                <div className="layer">
                 {this.state.historyVIEW ? 
                 <div className="viewHistory">
                     {/* <div className="closeHistory closeBtn"><button type="button" onClick={this.closeHistory} className="btn btn-warning">CLOSE</button></div> */}
-                    <Historylist data={this.state.history} closeHistoryDetail={this.closeHistoryDetail} />
-                    <div className="closeHistoryView d-flex col-12 px-5 mx-auto d-flex justify-content-end">
+                    <Historylist data={this.state.history} closeHisyory={e => this.closeHistory(e)} closeHistoryDetail={e => this.closeHistoryDetail(e)} />
+                    {/* <div className="closeHistoryView d-flex col-12 px-5 mx-auto d-flex justify-content-end">
                         <button type="button" onClick={this.closeHistory} className="btn btn-warning me-2">돌아가기</button>
                         <button type="button" onClick={this.closeHistoryDetail} className="btn btn-warning">리스트보기</button>
-                    </div>
+                    </div> */}
                 </div>
                 : <></>}
 		        {this.state.jsonVIEW ?
-                <div className="viewJSON">
+                <div className="layer jsonView">
                     <div className="closeJSON closeBtn"><button type="button" onClick={this.closeVIEW} className="btn btn-warning">닫기</button></div>
                     <AceEditor
                         mode="json"
@@ -421,16 +511,52 @@ export default class Metalist extends Component {
                         name={this.state.json[`_id`]}
                         value = {JSON.stringify(this.replaceKey(this.state.detail), null, 4)}
                         onChange={this.onChangeJSON}
+                        height={window.innerHeight - 60}
                         fontSize= {14}
-                        width= "100%"
-                        height="100%"
+                        width="100%"
                     />
                 </div>
                 : <></>}
+                {this.state.changeVIEW ? 
+                <div className="changeView" >
+                    {/* <div className="closeCHanged closeBtn"><button type="button" onClick={this.closeChanged} className="btn btn-warning">CLOSE</button></div> */}
+                    <div className="d-flex py-5">
+                        <div className="before col-md-6 border-right">
+                            <AceEditor
+                                mode="json"
+                                theme="tomorrow"
+                                name={this.state.json[`_id`]}
+                                value = {JSON.stringify(this.replaceKey(this.state.changed.before), null, 4)}
+                                onChange={this.onChangeJSON}
+                                fontSize= {14}
+                                width="100%"
+                                height={window.innerHeight - 150}
+                            />
+                        </div>
+                        <div className="after col-md-6">
+                            <AceEditor
+                                mode="json"
+                                theme="tomorrow"
+                                name={this.state.json[`_id`]}
+                                value = {JSON.stringify(this.replaceKey(this.state.changed.after), null, 4)}
+                                onChange={this.onChangeJSON}
+                                fontSize= {14}
+                                width="100%"
+                                height={window.innerHeight - 150}
+                            />
+                        </div>
+                    </div>
+                    <div className="btnArea d-flex justify-content-center">
+                        <button type="button" className="btn btn-primary me-1" onClick={(e)=>this.write(e,"change")}>등록</button>
+                        <button type="button" className="btn btn-secondary" onClick={(e)=>this.closeChanged(e)}>돌아가기</button>
+                    </div>
+                </div>
+                : <></>}
                  {this.state.typeVIEW ?
-                    this.state.detail && this.state.type ==='update' ? <><Metawrite key={this.state.detail._id} closeWrite={this.closeWrite} type={this.state.type} data={this.state.detail}/></>
-                    :<><Metawrite key={Math.random()} closeWrite={this.closeWrite} type={this.state.type} data={this.state.schema} /></>:<></>
+                    this.state.detail && this.state.type ==='update' ? <><Metawrite key={this.state.detail._id} closeWrite={e => this.closeWrite(e)} type={this.state.type} data={this.state.detail}/></>
+                    :<><Metawrite key={Math.random()} closeWrite={e => this.closeWrite(e)} type={this.state.type} data={this.state.schema} /></>:<></>
                  }
+                 </div>
             </>
         );
     }

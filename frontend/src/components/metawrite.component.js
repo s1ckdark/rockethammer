@@ -10,6 +10,7 @@ import Pagination from "react-js-pagination";
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
 import AceEditor from "react-ace";
+// import Metapreview from "./metapreview.component";
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/theme-tomorrow";
@@ -31,10 +32,10 @@ export default class Metawrite extends Component {
                 last_mod_id:'',
                 last_mod_dt:'',
                 is_used: true,
-                topic_desc:'',
                 op_name:'',
                 service:'',
                 related_topics:[],
+                topic_desc:'',
                 key:[],
                 value:[]
             },
@@ -43,7 +44,8 @@ export default class Metawrite extends Component {
             viewmode:'table',
             json:{},
             jsonerr:[],
-            type:''
+            type:'',
+            preview: false
         };
     }
 
@@ -57,7 +59,7 @@ export default class Metawrite extends Component {
         if(data && type ==='reg' || type === 'change') {
             console.log("type",type);
             Object.keys(data).map( whatisit => {
-                console.log(whatisit,data[whatisit].length);
+                console.log("what",whatisit,data[whatisit].length);
                 if(data[whatisit].length > 0){
                     console.log(data[whatisit][0].schema);
                 let toJson = JSON.parse(data[whatisit][0].schema);
@@ -137,7 +139,7 @@ export default class Metawrite extends Component {
             "p_type":"데이터 타입",
             "l_name":"논리명",
             "l_def":"설명",
-            "is_null":"Null허용여부",
+            "is_null":"널 여부",
             "default":"기본값",
             "memo":"메모",
             "topic_desc":"토픽설명"
@@ -207,13 +209,12 @@ export default class Metawrite extends Component {
             }   
         })
     }
-
-    onSubmit = async(e, type) => {
+    onPreview = async(e, type) => {
         e.preventDefault();
         let temp = this.state.data;
         if(type === 'reg' || type ==='change'){
               if(type === 'reg') {
-                temp.meta_version = 1;             
+                temp.meta_version = 1;   
             } else {
                 let meta_versionInt = this.state.data.meta_version + 1;
                 console.log(meta_versionInt, meta_versionInt);
@@ -244,12 +245,13 @@ export default class Metawrite extends Component {
                     localStorage.removeItem('data');
                     alert("등록 완료");
                 setTimeout(() => { 
-                    this.props.closeWrite();
+                    this.props.closeWrite(e);
                 }, 1000);}
                 })
             })
         } else if(type === 'update'){
             temp.revision = parseInt(this.state.data.revision)+1;
+            temp.is_used = "true";
             temp.last_mod_dt = (new Date).toISOString();
             temp.last_mod_id = AuthService.getCurrentUser().userid;
             this.setState(prevState => ({
@@ -267,11 +269,75 @@ export default class Metawrite extends Component {
                     })
                 }
             )
+        }
+        this.setState({
+            ...this.state,
+            preview: true
+        })
+    }
+
+    onSubmit = async(e, type) => {
+        e.preventDefault();
+        let temp = this.state.data;
+        if(type === 'reg' || type ==='change'){
+            //   if(type === 'reg') {
+            //     temp.meta_version = 1;   
+            // } else {
+            //     let meta_versionInt = this.state.data.meta_version + 1;
+            //     console.log(meta_versionInt, meta_versionInt);
+            //     temp.meta_version = meta_versionInt;
+            // }
+            // temp.last_mod_dt = (new Date).toISOString();
+            // temp.last_mod_id = AuthService.getCurrentUser().userid;
+            // console.log(temp);
+            // this.setState(prevState => ({
+            //         data: temp
+            //     }),()=>{
+            //     this.setState({
+            //         ...this.state,
+            //         history:{
+            //                 topic_name:this.state.prevData.topic_name,
+            //                 before:JSON.stringify(this.state.data),
+            //                 after:JSON.stringify(this.state.data),
+            //                 last_mod_dt:(new Date).toISOString(),
+            //                 last_mod_id:AuthService.getCurrentUser().userid
+            //             }
+            //         })
+            //     }
+            // )
+            await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
+                axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
+                if(res.status===200) {
+                    localStorage.removeItem('type');
+                    localStorage.removeItem('data');
+                    alert("등록 완료");
+                setTimeout(() => { 
+                    this.props.closeWrite(e);
+                }, 1000);}
+                })
+            })
+        } else if(type === 'update'){
+            // temp.revision = parseInt(this.state.data.revision)+1;
+            // temp.is_used = "true";
+            // temp.last_mod_dt = (new Date).toISOString();
+            // temp.last_mod_id = AuthService.getCurrentUser().userid;
+            // this.setState(prevState => ({
+            //         data: temp
+            //     }),()=>{
+            //     this.setState({
+            //         ...this.state,
+            //         history:{
+            //                 topic_name:this.state.prevData.topic_name,
+            //                 before:JSON.stringify(this.state.prevData),
+            //                 after:JSON.stringify(this.state.data),
+            //                 last_mod_dt:(new Date).toISOString(),
+            //                 last_mod_id:AuthService.getCurrentUser().userid
+            //             }
+            //         })
+            //     }
+            // )
             // console.log(this.state.prevData);
             let prevData = this.state.prevData, nextData= this.state.data;
-            // let compare = ["revision","meta_version","schema_id","schema_version","last_mod_dt","last_mod_id"];
-
-            // const prevData = this.replaceKey(this.state.prevData, "entokr");
             if(JSON.stringify(prevData) === JSON.stringify(temp)){ 
                 localStorage.removeItem('type');
                 localStorage.removeItem('data');
@@ -279,21 +345,7 @@ export default class Metawrite extends Component {
                 this.props.closeWrite(e);
             } else {
                 console.log("changed");
-                // this.exist(prevData, this.state.json);
-                // Object.keys(prevData).map( res => {
-                //     console.log(res);
-                //     this.exist(this.state.data, res);
-                // })
-                // this.state.data.meta.map(item => Object.keys(item).map( res => {
-                //     console.log(res);
-                // })
-                // )
-                // this.exist(this.state.data);
-                // this.setState({...this.state, 
-                //     json:this.replaceKey(this.state.data, "krtoen")
-                // })
-                // if(this.state.data.hasOwnProperty('물리명')){alert("있다!")} else {alert("없다")}
-                // await axios.post(process.env.REACT_APP_API+"/meta/update/"+_id, this.state.data).then( res => {
+                await axios.post(process.env.REACT_APP_API+"/meta/delete/",{keyword:this.state.data.topic_name})
                 await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
                     axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
                     if(res.status===200) {
@@ -317,10 +369,6 @@ export default class Metawrite extends Component {
         })
     }
 
-    // goBack = ()=>{
-    //     this.props.navigate(-1);
-    // }
-
     viewMode = (e, type) => {
         e.preventDefault();
         this.setState({...this.state, 
@@ -329,12 +377,14 @@ export default class Metawrite extends Component {
     }
 
     readonly = (name, schema=null) => {
+        if(!this.state.preview) {
         // console.log(name, schema);
-        if(schema !== 'key') { 
-            var tmp = ["p_name","p_type","topic_name","schema_id","schema_version","_id","is_null","default","revision","schema_id","meta_version","last_mod_id","last_mod_dt","subject"];
-            let result = tmp.filter(ele => ele === name)
-            return result.length > 0 ? true : false 
-        } else { return true; }
+            if(schema !== 'key') { 
+                var tmp = ["p_name","p_type","topic_name","schema_id","schema_version","_id","is_null","default","revision","schema_id","meta_version","last_mod_id","last_mod_dt","subject"];
+                let result = tmp.filter(ele => ele === name)
+                return result.length > 0 ? true : false 
+            } else { return true; }
+        } else { return true;}
     }
     hideField = (name) =>{
         let tmp = ["last_mod_dt","last_mod_id","subject","is_used"];
@@ -362,7 +412,7 @@ export default class Metawrite extends Component {
                     "p_type":"데이터 타입",
                     "l_name":"논리명",
                     "l_def":"설명",
-                    "is_null":"Null여부",
+                    "is_null":"널 여부",
                     "default":"기본값",
                     "memo":"메모",
                     "topic_desc":"토픽설명"
@@ -386,7 +436,7 @@ export default class Metawrite extends Component {
                     "데이터 타입":"p_type",
                     "논리명":"l_name",
                     "설명":"l_def",
-                    "Null여부":"is_null",
+                    "널 여부":"is_null",
                     "기본값":"default",
                     "메모":"memo",
                     "토픽설명":"topic_desc"
@@ -437,14 +487,25 @@ export default class Metawrite extends Component {
                             const data = this.state.data;
                             // console.log(field, data[field]);
                             if(typeof(data[field]) !== "object" || data[field] === null){
-                                return (
-                                    <div className={this.hideField(field)+" form-group col-md-3 mb-5 "+field}>
-                                        <div className={field}><p className="field-label">{this.trans(field)}</p></div>
-                                        <div className={"value-"+field+" value"}>
-                                            <input type="text" name={field} className={"input-"+field+" input-value w-75"} value={data[field]} onChange={(e)=> this.onChangeValue(e, field)} readOnly={this.readonly(field)}/>
+                                if(field === 'topic_desc') {
+                                    return (
+                                        <div className={this.hideField(field)+" form-group col-md-12 mb-5 "+field}>
+                                            <div className={field}><p className="field-label">{this.trans(field)}</p></div>
+                                            <div className={"value-"+field+" value"}>
+                                                <textarea name={field} className={"input-"+field+" input-value w-100"} value={data[field]} onChange={(e)=> this.onChangeValue(e, field)} readOnly={this.readonly(field)}/>
+                                            </div>
                                         </div>
-                                    </div>
-                                )
+                                    )
+                                } else {
+                                    return (
+                                        <div className={this.hideField(field)+" form-group col-md-3 mb-5 "+field}>
+                                            <div className={field}><p className="field-label">{this.trans(field)}</p></div>
+                                            <div className={"value-"+field+" value"}>
+                                                <input type="text" name={field} className={"input-"+field+" input-value w-75"} value={data[field]} onChange={(e)=> this.onChangeValue(e, field)} readOnly={this.readonly(field)}/>
+                                            </div>
+                                        </div>
+                                    )
+                                }
                             } else {
                                 if(field === 'related_topics'){
                                     return (
@@ -468,7 +529,7 @@ export default class Metawrite extends Component {
                                                             <> 
                                                                 <thead>
                                                                     <tr>
-                                                                        <th scope="col" class="col-1">번호</th>
+                                                                        <th scope="col" className="col-1">번호</th>
                                                                         {Object.keys(meta_field).map((field2, index) => {
                                                                            var tmp = [1, 1, 2, 3, 1, 1, 2]
                                                                             return (
@@ -524,11 +585,16 @@ export default class Metawrite extends Component {
                         }
                         </div>
                         <div className="action text-center">
-                            <button type="button" className="btn btn-primary me-1" onClick={(e)=>this.onSubmit(e, this.state.type)}>{ this.state.type === 'reg' ? "등록":"저장"}</button>
-                            <button type="button" className="btn btn-secondary" onClick={(e)=>this.props.closeWrite(e)}>돌아가기</button>
+                        { this.state.preview === false ? 
+                            <button type="button" className="btn btn-primary me-1" onClick={e=>this.onPreview(e, this.state.type)}>미리 보기</button>
+                            :<button type="button" className="btn btn-primary me-1" onClick={e=>this.onSubmit(e, this.state.type)}>{ this.state.type === 'reg' ? "등록":"저장"}</button>}
+                            <button type="button" className="btn btn-secondary" onClick={e=>this.props.closeWrite(e)}>돌아가기</button>
                         </div>
                     </div>
                 </div>
+                {/* {this.state.preview ?
+                <Metapreview data={this.state.data} type={this.state.type}/>:<></>
+                } */}
             </div>
         );
     }

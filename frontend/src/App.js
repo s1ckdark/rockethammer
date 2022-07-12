@@ -22,6 +22,8 @@ import K8Monitor from "./components/k8monitor.component";
 import Metric from "./components/metric.component";
 import Admin from "./components/admin.component.js";
 import Metawrite from "./components/metawrite.component";
+// import Metapreview from "./components/metapreview.component";
+
 
 class App extends Component {
   constructor(props) {
@@ -162,6 +164,7 @@ onMouseLeave = (e) => {
             <Route path="/confluent" element={<Confluent />} />
             <Route path="/meta" element={<Meta />} />
             <Route path="/metawrite" element={<Metawrite />} />
+            {/* <Route path="/metapreview" element={<Metapreview />} /> */}
             <Route path="/kafkaadmin" element={<KafkaAdmin />} />
             <Route path="/kafkamonitor" element={<KafkaMonitor />} />
             <Route path="/k8monitor" element={<K8Monitor />} />

@@ -5,7 +5,7 @@
     -o-transition:all 0.5s ease-in-out;
     transition:all 0.5s ease-in-out;
   }
-
+  .star_black {position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;background-color: black;}
   .clickable {
     cursor: pointer;
   }
@@ -29,6 +29,7 @@
   }
 }
 
+
 .profile, .login, .register {
   position: absolute;
   top: 50%;
@@ -36,25 +37,25 @@
   transform: translate(-50%,-50%);
   .card-container {
     &.card {
-    border-radius:50%;
-    max-width: 400px !important;
-    padding: 30px;
     position: relative;
+    width:500px;
+    height: 500px;
     background-color: #f7f7f7;
-    padding: 20px 25px 30px;
-    margin: 0 auto 25px;
-    margin-top: 50px;
+    padding: 50px;
+    margin: 0 auto;
     -moz-border-radius: 2px;
     -webkit-border-radius: 2px;
-    border-radius: 5px;
+    border-radius: 50%;
     -moz-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.3);
     -webkit-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.3);
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.3);
     }
     .card-body {
-      width: 100%;
-      height: 100%;
+      width: 400px;
+      height: 400px;
       background-color: #ccc;
+      border-radius: 50%;
+      flex: unset !important;
       .jumbotron {
         padding: 30px 0;
       }
@@ -190,13 +191,67 @@
       }
       .metalist {
         margin:0 auto;
-        overflow: hidden;
+        // overflow: hidden;
         table {
           th {
             position: relative;
-            span {
-              position: absolute;
+            &[data-tooltip] {
+              z-index: 2;
+              cursor: pointer;
+            /* Hide the tooltip content by default */
+            &:before,
+            &:after {
               visibility: hidden;
+              -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+              filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+              opacity: 0;
+              pointer-events: none;
+            }
+              &:before {
+                position: absolute;
+                bottom: 100%;
+                left: 50%;
+                margin-bottom: 10px;
+                padding: 7px;
+                width: 100%;
+                transform: translate(-50%,0);
+                -webkit-border-radius: 3px;
+                -moz-border-radius: 3px;
+                border-radius: 3px;
+                background-color: #000;
+                background-color: hsla(0, 0%, 20%, 0.9);
+                color: #fff;
+                content: attr(data-tooltip);
+                text-align: center;
+                font-size: 14px;
+                line-height: 1.2;
+              }
+              &:after {
+                position: absolute;
+                bottom: 100%;
+                left: 50%;
+                margin-left: -10px;
+                width: 0;
+                border-top: 10px solid #000;
+                border-top: 10px solid hsla(0, 0%, 20%, 0.9);
+                border-right: 10px solid transparent;
+                border-left: 10px solid transparent;
+                content: " ";
+                font-size: 0;
+                line-height: 0;
+              }
+
+              &:hover:before,
+              &:hover:after {
+                @extend .transition;
+                visibility: visible;
+                -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+                filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+                opacity: 1;
+              }
+              &.visible {
+                opacity:1;
+              }
             }
           }
           tr {
@@ -206,7 +261,14 @@
           }
         }
         .detailview {
-
+          .info-group {
+            label {
+              font-size: 11px;
+            }
+            p {
+              margin-bottom: 8px;
+            }
+          }
       }
     }
       .metawrite {
@@ -221,9 +283,9 @@
         overflow-y: scroll;
       }
       .viewJSON {
-        top: 60px;
-        left: 0;
-        position: absolute;
+        // top: 60px;
+        // left: 0;
+        // position: absolute;
         width:100%;
         height: 100%;
         background-color: #c8c8c8;
@@ -241,7 +303,20 @@
         .historylist {
         }
         .detailView {
-
+          table {
+            tr {
+              &:first-child {
+                td {
+                  text-align: center;
+                }
+              }
+              td {
+                &:first-child {text-align: center;}
+                &:nth-child(4) {text-align: center;}
+                text-align: left;
+              }
+            }
+          }
         }
       }
     
@@ -267,8 +342,9 @@
         color: rgba(0,0,0,.5);
       }
     .select {background-color:#6c757d}
-    .layer {position: absolute; transform: translate(-50%,-50%);top: 50%; left: 50%;width: 100%;height: 100%; z-index: 998;background: #fff;}
-    input {border-radius: 10px;border:1px solid #ccc;padding: 0.5em; background: #fff;}
+    .layer {margin-top: 60px; z-index: 998;background: #fff;}
+    input, textarea {border-radius: 10px;border:1px solid #ccc;padding: 0.5em; background: #fff;}
+    textarea {min-height:100px;}
     input[readonly] {background-color:transparent;border:none;outline: none;}
     input[readonly]:focus {  background-color:transparent; border-color: transparent; box-shadow: none;outline: none; }
     input[readonly]::selection { background:none; color: #000; outline: none;}
@@ -283,7 +359,14 @@
       }
     }
     .form-group {
-        p.field-label {font-size: 11px;font-weight: 500;margin-bottom:.5rem;}
+      &:focus-within {
+        .field-label {
+          @extend .transition;
+          font-size:14px;
+        }
+      }
+        p.field-label {font-size: 11px;font-weight: 500;margin-bottom:.5rem;height:20px;}
+        input[readonly] {}
     }
     .schema-field {text-transform: uppercase;padding:0 0 1rem;display: inline-block;}
     // listiing
