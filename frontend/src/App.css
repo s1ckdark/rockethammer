@@ -32,15 +32,111 @@
 }
 
 .profile, .login, .register {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 60px - 1rem);
+  background-color: #202c39;
+}
+.profile #universe, .login #universe, .register #universe {
+  position: absolute;
+  width: 600px;
+  top: 50%;
+  left: 50%;
+  overflow: visible;
+  transform: translate(-50%, -50%);
+  z-index: 999;
+}
+.profile #universe #orbit, .login #universe #orbit, .register #universe #orbit {
+  fill: none;
+  stroke: #ffffff;
+}
+.profile #rocket, .login #rocket, .register #rocket {
+  position: absolute;
+  width: 100px;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 999;
+  overflow: visible;
+}
+.profile .saturn, .login .saturn, .register .saturn {
+  position: relative;
+}
+.profile .saturn .planet, .login .saturn .planet, .register .saturn .planet {
+  position: relative;
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  background-color: #cc5803;
+  overflow: hidden;
+}
+.profile .saturn .planet:before, .login .saturn .planet:before, .register .saturn .planet:before {
+  content: "";
+  position: absolute;
+  width: 300px;
+  height: 50px;
+  border-radius: 20px;
+  top: 200px;
+  background-color: #f29559;
+  left: 40px;
+  box-shadow: 120px 0 #f29559, -150px 50px #cc5803, 90px 50px #cc5803, -40px 50px #f29559, 0 100px #f29559, 120px 100px #f29559, -80px 150px #cc5803, 160px 150px #cc5803, 60px 150px #f29559;
+}
+.profile .saturn .planet:after, .login .saturn .planet:after, .register .saturn .planet:after {
+  content: "";
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  top: 0;
+  border-radius: 50%;
+  box-shadow: inset -20px 20px rgba(0, 0, 0, 0.2);
+}
+.profile .saturn .ring, .login .saturn .ring, .register .saturn .ring {
+  width: 705px;
+  height: 705px;
+  border-radius: 50%;
+  top: -145px;
+  left: -150px;
+  position: absolute;
+}
+.profile .saturn .up, .login .saturn .up, .register .saturn .up {
+  position: absolute;
+  width: 400px;
+  z-index: 999;
+  height: 200px;
+  border-radius: 200px 200px 0 0;
+  background-color: #cc5803;
+  top: 0;
+  overflow: hidden;
+}
+.profile .saturn .up:before, .login .saturn .up:before, .register .saturn .up:before {
+  content: "";
+  position: absolute;
+  width: 200px;
+  height: 50px;
+  border-radius: 20px;
+  left: 100px;
+  background-color: #f29559;
+  box-shadow: -150px 50px #cc5803, 90px 50px #cc5803, -40px 50px #f29559, 0 100px #f29559, -160px 100px #f29559, -220px 150px #cc5803, 60px 150px #cc5803, -100px 150px #f29559;
+}
+.profile .saturn .up:after, .login .saturn .up:after, .register .saturn .up:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 400px;
+  height: 200px;
+  border-radius: 200px 200px 0 0;
+  box-shadow: inset -20px 20px rgba(0, 0, 0, 0.2);
+}
+.profile .card-container, .login .card-container, .register .card-container {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
 .profile .card-container.card, .login .card-container.card, .register .card-container.card {
-  position: relative;
-  width: 500px;
-  height: 500px;
+  width: 400px;
+  height: 400px;
   background-color: #f7f7f7;
   padding: 50px;
   margin: 0 auto;
@@ -50,6 +146,10 @@
 .profile .card-container .card-body, .login .card-container .card-body, .register .card-container .card-body {
   width: 400px;
   height: 400px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
   background-color: #ccc;
   border-radius: 50%;
   flex: unset !important;

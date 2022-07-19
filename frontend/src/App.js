@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect, Component } from 'react'
-import { TimelineMax, Expo } from "gsap/all";
+import { gsap } from "gsap/all";
 import { Routes, Route, Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
@@ -22,8 +22,6 @@ import K8Monitor from "./components/k8monitor.component";
 import Metric from "./components/metric.component";
 import Admin from "./components/admin.component.js";
 import Metawrite from "./components/metawrite.component";
-// import Metapreview from "./components/metapreview.component";
-
 
 class App extends Component {
   constructor(props) {
@@ -34,8 +32,6 @@ class App extends Component {
       // showAdminBoard: false,
       currentUser: undefined
     };
-    // this.onMouseEnter = this.onMouseEnter.bind(this);
-    // this.onMouseLeave = this.onMouseLeave.bind(this);
   }
 
   componentDidMount() {
@@ -45,38 +41,24 @@ class App extends Component {
         currentUser: user,
       });
     }
-     this.animation = new TimelineMax({paused:true});   
-    }
+  }
 
-
-onMouseEnter = (e) => {
-          e.preventDefault();
-          var thisNode = e.currentTarget.querySelector('p');
-          var thisNodeImg = e.currentTarget.querySelector('img');
-          // console.log(e.currentTarget);
-          thisNodeImg.style.opacity="0.6"
-          thisNode.style.visibility="visible";
-          thisNode.style.opacity="1";
-          thisNode.style.top="50%";
-          thisNode.style.transform="translate(-50%,-50%)";
-          // this.animation.staggerFromTo(thisNode, 1, {autoAlpha:0,y:'30px' },{autoAlpha:1,y:'0px' }, 0.3); 
-          // // TweenMax.staggerTo(thisNode.querySelector('img'), 1, {scale:"1.5"});
-          // this.animation.play();
-        };
-onMouseLeave = (e) => {
-        e.preventDefault();
-        var thisNode = e.currentTarget.querySelector('p');
-        var thisNodeImg = e.currentTarget.querySelector('img');
-        // console.log(thisNode);
-        thisNodeImg.style.opacity="1"
-        thisNode.style.visibility="hidden";
-        thisNode.style.opacity="0";
-        thisNode.style.top="100%";
-        thisNode.style.transform="translate(-50%,0)";
-        // TweenMax.staggerTo(thisNode, 1, {scale:"1"});
-         // this.animation.reverse();
-        }
-  
+  onMouseEnter = (e) => {
+    e.preventDefault();
+    console.log(e.currentTarget);
+    var thisNode = e.currentTarget.querySelector('p');
+    var thisNodeImg = e.currentTarget.querySelector('img');
+    gsap.fromTo(thisNode, {autoAlpha:0,y:'0'},{autoAlpha:1,y:'-30px',duration:1},0)
+    gsap.fromTo(thisNodeImg, {scale:"1"},{scale:"1.5",duration:1}, 0);   
+  };
+    
+  onMouseLeave = (e) => {
+    e.preventDefault();
+    var thisNode = e.currentTarget.querySelector('p');
+    var thisNodeImg = e.currentTarget.querySelector('img');
+    gsap.to(thisNode, {autoAlpha:0})
+    gsap.to(thisNodeImg, {scale:"1"})
+  }
 
   logOut() {
     AuthService.logout();
@@ -84,7 +66,6 @@ onMouseLeave = (e) => {
 
   render() {
     const { currentUser } = this.state;
-
     return (
       <div ref={el => { this.container = el;}}>
       <Seo />
