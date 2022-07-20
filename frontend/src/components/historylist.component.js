@@ -106,15 +106,6 @@ export default class Historylist extends Component {
         })
     }
 
-    closeHistoryDetail = (e) => {
-        this.setState({
-            ...this.state,
-            show:false,
-            after:{},
-            before:{}
-        })
-    }
-
     IsJsonString = (str) => {
         try {
             JSON.parse(str);
@@ -124,6 +115,14 @@ export default class Historylist extends Component {
         return true;
     }
 
+    closeHistoryDetail = (e) => {
+        this.setState({
+            ...this.state,
+            show:false,
+            after:{},
+            before:{}
+        })
+    }
     replaceKey = (data)=>{
         const swaps = {
             "_id":"_id",
@@ -190,25 +189,20 @@ export default class Historylist extends Component {
                                 }): <h3 className="p-3 m-3 text-center">검색된 history data가 없습니다</h3>}
                             </tbody>
                         </table>
+                       
                         {this.state.show ? 
                         <div className="detailView mx-auto">
                             <ReactDiffViewer leftTitle="Before" rightTitle="After" oldValue={JSON.stringify(this.state.before, null, 2)} newValue={JSON.stringify(this.state.after, null, 2)} splitView={true} />
                             <div className="closeHistoryDetail d-flex justify-content-end my-3">
                                 <button type="button" onClick={this.closeHistoryDetail} className="btn btn-warning">내역 리스트</button>
-                                <button type="button" onClick={this.closeHistory} className="btn btn-warning">내역 닫기</button>
+                                <button type="button" onClick={this.props.closeVIEW} className="btn btn-warning">내역 닫기</button>
                             </div>
                         </div>
                         : <div className="closeHistoryDetail d-flex justify-content-end my-3">
-                        <button type="button" onClick={(e)=>this.closeHistory(e)} className="btn btn-warning">내역 닫기</button>
+                        <button type="button" onClick={this.props.closeVIEW} className="btn btn-warning">내역 닫기</button>
                          </div>}
-                           
-             
-                    {/* <Pagination
-                        activePage={this.state.user.currentPage}
-                        itemsCountPerPage={this.state.user.pageSize}
-                        totalItemsCount={this.state.user.totalcnt}
-                        onChange={this.handleUserPageChange}
-                    /> */}
+                       
+
                     </div>
                     </div>
         </>

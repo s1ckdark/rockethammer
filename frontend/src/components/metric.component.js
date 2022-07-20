@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Iframe from 'react-iframe'
-import axios from 'axios'
+
 // import UserService from "../services/user.service";
 
 export default class Metric extends Component {

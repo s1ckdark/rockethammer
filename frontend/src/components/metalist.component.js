@@ -55,7 +55,9 @@ export default class Metalist extends Component {
               after:''
           },
           typeVIEW:false,
-          type:''
+          type:'',
+          view:false,
+          sectionVIEW:''
 
         };
     this.handleMetaPageChange = this._handleMetaPageChange.bind(this);
@@ -230,37 +232,27 @@ export default class Metalist extends Component {
     }
     }
 
-    historyView = (e, topic_name) => {
-        e.preventDefault();
+    view = (e, type) => {
         this.setState({
             ...this.state,
-            historyVIEW:true
+            view:true,
+            sectionVIEW:type
         })
-    }
-
-    closeHistory = ()=>{
-        this.setState({
-            ...this.state,
-            historyVIEW: false
-        })
-    }
-
-    jsonVIEW = () => {
-        this.setState({
-            ...this.state,
-            jsonVIEW:true
-        })
-    }
-
-    changeView = (e, type) => {
-        e.preventDefault();
-        console.log(type);
     }
 
     closeVIEW = () => {
         this.setState({
             ...this.state,
-            jsonVIEW:false
+            view:false,
+            sectionVIEW:'',
+            changed:{
+                ...this.state.changed,
+                before: "",
+                after: ""
+            },
+            show:false,
+            after:{},
+            before:{}
         })
     }
 
@@ -317,7 +309,8 @@ export default class Metalist extends Component {
                 })
                 this.setState({
                     ...this.state,
-                    changeVIEW:true,
+                    view:true,
+                    sectionVIEW:'change',
                     changed:{
                       ...this.state.changed,
                       before: temp[1],
@@ -360,7 +353,7 @@ export default class Metalist extends Component {
         })
     }
 
-    closeHisotryDetail = (e) => {
+    closeHistoryDetail = (e) => {
         this.setState({
             ...this.state,
             show:false,
@@ -381,7 +374,7 @@ export default class Metalist extends Component {
     {
         return (
             <>
-                <div className="metalist">
+                <div className={this.state.view ? "metalist d-none":"metalist"}>
                 <div className="find mx-auto my-5 text-center d-block">
                     <div className="d-flex justify-content-center col-md-12 mx-auto">
                         <input className="search px-3 col-md-3" name="search" value={this.state.search} onChange = {this.onChangeKeyword} />
@@ -457,19 +450,19 @@ export default class Metalist extends Component {
                                     <p>{this.state.detail.last_mod_dt.split('.')[0].replace('T', ' ')}</p>
                                 </div>
                                 <div className="d-flex">
-                                    <button type="button" className="btn btn-success me-1" onClick={this.jsonVIEW}>조회</button>
-                                    <button type="button" className="btn btn-info me-1" onClick={(e)=>this.write(e,"update")} disabled={JSON.parse(this.state.meta['dataList'][this.state.idx].schema).schema ? false:true}>수정</button>
-                                    <button type="button" className="btn btn-secondary" onClick={(e)=>this.onDel(e,this.state.detail.topic_name)}  disabled={JSON.parse(this.state.meta['dataList'][this.state.idx].schema).schema ? false:true}>삭제</button> 
-                                    {this.state.history && this.state.history.length >0 ? <button type="button" className="btn btn-danger ms-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.detail.topic_name)}>이력</button> : <button type="button" className="btn btn-danger ms-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.detail.topic_name)} disabled={true}>이력</button>}
+                                    <button type="button" className="btn btn-success me-1" onClick={e=>this.view(e, 'json')}>조회</button>
+                                    <button type="button" className="btn btn-info me-1" onClick={e=>this.write(e,"update")} disabled={JSON.parse(this.state.meta['dataList'][this.state.idx].schema).schema ? false:true}>수정</button>
+                                    <button type="button" className="btn btn-secondary" onClick={e=>this.onDel(e,this.state.detail.topic_name)}  disabled={JSON.parse(this.state.meta['dataList'][this.state.idx].schema).schema ? false:true}>삭제</button> 
+                                    {this.state.history && this.state.history.length >0 ? <button type="button" className="btn btn-danger ms-1 searchbtn" onClick={(e)=>this.view(e, 'history')}>이력</button> : <button type="button" className="btn btn-danger ms-1 searchbtn" onClick={e=>this.view(e, 'history')} disabled={true}>이력</button>}
                                 </div>
                                 </>                     
                                 :
                                 <>
                                 <div className="d-flex">
-                                <button type="button" className="btn btn-success me-1" onClick={this.jsonVIEW} disabled={true}>조회</button>
-                                <button type="button" className="btn btn-primary me-1" onClick={(e)=>this.write(e,"reg")}  disabled={JSON.parse(this.state.meta['dataList'][this.state.idx].schema).schema ? false:true}>등록</button>
-                                <button type="button" className="btn btn-secondary" onClick={(e)=>this.onDel(e,this.state.detail._id)} disabled={true}>삭제</button> 
-                                <button type="button" className="btn btn-danger ms-1 searchbtn" onClick={(e)=>this.historyView(e, this.state.meta.data.topic_name)} disabled={true}>이력</button>
+                                <button type="button" className="btn btn-success me-1" onClick={e=>this.view(e, 'json')} disabled={true}>조회</button>
+                                <button type="button" className="btn btn-primary me-1" onClick={e=>this.write(e,"reg")}  disabled={JSON.parse(this.state.meta['dataList'][this.state.idx].schema).schema ? false:true}>등록</button>
+                                <button type="button" className="btn btn-secondary" onClick={e=>this.onDel(e,this.state.detail._id)} disabled={true}>삭제</button> 
+                                <button type="button" className="btn btn-danger ms-1 searchbtn" onClick={e=>this.view(e, 'history')} disabled={true}>이력</button>
                                 </div>
                                 </>}
                         </div>
@@ -492,35 +485,32 @@ export default class Metalist extends Component {
                     </div>
                     </div>
                 <div className="layer">
-                {this.state.historyVIEW ? 
+                {this.state.view && this.state.sectionVIEW === 'history' ? 
                 <div className="viewHistory">
-                    {/* <div className="closeHistory closeBtn"><button type="button" onClick={this.closeHistory} className="btn btn-warning">CLOSE</button></div> */}
-                    <Historylist data={this.state.history} closeHisyory={e => this.closeHistory(e)} closeHistoryDetail={e => this.closeHistoryDetail(e)} />
-                    {/* <div className="closeHistoryView d-flex col-12 px-5 mx-auto d-flex justify-content-end">
-                        <button type="button" onClick={this.closeHistory} className="btn btn-warning me-2">돌아가기</button>
-                        <button type="button" onClick={this.closeHistoryDetail} className="btn btn-warning">리스트보기</button>
-                    </div> */}
+                    <Historylist data={this.state.history} closeVIEW={this.closeVIEW} />
                 </div>
                 : <></>}
-		        {this.state.jsonVIEW ?
-                <div className="layer jsonView">
-                    <div className="closeJSON closeBtn"><button type="button" onClick={this.closeVIEW} className="btn btn-warning">닫기</button></div>
+		       {this.state.view && this.state.sectionVIEW === 'json' ?
+                <div className="jsonView">
                     <AceEditor
                         mode="json"
                         theme="tomorrow"
                         name={this.state.json[`_id`]}
                         value = {JSON.stringify(this.replaceKey(this.state.detail), null, 4)}
                         onChange={this.onChangeJSON}
-                        height={window.innerHeight - 60}
+                        height={"calc(100vh - 250px)"}
                         fontSize= {14}
                         width="100%"
                     />
+                     <div className="btnArea d-flex justify-content-center">
+                        <button type="button" className="btn btn-secondary" onClick={this.closeVIEW}>돌아가기</button>
+                    </div>
                 </div>
                 : <></>}
-                {this.state.changeVIEW ? 
-                <div className="changeView" >
+                {this.state.view && this.state.sectionVIEW === 'change' ?
+                <div className="changeView">
                     {/* <div className="closeCHanged closeBtn"><button type="button" onClick={this.closeChanged} className="btn btn-warning">CLOSE</button></div> */}
-                    <div className="d-flex py-5">
+                    <div className="d-flex pb-5">
                         <div className="before col-md-6 border-right">
                             <AceEditor
                                 mode="json"
@@ -530,7 +520,7 @@ export default class Metalist extends Component {
                                 onChange={this.onChangeJSON}
                                 fontSize= {14}
                                 width="100%"
-                                height={window.innerHeight - 150}
+                                height={"calc(100vh - 250px)"}
                             />
                         </div>
                         <div className="after col-md-6">
@@ -542,13 +532,13 @@ export default class Metalist extends Component {
                                 onChange={this.onChangeJSON}
                                 fontSize= {14}
                                 width="100%"
-                                height={window.innerHeight - 150}
+                                height={"calc(100vh - 250px)"}
                             />
                         </div>
                     </div>
                     <div className="btnArea d-flex justify-content-center">
                         <button type="button" className="btn btn-primary me-1" onClick={(e)=>this.write(e,"change")}>등록</button>
-                        <button type="button" className="btn btn-secondary" onClick={(e)=>this.closeChanged(e)}>돌아가기</button>
+                        <button type="button" className="btn btn-secondary" onClick={this.closeVIEW}>돌아가기</button>
                     </div>
                 </div>
                 : <></>}
