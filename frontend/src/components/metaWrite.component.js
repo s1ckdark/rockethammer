@@ -238,17 +238,17 @@ export default class Metawrite extends Component {
                     })
                 }
             )
-            await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
-                axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
-                if(res.status===200) {
-                    localStorage.removeItem('type');
-                    localStorage.removeItem('data');
-                    alert("등록 완료");
-                setTimeout(() => { 
-                    this.props.closeWrite(e);
-                }, 1000);}
-                })
-            })
+            // await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
+            //     axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
+            //     if(res.status===200) {
+            //         localStorage.removeItem('type');
+            //         localStorage.removeItem('data');
+            //         alert("등록 완료");
+            //     setTimeout(() => { 
+            //         this.props.closeWrite(e);
+            //     }, 1000);}
+            //     })
+            // })
         } else if(type === 'update'){
             temp.revision = parseInt(this.state.data.revision)+1;
             temp.is_used = "true";
@@ -459,7 +459,7 @@ export default class Metawrite extends Component {
     {
         return (
             <div className="metawrite bg-light p-5">
-                <div className="container">
+                <div className={ this.state.preview ? "onpreview container":"container"}>
                     {/* <div className="mode d-flex justify-content-end">
                         <button type="button" className={this.state.viewmode === "json" ? "btn btn-success" : "btn btn-dark mr-1"} onClick={(e)=>this.viewMode(e,"json")}>JSON</button>
                         <button type="button" className={this.state.viewmode === "table" ? "btn btn-success" : "btn btn-dark"} onClick={(e)=>this.viewMode(e,"table")}>TABLE</button>

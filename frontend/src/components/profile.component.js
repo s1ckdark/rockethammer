@@ -35,7 +35,7 @@ export default class Profile extends Component {
           path:"#orbit",
           align:"#orbit",
           alignOrigin: [0.5, 0.5],
-          autoRotate: true
+          autoRotate: false
       },
       transformOrigin: "50% 50%",
       duration: 5,
@@ -143,7 +143,7 @@ export default class Profile extends Component {
     <canvas className="star_black"></canvas>
      <div className="profile col-md-12">
       <svg id="universe" viewBox="0 0 700 700">
-        <ellipse id="orbit" cx="350" cy="400" rx="400" ry="120" fill="none" stroke="none" stroke-Width="3" />
+        <ellipse id="orbit" cx="350" cy="400" rx="350" ry="120" fill="none" stroke="none" stroke-Width="3" />
       </svg>
       <svg id="rocket" viewBox="0 0 512.016 512.016" style={{enableBackground:"new 0 0 512.016 512.016"}}>
         <g>
@@ -169,22 +169,21 @@ export default class Profile extends Component {
         <div className="planet">
             {(this.state.userReady) ?
             <>
-                  <div className="up"></div>
+  
+                  <div className="info-text">
                   <header className="jumbotron">
                     <img src="./img/rh_logo.png" alt="rockerhammer" className="w-100"/>
                   </header>
-                  <div className="card-text">
+                  <div className="text">
                     <h3><strong>{currentUser.name}</strong>님</h3>
                     {/* <h4>현재 방문 시각은<br/> {h % 12}:{(m < 10 ? '0' + m : m)}:{(s < 10 ? '0' + s : s)} {h < 12 ? 'AM' : 'PM'} 입니다.<br/> </h4>  */}
                     <p><label>이 름:</label>{currentUser.name}</p>
                     <p><label>소 속:</label>{currentUser.dept}</p>
                     <p><label>Authorities:</label>{currentUser.group && currentUser.group ? currentUser.group : null}</p>
-                  </div></>
+                  </div></div></>
            : null}
           </div>
-      <div className="ring ring1"></div>
-      <div className="ring ring2"></div>
-      <div className="ring ring3"></div>
+          <div className="up"></div>
    </div>
    </div>
    </>
