@@ -48,7 +48,7 @@ class App extends Component {
     console.log(e.currentTarget);
     var thisNode = e.currentTarget.querySelector('p');
     var thisNodeImg = e.currentTarget.querySelector('img');
-    gsap.fromTo(thisNode, {autoAlpha:0,y:'0'},{autoAlpha:1,y:'-30px',duration:1},0)
+    gsap.fromTo(thisNode, {autoAlpha:0,y:'0px'},{autoAlpha:1,y:'-30px',duration:1},0)
     gsap.fromTo(thisNodeImg, {scale:"1"},{scale:"1.5",duration:1}, 0);   
   };
     
@@ -56,7 +56,7 @@ class App extends Component {
     e.preventDefault();
     var thisNode = e.currentTarget.querySelector('p');
     var thisNodeImg = e.currentTarget.querySelector('img');
-    gsap.to(thisNode, {autoAlpha:0})
+    gsap.to(thisNode, {autoAlpha:0, y:'-30px'})
     gsap.to(thisNodeImg, {scale:"1"})
   }
 
@@ -145,7 +145,6 @@ class App extends Component {
             <Route path="/confluent" element={<Confluent />} />
             <Route path="/meta" element={<Meta />} />
             <Route path="/metawrite" element={<Metawrite />} />
-            {/* <Route path="/metapreview" element={<Metapreview />} /> */}
             <Route path="/kafkaadmin" element={<KafkaAdmin />} />
             <Route path="/kafkamonitor" element={<KafkaMonitor />} />
             <Route path="/k8monitor" element={<K8Monitor />} />

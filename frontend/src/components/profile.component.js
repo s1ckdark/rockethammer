@@ -165,17 +165,17 @@ export default class Profile extends Component {
           <path style={{fill:"#DA4453"}} d="M479.225,145.816L366.755,33.361c45.813-19.922,91.47-31.063,133.876-32.797  c2.906-0.125,6.062,0.906,8.281,3.109c2.188,2.203,3.219,5.375,3.094,8.25C510.287,54.361,499.131,100.003,479.225,145.816z"/>
           </g>
         </svg>
+        {/* <div className="cardflip"></div> */}
         <div className="saturn">
         <div className="planet">
             {(this.state.userReady) ?
             <>
-  
                   <div className="info-text">
                   <header className="jumbotron">
                     <img src="./img/rh_logo.png" alt="rockerhammer" className="w-100"/>
                   </header>
                   <div className="text">
-                    <h3><strong>{currentUser.name}</strong>님</h3>
+                    <h3>Welcome <strong>{currentUser.name}</strong>님</h3>
                     {/* <h4>현재 방문 시각은<br/> {h % 12}:{(m < 10 ? '0' + m : m)}:{(s < 10 ? '0' + s : s)} {h < 12 ? 'AM' : 'PM'} 입니다.<br/> </h4>  */}
                     <p><label>이 름:</label>{currentUser.name}</p>
                     <p><label>소 속:</label>{currentUser.dept}</p>

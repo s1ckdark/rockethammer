@@ -1,5 +1,5 @@
   /* animaton */
-  .transition{
+  .transition {
     -webkit-transition: all 0.5s ease-in-out;
     -moz-transition:all 0.5s ease-in-out;
     -o-transition:all 0.5s ease-in-out;
@@ -8,6 +8,26 @@
   .star_black {position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;background-color: black;}
   .clickable {
     cursor: pointer;
+  }
+
+  @property --rotate {
+    syntax: "<angle>";
+    initial-value: 132deg;
+    inherits: false;
+  }
+
+  @keyframes spin {
+    0% {
+      --rotate: 0deg;
+    }
+    100% {
+      --rotate: 360deg;
+    }
+  }
+  
+  :root {
+    --card-height: 65vh;
+    --card-width: calc(var(--card-height) / 1.5);
   }
 
 .paging {
@@ -28,8 +48,6 @@
     }
   }
 }
-
-
 
 .profile, .login, .register {
   display: flex;
@@ -56,6 +74,70 @@
     overflow: visible;
     position: absolute;
   }
+  
+  .cardflip {
+    background: #191c29;
+    width: var(--card-width);
+    height: var(--card-height);
+    padding: 3px;
+    position: relative;
+    border-radius: 6px;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    display: flex;
+    font-size: 1.5em;
+    color: rgb(88 199 250 / 0%);
+    cursor: pointer;
+    font-family: cursive;
+  }
+  
+  .cardflip:hover {
+    color: rgb(88 199 250 / 100%);
+    transition: color 1s;
+  }
+  .cardflip:hover:before, .cardflip:hover:after {
+    animation: none;
+    opacity: 0;
+  }
+  
+  
+  .cardflip:before {
+    content: "";
+    width: 104%;
+    height: 102%;
+    border-radius: 8px;
+    background-image: linear-gradient(
+      var(--rotate)
+      , #5ddcff, #3c67e3 43%, #4e00c2);
+      position: absolute;
+      z-index: -1;
+      top: -1%;
+      left: -2%;
+      animation: spin 2.5s linear infinite;
+  }
+  
+  .cardflip:after {
+    position: absolute;
+    content: "";
+    top: calc(var(--card-height) / 6);
+    left: 0;
+    right: 0;
+    z-index: -1;
+    height: 100%;
+    width: 100%;
+    margin: 0 auto;
+    transform: scale(0.8);
+    filter: blur(calc(var(--card-height) / 6));
+    background-image: linear-gradient(
+      var(--rotate)
+      , #5ddcff, #3c67e3 43%, #4e00c2);
+      opacity: 1;
+    transition: opacity .5s;
+    animation: spin 2.5s linear infinite;
+  }
+  
+
 
   .saturn {
     position: relative;
@@ -65,9 +147,9 @@
       height: 400px;
       border-radius:50%;
       background-color: #cc5803;
-      overflow: hidden;
+      // overflow: hidden;
       &:before {
-        content:"";
+        // content:"";
         position: absolute;
         width: 400px;
         height: 50px;
@@ -100,7 +182,7 @@
       top:0;
       overflow: hidden;
       &:before {
-      content:"";
+      // content:"";
       position: absolute;
       width: 200px;
       height: 50px;
@@ -126,9 +208,17 @@
       top: 50%;
       transform: translate(-50%,-50%);
       z-index:999;
-      width:300px;
-      height:300px;
+      max-width:300px;
+      max-height:300px;
+      .jumbotron {
+        position: absolute;
+        top: -200px;
+        left: 0;
+        opacity: 0;
+        visibility: hidden;
+      }
       .text {
+        color: #fff;
         padding: 15px 0;
         text-align: center;
         p {
@@ -311,70 +401,82 @@
         margin:0 auto;
         // overflow: hidden;
         table {
-          th {
-            position: relative;
-            &[data-tooltip] {
-              z-index: 2;
-              cursor: pointer;
-            /* Hide the tooltip content by default */
-            &:before,
-            &:after {
-              visibility: hidden;
-              -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-              filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
-              opacity: 0;
-              pointer-events: none;
-            }
-              &:before {
-                position: absolute;
-                bottom: 100%;
-                left: 50%;
-                margin-bottom: 10px;
-                padding: 7px;
-                width: 100%;
-                transform: translate(-50%,0);
-                -webkit-border-radius: 3px;
-                -moz-border-radius: 3px;
-                border-radius: 3px;
-                background-color: #000;
-                background-color: hsla(0, 0%, 20%, 0.9);
-                color: #fff;
-                content: attr(data-tooltip);
-                text-align: center;
-                font-size: 14px;
-                line-height: 1.2;
-              }
-              &:after {
-                position: absolute;
-                bottom: 100%;
-                left: 50%;
-                margin-left: -10px;
-                width: 0;
-                border-top: 10px solid #000;
-                border-top: 10px solid hsla(0, 0%, 20%, 0.9);
-                border-right: 10px solid transparent;
-                border-left: 10px solid transparent;
-                content: " ";
-                font-size: 0;
-                line-height: 0;
-              }
 
-              &:hover:before,
-              &:hover:after {
-                @extend .transition;
-                visibility: visible;
-                -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
-                filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
-                opacity: 1;
-              }
-              &.visible {
-                opacity:1;
-              }
-            }
-          }
           tr {
-            td {
+            th {
+              position: relative;
+              &[data-tooltip] {
+                z-index: 2;
+                cursor: pointer;
+              /* Hide the tooltip content by default */
+              &:before,
+              &:after {
+                visibility: hidden;
+                -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+                filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+                opacity: 0;
+                pointer-events: none;
+              }
+                &:before {
+                  position: absolute;
+                  bottom: 100%;
+                  left: 50%;
+                  margin-bottom: 10px;
+                  padding: 15px;
+                  width: 100%;
+                  transform: translate(-50%,0);
+                  -webkit-border-radius: 3px;
+                  -moz-border-radius: 3px;
+                  border-radius: 3px;
+                  background-color: #000;
+                  background-color: hsla(0, 0%, 20%, 0.9);
+                  color: #fff;
+                  content: attr(data-tooltip);
+                  text-align: left;
+                  font-size: 14px;
+                  line-height: 1.2;
+                }
+                &:after {
+                  position: absolute;
+                  bottom: 100%;
+                  left: 50%;
+                  margin-left: -10px;
+                  width: 0;
+                  border-top: 10px solid #000;
+                  border-top: 10px solid hsla(0, 0%, 20%, 0.9);
+                  border-right: 10px solid transparent;
+                  border-left: 10px solid transparent;
+                  content: " ";
+                  font-size: 0;
+                  line-height: 0;
+                }
 
+                &:hover:before,
+                &:hover:after {
+                  @extend .transition;
+                  visibility: visible;
+                  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+                  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+                  opacity: 1;
+                }
+                &.visible {
+                  opacity:1;
+                }
+                .info-icon {
+                  vertical-align: bottom;
+                  margin-left: 2px;
+                  font-weight:600;
+                  font-size: 13px;
+                  font-style: italic;
+                }
+              }
+            }
+            td {
+              &.value {
+                span {
+                  font-size: 25px;
+                }
+              }
             }
           }
         }
@@ -408,7 +510,7 @@
           position: absolute;
           top:50%;
           left:50%;
-          transform:translate(-50%,-50%) scale(1.2);
+          transform:translate(-50%,-50%);
         }
       }
       .viewJSON {
@@ -509,4 +611,50 @@
 
 .kafkaadmin {
   nav {display: none;}
+}
+
+/* The flip card container - set the width and height to whatever you want. We have added the border property to demonstrate that the flip itself goes out of the box on hover (remove perspective if you don't want the 3D effect */
+.flip-card {
+  background-color: transparent;
+  width: 300px;
+  height: 200px;
+  border: 1px solid #f1f1f1;
+  perspective: 1000px; /* Remove this if you don't want the 3D effect */
+}
+
+/* This container is needed to position the front and back side */
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+
+/* Do an horizontal flip when you move the mouse over the flip box container */
+.flip-card:hover .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+/* Position the front and back side */
+.flip-card-front, .flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden; /* Safari */
+  backface-visibility: hidden;
+}
+
+/* Style the front side (fallback if image is missing) */
+.flip-card-front {
+  background-color: #bbb;
+  color: black;
+}
+
+/* Style the back side */
+.flip-card-back {
+  background-color: dodgerblue;
+  color: white;
+  transform: rotateY(180deg);
 }

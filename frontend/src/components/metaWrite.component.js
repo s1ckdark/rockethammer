@@ -100,8 +100,8 @@ export default class Metawrite extends Component {
     } else if(data && type ==='update') {
         console.log("type",type);
         delete data['_id'];
-        data['revision'] = data['revision'] + 1;
-        data['meta_version'] = data['meta_version'] + 1; 
+        // data['revision'] = data['revision'] + 1;
+        // data['meta_version'] = data['meta_version'] + 1; 
         data['last_mod_dt'] = (new Date).toISOString();
         data['last_mod_id'] = AuthService.getCurrentUser().userid;
         localStorage.setItem('data', JSON.stringify(data));
@@ -126,15 +126,16 @@ export default class Metawrite extends Component {
         var defineName = {
             "_id":"_id",
             "topic_name":"토픽명",
-            "schema_id":"스키마ID",
-            "schema_version":"스키마버전",
+            "schema_id":"물리스키마ID",
+            "schema_version":"물리스키마버전",
             "meta_version":"메타버전",
             "op_name":"관리부서",
             "service":"업무시스템",
             "related_topics":"연관토픽",
             "last_mod_dt":"최종수정시간",
             "last_mod_id":"최종수정자",
-            "schema":"",
+            "schema":"스키마명",
+            "revision":"논리스키마버전",
             "p_name":"물리명",
             "p_type":"데이터 타입",
             "l_name":"논리명",
@@ -229,7 +230,7 @@ export default class Metawrite extends Component {
                 this.setState({
                     ...this.state,
                     history:{
-                            topic_name:this.state.prevData.topic_name,
+                            topic_name:this.state.data.topic_name,
                             before:JSON.stringify(this.state.data),
                             after:JSON.stringify(this.state.data),
                             last_mod_dt:(new Date).toISOString(),
@@ -276,6 +277,12 @@ export default class Metawrite extends Component {
         })
     }
 
+    onPreviewClose = (e) => {
+        this.setState({
+            ...this.state,
+            preview: false
+        })
+    }
     onSubmit = async(e, type) => {
         e.preventDefault();
         let temp = this.state.data;
@@ -387,7 +394,7 @@ export default class Metawrite extends Component {
         } else { return true;}
     }
     hideField = (name) =>{
-        let tmp = ["last_mod_dt","last_mod_id","subject","is_used"];
+        let tmp = ["last_mod_dt","last_mod_id","subject","is_used","meta_version","revision"];
         let result = tmp.filter(ele => ele === name )
         return result.length > 0 ? "d-none" : "d-block"
     }
@@ -399,8 +406,9 @@ export default class Metawrite extends Component {
                     "_id":"_id",
                     "topic_name":"토픽명",
                     "schema_id":"스키마ID",
-                    "schema_version":"스키마버전",
+                    "schema_version":"물리스키마버전",
                     "meta_version":"메타버전",
+                    "revision":"논리스키마버전",
                     "recycle_pol":"데이터삭제주기",
                     "op_name":"관리부서",
                     "service":"업무시스템",
@@ -460,26 +468,6 @@ export default class Metawrite extends Component {
         return (
             <div className="metawrite bg-light p-5">
                 <div className={ this.state.preview ? "onpreview container":"container"}>
-                    {/* <div className="mode d-flex justify-content-end">
-                        <button type="button" className={this.state.viewmode === "json" ? "btn btn-success" : "btn btn-dark mr-1"} onClick={(e)=>this.viewMode(e,"json")}>JSON</button>
-                        <button type="button" className={this.state.viewmode === "table" ? "btn btn-success" : "btn btn-dark"} onClick={(e)=>this.viewMode(e,"table")}>TABLE</button>
-                    </div> */}
-                    <div className={this.state.viewmode === "json" ? "d-block type-json" : "d-none type-json"}>
-                        <AceEditor
-                            mode="json"
-                            theme="tomorrow"
-                            name={this.state.data[`topic_name`]}
-                            value = {JSON.stringify(this.state.json, null, 4)}
-                            onChange={this.onChangeValueJSON}
-                            fontSize= {14}
-                            width= "100%"
-                            height="60vh"
-                        />
-                        <div className="action text-right my-5">
-                            <button type="button" className="btn btn-primary mr-3" onClick={this.onSubmit}>저장</button>
-                            <button type="button" className="btn btn-secondary" onClick={(e)=> this.props.closeWrite(e)}>돌아가기</button>
-                        </div>
-                    </div>
                     <div className={this.state.viewmode === "table" ? "d-block type-table" : "d-none type-table"}> 
                         <div className="d-flex flex-wrap my-5"> 
                         {Object.keys(this.state.data).map(field => {
@@ -586,15 +574,13 @@ export default class Metawrite extends Component {
                         </div>
                         <div className="action text-center">
                         { this.state.preview === false ? 
-                            <button type="button" className="btn btn-primary me-1" onClick={e=>this.onPreview(e, this.state.type)}>미리 보기</button>
-                            :<button type="button" className="btn btn-primary me-1" onClick={e=>this.onSubmit(e, this.state.type)}>{ this.state.type === 'reg' ? "등록":"저장"}</button>}
-                            <button type="button" className="btn btn-secondary" onClick={e=>this.props.closeWrite(e)}>돌아가기</button>
+                        <>
+                            <button type="button" className="btn btn-primary me-1" onClick={e=>this.onPreview(e, this.state.type)}>미리 보기</button><button type="button" className="btn btn-secondary" onClick={e=>this.props.closeWrite(e)}>뒤로가기</button></>
+                            :<><button type="button" className="btn btn-primary me-1" onClick={e=>this.onSubmit(e, this.state.type)}>{ this.state.type === 'reg' ? "등록":"저장"}</button><button type="button" className="btn btn-secondary" onClick={e=>this.onPreviewClose(e)}>뒤로가기</button></>}
+                           
                         </div>
                     </div>
                 </div>
-                {/* {this.state.preview ?
-                <Metapreview data={this.state.data} type={this.state.type}/>:<></>
-                } */}
             </div>
         );
     }

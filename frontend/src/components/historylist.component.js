@@ -131,13 +131,14 @@ export default class Historylist extends Component {
             "meta_id":"메타ID",
             "schema_version":"스키마버전",
             "meta_version":"메타버전",
-            "recycle_pol":"데이터삭제주기",
+            "revision":"논리스키마버전",
             "op_name":"관리부서",
             "service":"업무시스템",
+            "subject":"물리스키마명",
             "related_topics":"연관토픽",
             "last_mod_dt":"최종수정시간",
             "last_mod_id":"최종수정자",
-            "schema":"",
+            "schema":"스키마",
             "p_name":"물리명",
             "p_type":"데이터 타입",
             "l_name":"논리명",
@@ -145,7 +146,8 @@ export default class Historylist extends Component {
             "is_null":"Null허용여부",
             "default":"기본값",
             "memo":"메모",
-            "topic_desc":"토픽설명"
+            "topic_desc":"토픽설명",
+            "is_used":"사용여부"
         };
         const pattern = new RegExp(
         Object.keys(swaps).map(e => `(?:"(${e})":)`).join("|"), "g"
@@ -193,13 +195,13 @@ export default class Historylist extends Component {
                         {this.state.show ? 
                         <div className="detailView mx-auto">
                             <ReactDiffViewer leftTitle="Before" rightTitle="After" oldValue={JSON.stringify(this.state.before, null, 2)} newValue={JSON.stringify(this.state.after, null, 2)} splitView={true} />
-                            <div className="closeHistoryDetail d-flex justify-content-end my-3">
-                                <button type="button" onClick={this.closeHistoryDetail} className="btn btn-warning">내역 리스트</button>
-                                <button type="button" onClick={this.props.closeVIEW} className="btn btn-warning">내역 닫기</button>
+                            <div className="closeHistoryDetail d-flex justify-content-center my-5">
+                                <button type="button" onClick={this.closeHistoryDetail} className="btn btn-warning me-1">뒤로가기</button>
+                                <button type="button" onClick={this.props.closeVIEW} className="btn btn-warning">닫기</button>
                             </div>
                         </div>
-                        : <div className="closeHistoryDetail d-flex justify-content-end my-3">
-                        <button type="button" onClick={this.props.closeVIEW} className="btn btn-warning">내역 닫기</button>
+                        : <div className="closeHistoryDetail d-flex justify-content-center my-5">
+                        <button type="button" onClick={this.props.closeVIEW} className="btn btn-warning">닫기</button>
                          </div>}
                        
 
