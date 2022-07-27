@@ -63,7 +63,7 @@ export default class Metalist extends Component {
           sectionVIEW:'',
           delete:{}
         };
-    this.handleMetaPageChange = this._handleMetaPageChange.bind(this);
+        this.handleMetaPageChange = this._handleMetaPageChange.bind(this);
     }
     
     _handleMetaPageChange(pageNumber) {
@@ -88,19 +88,8 @@ export default class Metalist extends Component {
 //     })  
 //   }
 
-    onEdit = (e,item) => {
-        e.preventDefault();
-        console.log("edit");
-        console.log(item);
-    }
-
-    onSave = (e) => {
-        e.preventDefault();
-    }
-
     onDel = (e,_id) => {
         e.preventDefault();
-        // this.historyAction(e, "delete", _id);
         if (window.confirm("정말 삭제하시겠습니까??") == true){    //확인
             axios.post(process.env.REACT_APP_API+"/meta/delete",{keyword:this.state.detail.topic_name, last_mod_dt:(new Date).toISOString()}).then(res => {
                 this.setState({
@@ -139,6 +128,8 @@ export default class Metalist extends Component {
             .then(res => {
                 console.log(res);
               this.setState({
+                ...this.state,
+                listtype:'list',
                 meta: res.data
               })
             })
@@ -355,6 +346,7 @@ export default class Metalist extends Component {
             }
         })
     }
+
     closeWrite = (e) => {
         e.preventDefault();
         this.detailView(e,this.state.idx, this.state.detail.topic_name);
@@ -424,16 +416,14 @@ export default class Metalist extends Component {
                         {this.state.meta.dataList && this.state.meta.dataList.length > 0 ? this.state.meta.dataList.map((item,index) => {
                             var temp = {};
                             var mapping = {};
-                            var schema = JSON.parse(item.schema), meta_join = JSON.parse(item.meta_join);       
+                            var schema = JSON.parse(item.schema), meta_join = item.meta_join ? JSON.parse(item.meta_join):null;   
                             Object.keys(item.schema).map((res,index) => {
                                     this.IsJsonString(item[res]) ? temp[res] = JSON.parse(item[res]): temp[res]=item[res]
                             })
-                            console.log("schema",schema)
-                            console.log("meta_join",meta_join);
                             return(
                                     <tr data-index={index} className={this.state.idx === index ? "table-active text-center":"text-center"} key={5*parseInt(this.state.meta.current)+index+1}>
                                         <th scope="row">{5*parseInt(this.state.meta.current)+index+1}</th>
-                                        <td className="modified value">{meta_join && parseInt(schema.version.$numberLong) > parseInt(meta_join.schema_version) ? <span className="clickable" onClick={(e)=> this.notiforchange(e, schema.subject)}>&#x2611;</span> : <span>&#x2610;</span>}</td>
+                                        <td className="modified value">{meta_join && parseInt(schema.version.$numberLong) > parseInt(meta_join.schema_version) ? <span className="clickable" onClick={(e)=> this.notiforchange(e, schema.subject)}>Y</span> : <span>N</span>}</td>
                                         <td className="value-subject value form-group clickable" onClick={(e)=>this.detailView(e, index, schema.subject)}>
                                             {schema.subject.replace(/(-value|-key)/g, "")}
                                         </td>
@@ -442,7 +432,8 @@ export default class Metalist extends Component {
                                             {/* {new Date(schema.reg_dt).toISOString().substring(0,16)} */}
                                         </td>
                                         <td className="value-id value form-group">
-                                            {schema.schema ? <span>&#x2610;</span>:<span>&#x2611;</span> }
+                                            {schema.schema ? <span>N</span>:<span>Y</span> }  
+                                            {/* {schema.schema ? <span>&#x2610;</span>:<span>&#x2611;</span> } */}
                                         </td>
                                     </tr>
                                 );
@@ -488,7 +479,7 @@ export default class Metalist extends Component {
                                 <>
                                 <div className="d-flex">
                                 <button type="button" className="btn btn-success me-1" onClick={e=>this.view(e, 'json')} disabled={true}>조회</button>
-                                <button type="button" className="btn btn-primary me-1" onClick={e=>this.write(e,"reg")}  disabled={JSON.parse(this.state.meta['dataList'][this.state.idx].schema).schema ? false:true}>등록</button>
+                                <button type="button" className="btn btn-primary me-1" onClick={e=>this.write(e, "reg")}  disabled={JSON.parse(this.state.meta['dataList'][this.state.idx].schema).schema ? false:true}>등록</button>
                                 <button type="button" className="btn btn-secondary" onClick={e=>this.onDel(JSON.parse(this.state.meta['dataList'][this.state.idx].schema).meta_join.topic_name)} disabled={JSON.parse(this.state.meta['dataList'][this.state.idx].schema).meta_join ? false:true}>삭제</button> 
                                 <button type="button" className="btn btn-danger ms-1 searchbtn" onClick={e=>this.view(e, 'history')} disabled={true}>이력</button>
                                 </div>
