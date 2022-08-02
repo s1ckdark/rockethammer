@@ -239,17 +239,6 @@ export default class Metawrite extends Component {
                     })
                 }
             )
-            // await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
-            //     axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
-            //     if(res.status===200) {
-            //         localStorage.removeItem('type');
-            //         localStorage.removeItem('data');
-            //         alert("등록 완료");
-            //     setTimeout(() => { 
-            //         this.props.closeWrite(e);
-            //     }, 1000);}
-            //     })
-            // })
         } else if(type === 'update'){
             temp.revision = parseInt(this.state.data.revision)+1;
             temp.is_used = "true";
@@ -287,31 +276,6 @@ export default class Metawrite extends Component {
         e.preventDefault();
         let temp = this.state.data;
         if(type === 'reg' || type ==='change'){
-            //   if(type === 'reg') {
-            //     temp.meta_version = 1;   
-            // } else {
-            //     let meta_versionInt = this.state.data.meta_version + 1;
-            //     console.log(meta_versionInt, meta_versionInt);
-            //     temp.meta_version = meta_versionInt;
-            // }
-            // temp.last_mod_dt = (new Date).toISOString();
-            // temp.last_mod_id = AuthService.getCurrentUser().userid;
-            // console.log(temp);
-            // this.setState(prevState => ({
-            //         data: temp
-            //     }),()=>{
-            //     this.setState({
-            //         ...this.state,
-            //         history:{
-            //                 topic_name:this.state.prevData.topic_name,
-            //                 before:JSON.stringify(this.state.data),
-            //                 after:JSON.stringify(this.state.data),
-            //                 last_mod_dt:(new Date).toISOString(),
-            //                 last_mod_id:AuthService.getCurrentUser().userid
-            //             }
-            //         })
-            //     }
-            // )
             await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
                 axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
                 if(res.status===200) {
@@ -324,26 +288,6 @@ export default class Metawrite extends Component {
                 })
             })
         } else if(type === 'update'){
-            // temp.revision = parseInt(this.state.data.revision)+1;
-            // temp.is_used = "true";
-            // temp.last_mod_dt = (new Date).toISOString();
-            // temp.last_mod_id = AuthService.getCurrentUser().userid;
-            // this.setState(prevState => ({
-            //         data: temp
-            //     }),()=>{
-            //     this.setState({
-            //         ...this.state,
-            //         history:{
-            //                 topic_name:this.state.prevData.topic_name,
-            //                 before:JSON.stringify(this.state.prevData),
-            //                 after:JSON.stringify(this.state.data),
-            //                 last_mod_dt:(new Date).toISOString(),
-            //                 last_mod_id:AuthService.getCurrentUser().userid
-            //             }
-            //         })
-            //     }
-            // )
-            // console.log(this.state.prevData);
             let prevData = this.state.prevData, nextData= this.state.data;
             if(JSON.stringify(prevData) === JSON.stringify(temp)){ 
                 localStorage.removeItem('type');
@@ -352,7 +296,7 @@ export default class Metawrite extends Component {
                 this.props.closeWrite(e);
             } else {
                 console.log("changed");
-                await axios.post(process.env.REACT_APP_API+"/meta/delete/",{keyword:this.state.data.topic_name})
+                await axios.post(process.env.REACT_APP_API+"/meta/deleteall/",{keyword:this.state.data.topic_name})
                 await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
                     axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
                     if(res.status===200) {

@@ -45,7 +45,10 @@ export default class Metalist extends Component {
           },
           data:[],
           keyword:'',
-          idx:'',
+          select:{
+            idx:'',
+            topic_name:""
+          },
 		  show:false,
           historyVIEW:false,
           json:{},
@@ -107,75 +110,52 @@ export default class Metalist extends Component {
         }
         if (window.confirm("정말 삭제하시겠습니까??") === true && (typeofapi === 'api1' || typeofapi ==='api3')){    //확인
             try {
-                const response = await axios.post(url, {keyword:JSON.parse(this.state.meta['dataList'][this.state.idx].schema).subject})
+                const response = await axios.post(url, {keyword:JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).subject})
             } catch(err) {
                 console.log("error", err);
             }
         } else {
             try {
-                Promise.all(url.map(async (endpoint) => await axios.post(endpoint, {keyword:JSON.parse(this.state.meta['dataList'][this.state.idx].schema).subject}))).then((response1, response2) => {
+                Promise.all(url.map(async (endpoint) => await axios.post(endpoint, {keyword:JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).subject}))).then((response1, response2) => {
                     console.log(response1, response2)
                 })
             } catch(err) {
                 console.log("error", err);
             }
+        }
+        if(typeofapi === 'api1') {
             this.setState({
                 ...this.state,
-                delete:{
-                    ...this.state.delete,
-                    is_used:"false",
-                    last_mod_dt:(new Date).toISOString()
-                },
                 history:{
                     topic_name:this.state.detail.topic_name,
                     before:JSON.stringify(this.state.detail),
-                    after:JSON.stringify(this.state.delete),
+                    after:{},
                     last_mod_dt:(new Date).toISOString(),
                     last_mod_id:AuthService.getCurrentUser().userid
                 }
             })
-        const response2 = await axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history)
-        if(response2.status ===200){
-                localStorage.removeItem('type');
-                localStorage.removeItem('data');
-                alert("삭제가 완료되었습니다");
-                setTimeout(() => { 
-                    window.location.reload(false);
-            }, 1000)
+            const response2 = await axios.post(process.env.REACT_APP_API+"/history/inserthistory/", {})
+            if(response2.status ===200){
+                await axios.post(process.env.REACT_APP_API+"/history/history_del", {topic_name:this.state.detail.topic_name, reg_dt:(new Date).toISOString(),user_id:AuthService.getCurrentUser().userid,op:"delete"})
+                    localStorage.removeItem('type');
+                    localStorage.removeItem('data');
+                    alert("삭제가 완료되었습니다");
+                    setTimeout(() => { 
+                        window.location.reload(false);
+                }, 1000)
+            }
         }
-        }
+    
+        await axios.post(process.env.REACT_APP_API+"/history/history_del", {topic_name:this.state.detail.topic_name, reg_dt:(new Date).toISOString(),user_id:AuthService.getCurrentUser().userid,op:"delete"})
+            localStorage.removeItem('type');
+            localStorage.removeItem('data');
+            alert("삭제가 완료되었습니다");
+            setTimeout(() => { 
+                window.location.reload(false);
+        }, 1000)
+        }     
 
-            // axios.post(process.env.REACT_APP_API+"/meta/delete",{keyword:this.state.detail.topic_name, last_mod_dt:(new Date).toISOString()}).then(res => {
-            //     this.setState({
-            //         ...this.state,
-            //         delete:{
-            //             ...this.state.delete,
-            //             is_used:"false",
-            //             last_mod_dt:(new Date).toISOString()
-            //         }
-            //     })
-                // this.setState({
-                //     ...this.state,
-                //     history:{
-                //             topic_name:this.state.detail.topic_name,
-                //             before:JSON.stringify(this.state.detail),
-                //             after:JSON.stringify(this.state.delete),
-                //             last_mod_dt:(new Date).toISOString(),
-                //             last_mod_id:AuthService.getCurrentUser().userid
-                //         }
-                //     })
-                // axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
-                //     if(res.status===200) {
-                //         localStorage.removeItem('type');
-                //         localStorage.removeItem('data');
-                //         alert("삭제가 완료되었습니다");
-                //         setTimeout(() => { 
-                //             window.location.reload(false);
-                //     }, 1000);}
-                //     })
-        //     }) 
-        // }       
-    }
+
     fetchMetaData = async(page) => {
         if(this.state.type ==='list'){
         await axios.post(process.env.REACT_APP_API+"/schema/getallschema",{size:5,page:page})
@@ -282,28 +262,32 @@ export default class Metalist extends Component {
         this.setState({
             ...this.state,
             detailVIEW: true,
-            detail:''
+            detail:'',
+            select:{
+                idx:idx,
+                topic_name:tn
+            }
         })
         axios.post(process.env.REACT_APP_API+"/meta/getmeta",{keyword:tn}).then(res => {
             if(res.data && res.data.length > 0) {
-                this.setState({...this.state, detail:res.data[0],delete:res.data[0],show:true, type:'update', idx:idx})
+                this.setState({...this.state, detail:res.data[0],delete:res.data[0],show:true, type:'update'})
             } else {
-                this.setState({...this.state, detail:{},delete:{},type:'reg', idx:idx,show:true})
+                this.setState({...this.state, detail:{},delete:{},type:'reg', show:true})
             }
         })
         axios.post(process.env.REACT_APP_API+"/history/gethistory",{keyword:tn}).then(res => {
             if(res.data && res.data.length > 0) {
-                this.setState({...this.state, history:res.data, idx:idx})
+                this.setState({...this.state, history:res.data})
             } else {
-                this.setState({...this.state, history:{},idx:idx})
+                this.setState({...this.state, history:{},select:{idx:idx,topic_name:tn}})
             }
         })
         axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:tn}).then(res => {
             // console.log(res.data);
             if(res.data && res.data.value.length > 0) {
-                this.setState({...this.state, schema:res.data, idx:idx})
+                this.setState({...this.state, schema:res.data})
             } else {
-                this.setState({...this.state, schema:{},idx:idx})
+                this.setState({...this.state, schema:{}})
             }
         })
     }
@@ -405,7 +389,7 @@ export default class Metalist extends Component {
 
     closeWrite = (e) => {
         e.preventDefault();
-        this.detailView(e,this.state.idx, this.state.detail.topic_name);
+        this.detailView(e,this.state.select.idx, this.state.detail.topic_name);
         this.setState({
             ...this.state,
            type:'',
@@ -477,7 +461,7 @@ export default class Metalist extends Component {
                                     this.IsJsonString(item[res]) ? temp[res] = JSON.parse(item[res]): temp[res]=item[res]
                             })
                             return(
-                                    <tr data-index={index} className={this.state.idx === index ? "table-active text-center":"text-center"} key={5*parseInt(this.state.meta.current)+index+1}>
+                                    <tr data-index={index} className={this.state.select.idx === index ? "table-active text-center":"text-center"} key={5*parseInt(this.state.meta.current)+index+1}>
                                         <th scope="row">{5*parseInt(this.state.meta.current)+index+1}</th>
                                         <td className="modified value">{meta_join && parseInt(schema.version.$numberLong) > parseInt(meta_join.schema_version) ? <span className="clickable" onClick={(e)=> this.notiforchange(e, schema.subject)}>Y</span> : <span>N</span>}</td>
                                         <td className="value-subject value form-group clickable" onClick={(e)=>this.detailView(e, index, schema.subject)}>
@@ -503,7 +487,7 @@ export default class Metalist extends Component {
                         <div className="detail">
                             <div className="info-group mb-4">
                                     <label>토픽명</label>
-                                    <h3>{JSON.parse(this.state.meta.dataList[this.state.idx].schema).subject.replace(/(-value|-key)/g, "")}</h3>
+                                    <h3>{JSON.parse(this.state.meta.dataList[this.state.select.idx].schema).subject.replace(/(-value|-key)/g, "")}</h3>
                                 </div>
                             {Object.keys(this.state.detail).length > 0 ? 
                                 <>
@@ -526,22 +510,14 @@ export default class Metalist extends Component {
                                 </>
                                 :<></>}
                                 <div className="d-flex">
-                                    <button type="button" className="btn btn-success me-1" onClick={e=>this.view(e, 'json')} disabled={this.state.detail.is_used === 'true' ? false:true}>조회</button>
-                                    {Object.keys(this.state.detail).length  > 0 ? <button type="button" className="btn btn-info me-1" onClick={e=>this.write(e,"update")} disabled={this.state.detail.is_used === 'true' && this.state.detail ? false:true}>수정</button>:<></>}
-                                    {Object.keys(this.state.detail).length === 0 ? <button type="button" className="btn btn-primary me-1" onClick={e=>this.write(e,"reg")}  disabled={JSON.parse(this.state.meta['dataList'][this.state.idx].schema).schema ? false:true}>등록</button>:<></>}
-                                    {JSON.parse(this.state.meta['dataList'][this.state.idx].schema).schema && Object.keys(this.state.detail).length > 0 ? <button type="button" className="btn btn-secondary me-1" onClick={e=>this.onDel(e, "api1", this.state.detail.topic_name)} disabled={this.state.detail.is_used ==='true' ? false:true} role="api1">삭제</button>:<></>}
-                                    {!JSON.parse(this.state.meta['dataList'][this.state.idx].schema).schema && Object.keys(this.state.detail).length > 0  ? <button type="button" className="btn btn-secondary me-1" onClick={e=>this.onDel(e, "api2", this.state.detail.topic_name)} role="api2">삭제</button>:<></>}
-                                    {!JSON.parse(this.state.meta['dataList'][this.state.idx].schema).schema && Object.keys(this.state.detail).length === 0  ? <button type="button" className="btn btn-secondary me-1" onClick={e=>this.onDel(e,"api3", JSON.parse(this.state.meta['dataList'][this.state.idx].schema).meta_join.topic_name)} role="api3">삭제</button>:<></>}
-                                    {/* {JSON.parse(this.state.meta['dataList'][this.state.idx].schema).schema === false && this.state.detail ? <button type="button" className="btn btn-secondary" onClick={e=>this.onDel(e, "api2", this.state.detail.topic_name)}  disabled={this.state.detail.is_used === 'true' ? false:true}>삭제2</button>:<button type="button" className="btn btn-secondary" onClick={e=>this.onDel(e, "api1", this.state.detail.topic_name)}  disabled={this.state.detail.is_used === 'true' ? false:true}>삭제1</button> } */}
+                                    <button type="button" className="btn btn-success me-1" onClick={e=>this.view(e, 'json')} disabled={Object.keys(this.state.detail).length > 0 ? false:true}>조회</button>
+                                    {Object.keys(this.state.detail).length  > 0 ? <button type="button" className="btn btn-info me-1" onClick={e=>this.write(e,"update")}>수정</button>:<button type="button" className="btn btn-primary me-1" onClick={e=>this.write(e,"reg")}  disabled={JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).schema ? false:true}>등록</button>}
+                                    {JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).schema && Object.keys(this.state.detail).length >= 0 ? <button type="button" className="btn btn-secondary me-1" onClick={e=>this.onDel(e, "api1", this.state.detail.topic_name)} role="api1" disabled={Object.keys(this.state.detail).length > 0 ? false:true}>삭제</button>:<></>}
+                                    {!JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).schema && Object.keys(this.state.detail).length > 0  ? <button type="button" className="btn btn-secondary me-1" onClick={e=>this.onDel(e, "api2", this.state.detail.topic_name)} role="api2">삭제</button>:<></>}
+                                    {!JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).schema && Object.keys(this.state.detail).length === 0  ? <button type="button" className="btn btn-secondary me-1" onClick={e=>this.onDel(e,"api3", JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).subject)} role="api3">삭제</button>:<></>}
                                     <button type="button" className="btn btn-danger searchbtn" onClick={(e)=>this.view(e, 'history')} disabled={this.state.history && this.state.history.length >0 ? false:true}>이력</button>
                                 </div>
-{/*               
-                                <div className="d-flex">
-                                <button type="button" className="btn btn-success me-1" onClick={e=>this.view(e, 'json')} disabled={true}>조회</button>
-                                <button type="button" className="btn btn-primary me-1" onClick={e=>this.write(e, "reg")}  disabled={JSON.parse(this.state.meta['dataList'][this.state.idx].schema).schema ? false:true}>등록</button>
-                                <button type="button" className="btn btn-secondary" onClick={e=>this.onDel(e,"api3", JSON.parse(this.state.meta['dataList'][this.state.idx].schema).meta_join.topic_name)} disabled={JSON.parse(this.state.meta['dataList'][this.state.idx].schema).meta_join ? false:true}>삭제3</button> 
-                                <button type="button" className="btn btn-danger ms-1 searchbtn" onClick={e=>this.view(e, 'history')} disabled={true}>이력</button>
-                                </div> */}
+
                         </div>
                     </div>
                     : <></>}
