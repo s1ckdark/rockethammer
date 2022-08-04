@@ -214,7 +214,7 @@ export default class Metawrite extends Component {
         e.preventDefault();
         let temp = this.state.data;
         if(type === 'reg' || type ==='change'){
-              if(type === 'reg') {
+            if(type === 'reg') {
                 temp.meta_version = 1;   
             } else {
                 let meta_versionInt = this.state.data.meta_version + 1;
@@ -231,7 +231,7 @@ export default class Metawrite extends Component {
                     ...this.state,
                     history:{
                             topic_name:this.state.data.topic_name,
-                            before:JSON.stringify(this.state.data),
+                            before:type==='reg' ? "":JSON.stringify(this.state.data),
                             after:JSON.stringify(this.state.data),
                             last_mod_dt:(new Date).toISOString(),
                             last_mod_id:AuthService.getCurrentUser().userid

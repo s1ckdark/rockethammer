@@ -482,13 +482,13 @@ export default class Metalist extends Component {
                             </tbody>
                         </table>
                     </div>
-                   {this.state.show ? 
+                    {this.state.show ? 
                     <div className="detailview col-md-3 p-5 ms-3 my-3 border-left bg-light">
                         <div className="detail">
                             <div className="info-group mb-4">
-                                    <label>토픽명</label>
-                                    <h3>{JSON.parse(this.state.meta.dataList[this.state.select.idx].schema).subject.replace(/(-value|-key)/g, "")}</h3>
-                                </div>
+                                <label>토픽명</label>
+                                <h3>{JSON.parse(this.state.meta.dataList[this.state.select.idx].schema).subject.replace(/(-value|-key)/g, "")}</h3>
+                            </div>
                             {Object.keys(this.state.detail).length > 0 ? 
                                 <>
                                 <div className="info-group">
@@ -509,19 +509,17 @@ export default class Metalist extends Component {
                                 </div>
                                 </>
                                 :<></>}
-                                <div className="d-flex">
-                                    <button type="button" className="btn btn-success me-1" onClick={e=>this.view(e, 'json')} disabled={Object.keys(this.state.detail).length > 0 ? false:true}>조회</button>
-                                    {Object.keys(this.state.detail).length  > 0 ? <button type="button" className="btn btn-info me-1" onClick={e=>this.write(e,"update")}>수정</button>:<button type="button" className="btn btn-primary me-1" onClick={e=>this.write(e,"reg")}  disabled={JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).schema ? false:true}>등록</button>}
-                                    {JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).schema && Object.keys(this.state.detail).length >= 0 ? <button type="button" className="btn btn-secondary me-1" onClick={e=>this.onDel(e, "api1", this.state.detail.topic_name)} role="api1" disabled={Object.keys(this.state.detail).length > 0 ? false:true}>삭제</button>:<></>}
-                                    {!JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).schema && Object.keys(this.state.detail).length > 0  ? <button type="button" className="btn btn-secondary me-1" onClick={e=>this.onDel(e, "api2", this.state.detail.topic_name)} role="api2">삭제</button>:<></>}
-                                    {!JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).schema && Object.keys(this.state.detail).length === 0  ? <button type="button" className="btn btn-secondary me-1" onClick={e=>this.onDel(e,"api3", JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).subject)} role="api3">삭제</button>:<></>}
-                                    <button type="button" className="btn btn-danger searchbtn" onClick={(e)=>this.view(e, 'history')} disabled={this.state.history && this.state.history.length >0 ? false:true}>이력</button>
-                                </div>
-
+                            <div className="d-flex">
+                                <button type="button" className="btn btn-success me-1" onClick={e=>this.view(e, 'json')} disabled={Object.keys(this.state.detail).length > 0 ? false:true}>조회</button>
+                                {Object.keys(this.state.detail).length  > 0 ? <button type="button" className="btn btn-info me-1" onClick={e=>this.write(e,"update")}>수정</button>:<button type="button" className="btn btn-primary me-1" onClick={e=>this.write(e,"reg")}  disabled={JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).schema ? false:true}>등록</button>}
+                                {JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).schema && Object.keys(this.state.detail).length >= 0 ? <button type="button" className="btn btn-secondary me-1" onClick={e=>this.onDel(e, "api1", this.state.detail.topic_name)} role="api1" disabled={Object.keys(this.state.detail).length > 0 ? false:true}>삭제</button>:<></>}
+                                {!JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).schema && Object.keys(this.state.detail).length > 0  ? <button type="button" className="btn btn-secondary me-1" onClick={e=>this.onDel(e, "api2", this.state.detail.topic_name)} role="api2">삭제</button>:<></>}
+                                {!JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).schema && Object.keys(this.state.detail).length === 0  ? <button type="button" className="btn btn-secondary me-1" onClick={e=>this.onDel(e,"api3", JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).subject)} role="api3">삭제</button>:<></>}
+                                <button type="button" className="btn btn-danger searchbtn" onClick={(e)=>this.view(e, 'history')} disabled={this.state.history && this.state.history.length >0 ? false:true}>이력</button>
+                            </div>
                         </div>
                     </div>
                     : <></>}
-       
                 </div>
                 <div className="paging text-center mx-auto py-1">
                         <Pagination
@@ -565,33 +563,7 @@ export default class Metalist extends Component {
                 {this.state.view && this.state.sectionVIEW === 'change' ?
                 <div className="changeView">
                     <div className="d-flex pb-5">
-                    <ReactDiffViewer leftTitle="Before" rightTitle="After" oldValue={JSON.stringify(this.replaceKey(this.state.changed.before), null, 4)} newValue={JSON.stringify(this.replaceKey(this.state.changed.after), null, 4)} splitView={true} />
-                        {/* <div className="before col-md-6 border-right">
-                            <AceEditor
-                                mode="json"
-                                theme="tomorrow"
-                                name={this.state.json[`_id`]}
-                                value = {JSON.stringify(this.replaceKey(this.state.changed.before), null, 4)}
-                                onChange={this.onChangeJSON}
-                                fontSize= {14}
-                                width="100%"
-                                readOnly={true}
-                                maxLines={Infinity}
-                            />
-                        </div>
-                        <div className="after col-md-6">
-                            <AceEditor
-                                mode="json"
-                                theme="tomorrow"
-                                name={this.state.json[`_id`]}
-                                value = {JSON.stringify(this.replaceKey(this.state.changed.after), null, 4)}
-                                onChange={this.onChangeJSON}
-                                fontSize= {14}
-                                width="100%"
-                                readOnly={true}
-                                maxLines={Infinity}
-                            />
-                        </div> */}
+                        <ReactDiffViewer leftTitle="Before" rightTitle="After" oldValue={JSON.stringify(this.replaceKey(this.state.changed.before), null, 4)} newValue={JSON.stringify(this.replaceKey(this.state.changed.after), null, 4)} splitView={true} />
                     </div>
                     <div className="btnArea d-flex justify-content-center">
                         <button type="button" className="btn btn-primary me-1" onClick={(e)=>this.write(e,"change")}>등록</button>

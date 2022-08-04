@@ -101,7 +101,7 @@ export default class Historylist extends Component {
         this.setState({
             ...this.state,
             show:true,
-            before: this.replaceKey(JSON.parse(before)),
+            before: before !=='' ? this.replaceKey(JSON.parse(before)):{},
             after: this.replaceKey(JSON.parse(after))
         })
     }
