@@ -243,9 +243,9 @@ export default class Admin extends Component {
                 </Modal>
         <h1 className="heading-1">Admin</h1>
         <div className="tab d-flex justify-content-center mb-5">
-          <div className={this.state.toggle === 1 ? "active border border-info tab usertab mx-2 px-5 py-3" : "border usertab mx-2 px-5 py-3" } onClick={(e)=>this.toggle(1)}>User</div>
-          <div className={this.state.toggle === 2 ? "active border border-primary tab historytab mx-2 px-5 py-3": "border historytab mx-2 px-5 py-3"} onClick={(e)=>this.toggle(2)}>History</div>
-          <div className={this.state.toggle === 3 ? "active border border-dark tab addusertab mx-2 px-5 py-3": "border addusertab mx-2 px-5 py-3"} onClick={(e)=>this.toggle(3)}>Add user</div>
+          <div className={this.state.toggle === 3 ? "active border border-dark tab addusertab mx-2 px-5 py-3": "border addusertab mx-2 px-5 py-3"} onClick={(e)=>this.toggle(3)}>사용자 생성</div>
+          <div className={this.state.toggle === 1 ? "active border border-info tab usertab mx-2 px-5 py-3" : "border usertab mx-2 px-5 py-3" } onClick={(e)=>this.toggle(1)}>사용자 수정</div>
+          <div className={this.state.toggle === 2 ? "active border border-primary tab historytab mx-2 px-5 py-3": "border historytab mx-2 px-5 py-3"} onClick={(e)=>this.toggle(2)}>히스토리</div>
       </div>
       <div className={this.state.toggle ===1 ? "userManage active":"userManage"}>
               <table className="list">
