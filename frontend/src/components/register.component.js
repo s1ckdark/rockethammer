@@ -181,7 +181,7 @@ export default class Register extends Component {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="password">Password</label>
+                  <label htmlFor="password">패스워드</label>
                   <Input
                     type="password"
                     className="form-control"
@@ -193,7 +193,7 @@ export default class Register extends Component {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="name">Name</label>
+                  <label htmlFor="name">사용자명</label>
                   <Input
                     type="text"
                     className="form-control"
@@ -205,7 +205,7 @@ export default class Register extends Component {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="dept">Dept</label>
+                  <label htmlFor="dept">부서명</label>
                   <Input
                     type="text"
                     className="form-control"
@@ -224,7 +224,7 @@ export default class Register extends Component {
                   />
   
                 <div className="action-btn mt-3">
-                    <button className="btn btn-primary btn-block me-2">Sign Up</button>
+                    <button className="btn btn-primary btn-block me-2">회원 가입</button>
                     <button type="button" className="btn btn-primary btn-block" onClick={this.handleCancelClick}>Cancel</button>
                   </div>
               </div>

@@ -166,9 +166,9 @@ export default class Admin extends Component {
           userid:userid
         }).then(res => {
             if(res.data.password !== this.state.user.data[index].password) ele.push("비밀번호 변경")
-          if(res.data.name !== this.state.user.data[index].name) ele.push("이름을 {"+res.data.name+"} -> {"+this.state.user.data[index].name+"} "+conType)
-          if(res.data.dept !== this.state.user.data[index].dept) ele.push("소속을 {"+res.data.dept+"} -> {"+this.state.user.data[index].dept+"} "+conType)
-          if(res.data.group !== this.state.user.data[index].group) ele.push("그룹을 {"+res.data.group+"} -> {"+this.state.user.data[index].group+"} "+conType)
+            if(res.data.name !== this.state.user.data[index].name) ele.push("이름을 {"+res.data.name+"} -> {"+this.state.user.data[index].name+"} "+conType)
+            if(res.data.dept !== this.state.user.data[index].dept) ele.push("소속을 {"+res.data.dept+"} -> {"+this.state.user.data[index].dept+"} "+conType)
+            if(res.data.group !== this.state.user.data[index].group) ele.push("그룹을 {"+res.data.group+"} -> {"+this.state.user.data[index].group+"} "+conType)
         })
         console.log(ele);
         // historytype = ele.join("\r\n");
@@ -241,11 +241,11 @@ export default class Admin extends Component {
                     </Button>
                     </Modal.Footer>
                 </Modal>
-        <h1 className="heading-1">Admin</h1>
+        <h1 className="heading-1">관리자모드</h1>
         <div className="tab d-flex justify-content-center mb-5">
-          <div className={this.state.toggle === 3 ? "active border border-dark tab addusertab mx-2 px-5 py-3": "border addusertab mx-2 px-5 py-3"} onClick={(e)=>this.toggle(3)}>사용자 생성</div>
-          <div className={this.state.toggle === 1 ? "active border border-info tab usertab mx-2 px-5 py-3" : "border usertab mx-2 px-5 py-3" } onClick={(e)=>this.toggle(1)}>사용자 수정</div>
-          <div className={this.state.toggle === 2 ? "active border border-primary tab historytab mx-2 px-5 py-3": "border historytab mx-2 px-5 py-3"} onClick={(e)=>this.toggle(2)}>히스토리</div>
+          <div className={this.state.toggle === 3 ? "active border tab addusertab mx-2 px-5 py-3": "border addusertab mx-2 px-5 py-3"} onClick={(e)=>this.toggle(3)}>사용자 생성</div>
+          <div className={this.state.toggle === 1 ? "active border tab usertab mx-2 px-5 py-3" : "border usertab mx-2 px-5 py-3" } onClick={(e)=>this.toggle(1)}>사용자 수정</div>
+          <div className={this.state.toggle === 2 ? "active border tab historytab mx-2 px-5 py-3": "border historytab mx-2 px-5 py-3"} onClick={(e)=>this.toggle(2)}>히스토리</div>
       </div>
       <div className={this.state.toggle ===1 ? "userManage active":"userManage"}>
               <table className="list">
@@ -253,10 +253,10 @@ export default class Admin extends Component {
           <tr className="text-center">
             <th>번호</th>
             <th className="d-none">id</th>
-            <th className="col-md-2">유저 ID</th>
-            <th className="col-md-1">비밀번호</th>
+            <th className="col-md-2">유저ID</th>
+            <th className="col-md-1">패스워드</th>
             <th className="col-md-2">사용자명</th>
-            <th className="col-md-2">소속</th>
+            <th className="col-md-2">부서명</th>
             <th className="col-md-1">그룹명</th>
             <th className="col-md-2">마지막 접속일시</th>
             <th className="col-md-2"></th>
@@ -281,12 +281,12 @@ export default class Admin extends Component {
                 <td className="last_login_dt"><p className="d-none value">{user.last_login_dt}</p>
                 <input disabled={this.state.lock[index]} type="text" name="last_login_dt" className="form-control" onChange={(e)=>this.onChangeValue(e,index)} value={this.state.user.data[index].last_login_dt} /></td>
                 <td className="action d-inline">
-                  <button className="btn" onClick={(e)=> this.action(e,"lock", user.userid, index)}>{this.state.lock[index] ? <FontAwesomeIcon icon={faLock} size="1x" alt="unlock"/> :  <FontAwesomeIcon icon={faLockOpen} size="1x" alt="lock"/> }</button>
-                  <button className="btn" onClick={(e)=> this.action(e,"delete",user.userid, index)}><FontAwesomeIcon icon={faTrashAlt} size="1x" alt="delete user"/></button>
-                  <button className="btn" onClick={(e)=> this.action(e,"update", user.userid, index)}><FontAwesomeIcon icon={faUserEdit} size="1x" alt="update user"/></button>
+                  <button className="btn" data-tooltip="사용자 수정" onClick={(e)=> this.action(e,"lock", user.userid, index)}>{this.state.lock[index] ? <FontAwesomeIcon icon={faLock} size="1x" alt="unlock"/> :  <FontAwesomeIcon icon={faLockOpen} size="1x" alt="lock"/> }</button>
+                  <button className="btn" data-tooltip="수정내역 저장" onClick={(e)=> this.action(e,"update", user.userid, index)}><FontAwesomeIcon icon={faUserEdit} size="1x" alt="update user"/></button>
+                  <button className="btn" data-tooltip="사용자 삭제" onClick={(e)=> this.action(e,"delete",user.userid, index)}><FontAwesomeIcon icon={faTrashAlt} size="1x" alt="delete user"/></button>
                 </td>
               </tr>
-              )): <h3 className="text-center">등록된 사용자가 없습니다</h3>}
+              )): <tr><td colspan="9"><h3 className="text-center">등록된 사용자가 없습니다</h3></td></tr>}
           </tbody>
         </table>
          <Pagination
@@ -318,7 +318,7 @@ export default class Admin extends Component {
             <td className="text-center my-3 p-3 col-md-3">{log.mod_dt}</td>
           </tr>
           );
-        }): <tr className="nothing"><td colspan="4"><h2 className="text-center">남겨진 내역이 없습니다</h2></td></tr>}
+        }): <tr className="nothing"><td colspan="5"><h2 className="text-center">남겨진 내역이 없습니다</h2></td></tr>}
         </tbody>
     </table>
        <Pagination

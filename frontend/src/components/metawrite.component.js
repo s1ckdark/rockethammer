@@ -453,7 +453,7 @@ export default class Metawrite extends Component {
                                             return(
                                                 <div className="col-md-12">
                                                 <h3 className="h3 schema-field mt-5">{field} Schema</h3>
-                                                <table className="table my-1">
+                                                <table className={"table my-1 "+field}>
                                                     {data[field].map((meta_field, index) => {
                                                         return (
                                                             <>
@@ -461,9 +461,9 @@ export default class Metawrite extends Component {
                                                             <> 
                                                                 <thead>
                                                                     <tr>
-                                                                        <th scope="col" className="col-1">번호</th>
+                                                                        <th scope="col">번호</th>
                                                                         {Object.keys(meta_field).map((field2, index) => {
-                                                                           var tmp = [1, 1, 2, 3, 1, 1, 2]
+                                                                           var tmp = field === "value" ? [2, 1, 2, 3, 1, 1, 2] : [3,3,3,3];
                                                                             return (
                                                                                 <>
                                                                                     <th scope="col" className={"text-center col-"+tmp[index]}>{this.trans(field2)}</th>
@@ -474,7 +474,7 @@ export default class Metawrite extends Component {
                                                                     </tr>
                                                                 </thead>
                                                                 <tr>
-                                                                <th scope="row">{index+1}</th>
+                                                                <td scope="row">{index+1}</td>
                                                                 {Object.keys(meta_field).map((field2) => {
                                                                         return (
                                                                             <td><input type="text" name={field2} className={"field-input "+field2} value={data[field][index][field2]} onChange={(e)=>this.onChangeValueTemp(e, index, field)} readOnly={this.readonly(field2, field)} /></td>
@@ -485,7 +485,7 @@ export default class Metawrite extends Component {
                                                             </tr>
                                                             </>
                                                             : <tr>
-                                                                <th scope="row">{index+1}</th>
+                                                                <td scope="row">{index+1}</td>
                                                                 {Object.keys(meta_field).map((field2) => {
                                                                         return (
                                                                             <td><input type="text" name={field2} className={"field-input "+field2} value={data[field][index][field2]} onChange={(e)=>this.onChangeValueTemp(e, index, field)} readOnly={this.readonly(field2, field)} /></td>

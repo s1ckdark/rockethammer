@@ -108,20 +108,25 @@ export default class Metalist extends Component {
             default:
                 console.log(typeofapi);
         }
-        if (window.confirm("정말 삭제하시겠습니까??") === true && (typeofapi === 'api1' || typeofapi ==='api3')){    //확인
-            try {
-                const response = await axios.post(url, {keyword:JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).subject})
-            } catch(err) {
-                console.log("error", err);
-            }
-        } else {
-            try {
-                Promise.all(url.map(async (endpoint) => await axios.post(endpoint, {keyword:JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).subject}))).then((response1, response2) => {
-                    console.log(response1, response2)
-                })
-            } catch(err) {
-                console.log("error", err);
-            }
+        if (window.confirm("정말 삭제하시겠습니까??") === true){
+            if(typeofapi === 'api1' || typeofapi ==='api3'){    //확인
+                console.log("api1,api3");
+                // try {
+                //     const response = await axios.post(url, {keyword:JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).subject})
+                // } catch(err) {
+                //     console.log("error", err);
+                // }
+            } else {
+                console.log("api2");
+            // try {
+            //     Promise.all(url.map(async (endpoint) => await axios.post(endpoint, {keyword:JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).subject}))).then((response1, response2) => {
+            //         console.log(response1, response2)
+            //     })
+            // } catch(err) {
+            //     console.log("error", err);
+            // }
+        }} else {
+            console.log("cancel");
         }
         if(typeofapi === 'api1') {
             this.setState({

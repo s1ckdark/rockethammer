@@ -67,7 +67,7 @@ class App extends Component {
   render() {
     const { currentUser } = this.state;
     return (
-      <div ref={el => { this.container = el;}}>
+      <div className="main" ref={el => { this.container = el;}}>
       <Seo />
     {currentUser ? 
       currentUser.group === 'ADMIN' ?

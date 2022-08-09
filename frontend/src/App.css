@@ -1,5 +1,5 @@
 /* animaton */
-.transition, .meta .form-group:focus-within .field-label, .meta .metawrite .onpreview, .meta .metalist table tr th[data-tooltip]:hover:before, .meta .metalist table tr th[data-tooltip]:hover:after {
+.transition, .meta .form-group:focus-within .field-label, .meta .metawrite .onpreview, button[data-tooltip]:hover:before, button[data-tooltip]:hover:after, th[data-tooltip]:hover:before, th[data-tooltip]:hover:after {
   transition: all 0.5s ease-in-out;
 }
 
@@ -29,6 +29,71 @@
 }
 .paging ul.pagination li .page-link.page-active {
   color: inherit;
+}
+
+button, th {
+  position: relative;
+}
+button[data-tooltip], th[data-tooltip] {
+  z-index: 2;
+  cursor: pointer;
+  /* Hide the tooltip content by default */
+}
+button[data-tooltip]:before, button[data-tooltip]:after, th[data-tooltip]:before, th[data-tooltip]:after {
+  visibility: hidden;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+  opacity: 0;
+  pointer-events: none;
+}
+button[data-tooltip]:before, th[data-tooltip]:before {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-bottom: 10px;
+  padding: 15px;
+  display: block;
+  width: 100%;
+  min-width: 100px;
+  transform: translate(-50%, 0);
+  border-radius: 3px;
+  background-color: #000;
+  background-color: hsla(0deg, 0%, 20%, 0.9);
+  color: #fff;
+  content: attr(data-tooltip);
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.2;
+}
+button[data-tooltip]:after, th[data-tooltip]:after {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -10px;
+  width: 0;
+  border-top: 10px solid #000;
+  border-top: 10px solid hsla(0deg, 0%, 20%, 0.9);
+  border-right: 10px solid transparent;
+  border-left: 10px solid transparent;
+  content: " ";
+  font-size: 0;
+  line-height: 0;
+}
+button[data-tooltip]:hover:before, button[data-tooltip]:hover:after, th[data-tooltip]:hover:before, th[data-tooltip]:hover:after {
+  visibility: visible;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+  opacity: 1;
+}
+button[data-tooltip].visible, th[data-tooltip].visible {
+  opacity: 1;
+}
+button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
+  vertical-align: bottom;
+  margin-left: 2px;
+  font-weight: 600;
+  font-size: 13px;
+  font-style: italic;
 }
 
 .profile, .login, .register {
@@ -152,29 +217,13 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-}
-.profile .card-container.card, .login .card-container.card, .register .card-container.card {
   width: 400px;
-  height: 400px;
+  height: auto;
   background-color: #f7f7f7;
   padding: 50px;
   margin: 0 auto;
   border-radius: 20px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.3);
-}
-.profile .card-container .card-body, .login .card-container .card-body, .register .card-container .card-body {
-  width: 400px;
-  height: 400px;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background-color: #ccc;
-  border-radius: 50%;
-  flex: unset !important;
-}
-.profile .card-container .card-body .jumbotron, .login .card-container .card-body .jumbotron, .register .card-container .card-body .jumbotron {
-  padding: 30px 0;
 }
 .profile .card-container .card-text, .login .card-container .card-text, .register .card-container .card-text {
   padding: 15px 0;
@@ -195,6 +244,16 @@
   margin: 0 auto 10px;
   display: block;
   border-radius: 50%;
+}
+
+.register {
+  height: auto;
+}
+.register .card-container {
+  position: relative;
+  top: unset;
+  left: unset;
+  transform: none;
 }
 
 .serviceIcon {
@@ -319,6 +378,9 @@
 .admin .history {
   display: none;
 }
+.admin .tab .active {
+  background-color: #eee;
+}
 .admin .active {
   display: block !important;
 }
@@ -360,72 +422,13 @@
 .meta .metalist table tr th {
   position: relative;
 }
-.meta .metalist table tr th[data-tooltip] {
-  z-index: 2;
-  cursor: pointer;
-  /* Hide the tooltip content by default */
-}
-.meta .metalist table tr th[data-tooltip]:before, .meta .metalist table tr th[data-tooltip]:after {
-  visibility: hidden;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
-  opacity: 0;
-  pointer-events: none;
-}
-.meta .metalist table tr th[data-tooltip]:before {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  margin-bottom: 10px;
-  padding: 15px;
-  width: 100%;
-  transform: translate(-50%, 0);
-  border-radius: 3px;
-  background-color: #000;
-  background-color: hsla(0deg, 0%, 20%, 0.9);
-  color: #fff;
-  content: attr(data-tooltip);
-  text-align: left;
-  font-size: 14px;
-  line-height: 1.2;
-}
-.meta .metalist table tr th[data-tooltip]:after {
-  position: absolute;
-  bottom: 100%;
-  left: 50%;
-  margin-left: -10px;
-  width: 0;
-  border-top: 10px solid #000;
-  border-top: 10px solid hsla(0deg, 0%, 20%, 0.9);
-  border-right: 10px solid transparent;
-  border-left: 10px solid transparent;
-  content: " ";
-  font-size: 0;
-  line-height: 0;
-}
-.meta .metalist table tr th[data-tooltip]:hover:before, .meta .metalist table tr th[data-tooltip]:hover:after {
-  visibility: visible;
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
-  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
-  opacity: 1;
-}
-.meta .metalist table tr th[data-tooltip].visible {
-  opacity: 1;
-}
-.meta .metalist table tr th[data-tooltip] .info-icon {
-  vertical-align: bottom;
-  margin-left: 2px;
-  font-weight: 600;
-  font-size: 13px;
-  font-style: italic;
-}
-.meta .metalist table tr td.value span {
+.meta .metalist table tr th td.value span {
   font-size: 18px;
 }
-.meta .metalist .detailview .info-group label {
+.meta .metalist table .detailview .info-group label {
   font-size: 11px;
 }
-.meta .metalist .detailview .info-group p {
+.meta .metalist table .detailview .info-group p {
   margin-bottom: 8px;
 }
 .meta .metawrite {
@@ -448,6 +451,9 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+.meta .metawrite table th, .meta .metawrite table td {
+  min-width: 50px;
 }
 .meta .viewJSON {
   width: 100%;
@@ -581,50 +587,4 @@
 
 .kafkaadmin nav {
   display: none;
-}
-
-/* The flip card container - set the width and height to whatever you want. We have added the border property to demonstrate that the flip itself goes out of the box on hover (remove perspective if you don't want the 3D effect */
-.flip-card {
-  background-color: transparent;
-  width: 300px;
-  height: 200px;
-  border: 1px solid #f1f1f1;
-  perspective: 1000px; /* Remove this if you don't want the 3D effect */
-}
-
-/* This container is needed to position the front and back side */
-.flip-card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  transition: transform 0.8s;
-  transform-style: preserve-3d;
-}
-
-/* Do an horizontal flip when you move the mouse over the flip box container */
-.flip-card:hover .flip-card-inner {
-  transform: rotateY(180deg);
-}
-
-/* Position the front and back side */
-.flip-card-front, .flip-card-back {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  -webkit-backface-visibility: hidden; /* Safari */
-  backface-visibility: hidden;
-}
-
-/* Style the front side (fallback if image is missing) */
-.flip-card-front {
-  background-color: #bbb;
-  color: black;
-}
-
-/* Style the back side */
-.flip-card-back {
-  background-color: dodgerblue;
-  color: white;
-  transform: rotateY(180deg);
 }/*# sourceMappingURL=App.css.map */

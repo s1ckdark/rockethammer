@@ -26,6 +26,76 @@
     }
   }
 }
+button, th {
+  position: relative;
+&[data-tooltip] {
+  z-index: 2;
+  cursor: pointer;
+/* Hide the tooltip content by default */
+&:before,
+&:after {
+  visibility: hidden;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+  opacity: 0;
+  pointer-events: none;
+}
+  &:before {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-bottom: 10px;
+    padding: 15px;
+    display: block;
+    width: 100%;
+    min-width: 100px;
+    transform: translate(-50%,0);
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    background-color: #000;
+    background-color: hsla(0, 0%, 20%, 0.9);
+    color: #fff;
+    content: attr(data-tooltip);
+    text-align: center;
+    font-size: 14px;
+    line-height: 1.2;
+  }
+  &:after {
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -10px;
+    width: 0;
+    border-top: 10px solid #000;
+    border-top: 10px solid hsla(0, 0%, 20%, 0.9);
+    border-right: 10px solid transparent;
+    border-left: 10px solid transparent;
+    content: " ";
+    font-size: 0;
+    line-height: 0;
+  }
+
+  &:hover:before,
+  &:hover:after {
+    @extend .transition;
+    visibility: visible;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
+    opacity: 1;
+  }
+  &.visible {
+    opacity:1;
+  }
+  .info-icon {
+    vertical-align: bottom;
+    margin-left: 2px;
+    font-weight:600;
+    font-size: 13px;
+    font-style: italic;
+  }
+}
+}
 
 .profile, .login, .register {
   display: flex;
@@ -155,9 +225,8 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%,-50%);
-    &.card {
     width: 400px;
-    height: 400px;
+    height: auto;
     background-color: #f7f7f7;
     padding: 50px;
     margin: 0 auto;
@@ -167,21 +236,6 @@
     -moz-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.3);
     -webkit-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.3);
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.3);
-    }
-    .card-body {
-      width: 400px;
-      height: 400px;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%,-50%);
-      background-color: #ccc;
-      border-radius: 50%;
-      flex: unset !important;
-      .jumbotron {
-        padding: 30px 0;
-      }
-    }
     .card-text {
       padding: 15px 0;
       text-align: right;
@@ -207,6 +261,15 @@
   }
 }
 
+.register {
+  height: auto;
+  .card-container {
+    position: relative;
+    top: unset;
+    left: unset;
+    transform: none;
+  }
+}
   .serviceIcon {display: flex; align-items: center; justify-content: center; padding: 50px 0 0;}
   .icon {width: 33px; height: 33px;display: block;margin: 10px;}
   .logo {width:200px;}
@@ -273,6 +336,11 @@
         font-weight: 800;
       }
       .history {display: none;}
+      .tab {
+        .active {
+          background-color: #eee;
+        }
+      }
       .active {
         display: block !important;
       }
@@ -286,8 +354,6 @@
   }
   
   .meta {
-      // position: relative;
-      //metawrite
       .separate-line {width: 1px;}
       .close {
         position: fixed;
@@ -319,72 +385,6 @@
           tr {
             th {
               position: relative;
-              &[data-tooltip] {
-                z-index: 2;
-                cursor: pointer;
-              /* Hide the tooltip content by default */
-              &:before,
-              &:after {
-                visibility: hidden;
-                -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
-                filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
-                opacity: 0;
-                pointer-events: none;
-              }
-                &:before {
-                  position: absolute;
-                  bottom: 100%;
-                  left: 50%;
-                  margin-bottom: 10px;
-                  padding: 15px;
-                  width: 100%;
-                  transform: translate(-50%,0);
-                  -webkit-border-radius: 3px;
-                  -moz-border-radius: 3px;
-                  border-radius: 3px;
-                  background-color: #000;
-                  background-color: hsla(0, 0%, 20%, 0.9);
-                  color: #fff;
-                  content: attr(data-tooltip);
-                  text-align: left;
-                  font-size: 14px;
-                  line-height: 1.2;
-                }
-                &:after {
-                  position: absolute;
-                  bottom: 100%;
-                  left: 50%;
-                  margin-left: -10px;
-                  width: 0;
-                  border-top: 10px solid #000;
-                  border-top: 10px solid hsla(0, 0%, 20%, 0.9);
-                  border-right: 10px solid transparent;
-                  border-left: 10px solid transparent;
-                  content: " ";
-                  font-size: 0;
-                  line-height: 0;
-                }
-
-                &:hover:before,
-                &:hover:after {
-                  @extend .transition;
-                  visibility: visible;
-                  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
-                  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
-                  opacity: 1;
-                }
-                &.visible {
-                  opacity:1;
-                }
-                .info-icon {
-                  vertical-align: bottom;
-                  margin-left: 2px;
-                  font-weight:600;
-                  font-size: 13px;
-                  font-style: italic;
-                }
-              }
-            }
             td {
               &.value {
                 span {
@@ -405,6 +405,7 @@
           }
       }
     }
+  }
       .metawrite {
         position: fixed;
         top: 60px;
@@ -425,6 +426,11 @@
           top:50%;
           left:50%;
           transform:translate(-50%,-50%);
+        }
+        table {
+          th, td {
+            min-width: 50px;
+          }
         }
       }
       .viewJSON {
@@ -527,48 +533,3 @@
   nav {display: none;}
 }
 
-/* The flip card container - set the width and height to whatever you want. We have added the border property to demonstrate that the flip itself goes out of the box on hover (remove perspective if you don't want the 3D effect */
-.flip-card {
-  background-color: transparent;
-  width: 300px;
-  height: 200px;
-  border: 1px solid #f1f1f1;
-  perspective: 1000px; /* Remove this if you don't want the 3D effect */
-}
-
-/* This container is needed to position the front and back side */
-.flip-card-inner {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  transition: transform 0.8s;
-  transform-style: preserve-3d;
-}
-
-/* Do an horizontal flip when you move the mouse over the flip box container */
-.flip-card:hover .flip-card-inner {
-  transform: rotateY(180deg);
-}
-
-/* Position the front and back side */
-.flip-card-front, .flip-card-back {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  -webkit-backface-visibility: hidden; /* Safari */
-  backface-visibility: hidden;
-}
-
-/* Style the front side (fallback if image is missing) */
-.flip-card-front {
-  background-color: #bbb;
-  color: black;
-}
-
-/* Style the back side */
-.flip-card-back {
-  background-color: dodgerblue;
-  color: white;
-  transform: rotateY(180deg);
-}
