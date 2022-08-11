@@ -45,7 +45,6 @@ class App extends Component {
 
   onMouseEnter = (e) => {
     e.preventDefault();
-    console.log(e.currentTarget);
     var thisNode = e.currentTarget.querySelector('p');
     var thisNodeImg = e.currentTarget.querySelector('img');
     gsap.fromTo(thisNode, {autoAlpha:0,y:'0px'},{autoAlpha:1,y:'-30px',duration:1},0)

@@ -414,7 +414,7 @@ button, th {
         left:0;
         z-index:998;
         width: 100%;
-        height: 100%;
+        height: calc(100% - 60px);
         overflow-y: scroll;
         .onpreview {
           @extend .transition;
@@ -506,14 +506,30 @@ button, th {
       &[readonly]::-moz-selection { background: none; color: #000; }
       &[name="is_null"] {text-transform: uppercase;}    
     }
+
     table {
-      tr {       
-        td,th {vertical-align: middle;text-align: center; padding: 15px 0;margin: 10px auto;}
+      tr {    
+        td,th { vertical-align: middle;text-align: center; padding: 15px 0;margin: 10px auto;}
         p {margin:0;}
         input {text-align: center;width:80%;margin:0 auto;}
         input[readonly] {text-align: center;}
       }
+    } 
+
+    .changeView {
+      tr {    
+        &:first-child {
+          td, th {text-align: center;}
+        }   
+        td,th {
+          vertical-align: middle;text-align: left; padding: 15px 0;margin: 10px auto;
+          &:first-child {
+            text-align: center;
+          }
+        }
+      }
     }
+
     .form-group {
       &:focus-within {
         .field-label {

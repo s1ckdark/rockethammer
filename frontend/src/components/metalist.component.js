@@ -47,7 +47,8 @@ export default class Metalist extends Component {
           keyword:'',
           select:{
             idx:'',
-            topic_name:""
+            topic_name:"",
+            subject:""
           },
 		  show:false,
           historyVIEW:false,
@@ -77,7 +78,8 @@ export default class Metalist extends Component {
           meta:{
               ...this.state.meta,
               current: pageNumber-1
-          }
+          },
+          detailVIEW:false
       }, ()=>{this.fetchMetaData(pageNumber-1);})
     }
       
@@ -92,8 +94,18 @@ export default class Metalist extends Component {
 //     })  
 //   }
 
-    onDel = async (e,typeofapi,_id) => {
-        e.preventDefault();
+    useConfirm = (e, message, onConfirm, onCancel) => {
+        e.preventDefault()
+        if(window.confirm(message)) {
+                onConfirm();
+            } else {
+                onCancel();
+            }
+        }
+    
+
+    onDel = async (typeofapi, topic_name) => {
+        console.log(typeofapi, topic_name);
         let url, url2;
         switch(typeofapi){
             case 'api1':
@@ -106,60 +118,60 @@ export default class Metalist extends Component {
                 url = process.env.REACT_APP_API+"/schema/delete";
                 break;
             default:
-                console.log(typeofapi);
+                console.log("typeofapi",typeofapi);
         }
-        if (window.confirm("정말 삭제하시겠습니까??") === true){
-            if(typeofapi === 'api1' || typeofapi ==='api3'){    //확인
-                console.log("api1,api3");
-                // try {
-                //     const response = await axios.post(url, {keyword:JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).subject})
-                // } catch(err) {
-                //     console.log("error", err);
-                // }
-            } else {
-                console.log("api2");
-            // try {
-            //     Promise.all(url.map(async (endpoint) => await axios.post(endpoint, {keyword:JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).subject}))).then((response1, response2) => {
-            //         console.log(response1, response2)
-            //     })
-            // } catch(err) {
-            //     console.log("error", err);
-            // }
-        }} else {
-            console.log("cancel");
-        }
-        if(typeofapi === 'api1') {
-            this.setState({
-                ...this.state,
-                history:{
-                    topic_name:this.state.detail.topic_name,
-                    before:JSON.stringify(this.state.detail),
-                    after:{},
-                    last_mod_dt:(new Date).toISOString(),
-                    last_mod_id:AuthService.getCurrentUser().userid
+        
+        if(typeofapi === 'api1' || typeofapi ==='api3'){    //확인
+                try {
+                    const response = await axios.post(url, {keyword:JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).subject})
+                } catch(err) {
+                    console.log("error", err);
                 }
-            })
-            const response2 = await axios.post(process.env.REACT_APP_API+"/history/inserthistory/", {})
-            if(response2.status ===200){
-                await axios.post(process.env.REACT_APP_API+"/history/history_del", {topic_name:this.state.detail.topic_name, reg_dt:(new Date).toISOString(),user_id:AuthService.getCurrentUser().userid,op:"delete"})
-                    localStorage.removeItem('type');
-                    localStorage.removeItem('data');
-                    alert("삭제가 완료되었습니다");
-                    setTimeout(() => { 
-                        window.location.reload(false);
-                }, 1000)
+        } else {
+            try {
+                Promise.all(url.map(async (endpoint) => await axios.post(endpoint, {keyword:JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).subject}))).then((response1, response2) => {
+                    console.log(response1, response2)
+                })
+            } catch(err) {
+                console.log("error", err);
             }
         }
+
+        // if(typeofapi === 'api1') {
+        //     this.setState({
+        //         ...this.state,
+        //         history:{
+        //             topic_name:this.state.detail.topic_name,
+        //             before:JSON.stringify(this.state.detail),
+        //             after:{},
+        //             last_mod_dt:(new Date).toISOString(),
+        //             last_mod_id:AuthService.getCurrentUser().userid
+        //         }
+        //     })
+            // const response2 = await axios.post(process.env.REACT_APP_API+"/history/inserthistory/", {})
+            // if(response2.status ===200){
+                // await axios.post(process.env.REACT_APP_API+"/history/history_del", {topic_name:this.state.detail.topic_name, reg_dt:(new Date).toISOString(),user_id:AuthService.getCurrentUser().userid,op:"delete"})
+                //     localStorage.removeItem('type');
+                //     localStorage.removeItem('data');
+                //     alert("삭제가 완료되었습니다");
+                //     setTimeout(() => { 
+                //         window.location.reload(false);
+                // }, 1000)
+            // }
+        // }
     
         await axios.post(process.env.REACT_APP_API+"/history/history_del", {topic_name:this.state.detail.topic_name, reg_dt:(new Date).toISOString(),user_id:AuthService.getCurrentUser().userid,op:"delete"})
-            localStorage.removeItem('type');
-            localStorage.removeItem('data');
-            alert("삭제가 완료되었습니다");
-            setTimeout(() => { 
-                window.location.reload(false);
+        localStorage.removeItem('type');
+        localStorage.removeItem('data');
+        alert("삭제가 완료되었습니다");
+        setTimeout(() => { 
+            window.location.reload(false);
         }, 1000)
-        }     
+    }  
 
+    onCancel = () => {
+        console.log("cancel");
+    }
 
     fetchMetaData = async(page) => {
         if(this.state.type ==='list'){
@@ -270,7 +282,8 @@ export default class Metalist extends Component {
             detail:'',
             select:{
                 idx:idx,
-                topic_name:tn
+                topic_name:tn,
+                subject:topic_name
             }
         })
         axios.post(process.env.REACT_APP_API+"/meta/getmeta",{keyword:tn}).then(res => {
@@ -517,9 +530,9 @@ export default class Metalist extends Component {
                             <div className="d-flex">
                                 <button type="button" className="btn btn-success me-1" onClick={e=>this.view(e, 'json')} disabled={Object.keys(this.state.detail).length > 0 ? false:true}>조회</button>
                                 {Object.keys(this.state.detail).length  > 0 ? <button type="button" className="btn btn-info me-1" onClick={e=>this.write(e,"update")}>수정</button>:<button type="button" className="btn btn-primary me-1" onClick={e=>this.write(e,"reg")}  disabled={JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).schema ? false:true}>등록</button>}
-                                {JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).schema && Object.keys(this.state.detail).length >= 0 ? <button type="button" className="btn btn-secondary me-1" onClick={e=>this.onDel(e, "api1", this.state.detail.topic_name)} role="api1" disabled={Object.keys(this.state.detail).length > 0 ? false:true}>삭제</button>:<></>}
-                                {!JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).schema && Object.keys(this.state.detail).length > 0  ? <button type="button" className="btn btn-secondary me-1" onClick={e=>this.onDel(e, "api2", this.state.detail.topic_name)} role="api2">삭제</button>:<></>}
-                                {!JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).schema && Object.keys(this.state.detail).length === 0  ? <button type="button" className="btn btn-secondary me-1" onClick={e=>this.onDel(e,"api3", JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).subject)} role="api3">삭제</button>:<></>}
+                                {JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).schema && Object.keys(this.state.detail).length >= 0 ? <button type="button" className="btn btn-secondary me-1" onClick={e=> this.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, "api1", this.state.select.topic_name), this.onCancel)} role="api1" disabled={Object.keys(this.state.detail).length > 0 ? false:true}>삭제</button>:<></>}
+                                {!JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).schema && Object.keys(this.state.detail).length > 0  ? <button type="button" className="btn btn-secondary me-1" onClick={e=> this.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, "api2", this.state.select.topic_name), this.onCancel)} role="api2">삭제</button>:<></>}
+                                {!JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).schema && Object.keys(this.state.detail).length === 0  ? <button type="button" className="btn btn-secondary me-1" onClick={e=> this.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, "api3", this.state.select.subject), this.onCancel)} role="api3">삭제</button>:<></>}
                                 <button type="button" className="btn btn-danger searchbtn" onClick={(e)=>this.view(e, 'history')} disabled={this.state.history && this.state.history.length >0 ? false:true}>이력</button>
                             </div>
                         </div>

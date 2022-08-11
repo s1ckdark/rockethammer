@@ -439,7 +439,7 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
   left: 0;
   z-index: 998;
   width: 100%;
-  height: 100%;
+  height: calc(100% - 60px);
   overflow-y: scroll;
 }
 .meta .metawrite .onpreview {
@@ -568,6 +568,18 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
   margin: 0 auto;
 }
 .meta table tr input[readonly] {
+  text-align: center;
+}
+.meta .changeView tr:first-child td, .meta .changeView tr:first-child th {
+  text-align: center;
+}
+.meta .changeView tr td, .meta .changeView tr th {
+  vertical-align: middle;
+  text-align: left;
+  padding: 15px 0;
+  margin: 10px auto;
+}
+.meta .changeView tr td:first-child, .meta .changeView tr th:first-child {
   text-align: center;
 }
 .meta .form-group:focus-within .field-label {

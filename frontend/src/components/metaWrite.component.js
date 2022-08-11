@@ -410,9 +410,9 @@ export default class Metawrite extends Component {
     render()
     {
         return (
-            <div className="metawrite bg-light p-5">
+            <div className="metawrite bg-light">
                 <div className={ this.state.preview ? "onpreview container":"container"}>
-                    <div className={this.state.viewmode === "table" ? "d-block type-table" : "d-none type-table"}> 
+                    <div className={this.state.viewmode === "table" ? "d-block type-table p-5" : "d-none type-table"}> 
                         <div className="d-flex flex-wrap my-5"> 
                         {Object.keys(this.state.data).map(field => {
                             // common field
