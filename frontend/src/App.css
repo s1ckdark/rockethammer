@@ -96,6 +96,39 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
   font-style: italic;
 }
 
+.card-container {
+  width: 600px;
+  height: auto;
+  background-color: #f7f7f7;
+  padding: 50px;
+  margin: 0 auto;
+  border-radius: 20px;
+  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.3);
+}
+.card-container .card-text {
+  padding: 15px 0;
+  text-align: right;
+}
+.card-container .card-text p {
+  font-size: 1rem;
+  margin-bottom: 0;
+  line-height: 1.6;
+}
+.card-container .card-text label {
+  margin-top: 10px;
+  margin-right: 15px;
+}
+.card-container .profile-img-card {
+  width: 96px;
+  height: 96px;
+  margin: 0 auto 10px;
+  display: block;
+  border-radius: 50%;
+}
+.card-container .form-group {
+  margin: 30px 0 15px;
+}
+
 .profile, .login, .register {
   display: flex;
   justify-content: center;
@@ -211,39 +244,6 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
 .profile .saturn .info-text .text label, .login .saturn .info-text .text label, .register .saturn .info-text .text label {
   margin-top: 10px;
   margin-right: 15px;
-}
-.profile .card-container, .login .card-container, .register .card-container {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 400px;
-  height: auto;
-  background-color: #f7f7f7;
-  padding: 50px;
-  margin: 0 auto;
-  border-radius: 20px;
-  box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.3);
-}
-.profile .card-container .card-text, .login .card-container .card-text, .register .card-container .card-text {
-  padding: 15px 0;
-  text-align: right;
-}
-.profile .card-container .card-text p, .login .card-container .card-text p, .register .card-container .card-text p {
-  font-size: 1rem;
-  margin-bottom: 0;
-  line-height: 1.6;
-}
-.profile .card-container .card-text label, .login .card-container .card-text label, .register .card-container .card-text label {
-  margin-top: 10px;
-  margin-right: 15px;
-}
-.profile .card-container .profile-img-card, .login .card-container .profile-img-card, .register .card-container .profile-img-card {
-  width: 96px;
-  height: 96px;
-  margin: 0 auto 10px;
-  display: block;
-  border-radius: 50%;
 }
 
 .register {
@@ -363,9 +363,6 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
   height: calc(1.5em + 0.75rem + 2px);
   padding: 0.375rem 0.75rem;
 }
-.admin table .btn {
-  font-size: 11px;
-}
 .admin .pagination {
   justify-content: center;
 }
@@ -384,7 +381,7 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
 .admin .active {
   display: block !important;
 }
-.admin .userManage, .admin .history, .admin .adduser {
+.admin .userManage, .admin .history, .admin .adduser, .admin .weblog {
   display: none;
 }
 .admin .history td {

@@ -15,7 +15,6 @@ import ReactDiffViewer from 'react-diff-viewer';
 import Pagination from "react-js-pagination";
 import Metawrite from "./metawrite.component";
 import Historylist from "./historylist.component";
-import { faCropSimple } from "@fortawesome/free-solid-svg-icons";
 window.React = React;
 
 export default class Metalist extends Component {
@@ -583,7 +582,7 @@ export default class Metalist extends Component {
                     <div className="d-flex pb-5">
                         <ReactDiffViewer leftTitle="Before" rightTitle="After" oldValue={JSON.stringify(this.replaceKey(this.state.changed.before), null, 4)} newValue={JSON.stringify(this.replaceKey(this.state.changed.after), null, 4)} splitView={true} />
                     </div>
-                    <div className="btnArea d-flex justify-content-center">
+                    <div className="btnArea d-flex justify-content-center mb-5">
                         <button type="button" className="btn btn-primary me-1" onClick={(e)=>this.write(e,"change")}>등록</button>
                         <button type="button" className="btn btn-secondary" onClick={this.closeVIEW}>뒤로가기</button>
                     </div>

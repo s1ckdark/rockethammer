@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { useHistory } from "react-router-dom";
 import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
+import Select from 'react-validation/build/select';
 import CheckButton from "react-validation/build/button";
 import AuthService from "../services/auth.service";
 import axios from 'axios';
@@ -10,7 +11,7 @@ const required = value => {
   if (!value) {
     return (
       <div className="alert alert-danger" role="alert">
-        This field is required!
+        필수정보 입니다
       </div>
     );
   }
@@ -20,7 +21,7 @@ const vuserid = value => {
   if (value.length < 3 || value.length > 20) {
     return (
       <div className="alert alert-danger" role="alert">
-        The userid must be between 3 and 20 characters.
+        유저ID는 3자에서 20자 사이로 입력해주세요.
       </div>
     );
   }
@@ -30,7 +31,7 @@ const vpassword = value => {
   if (value.length < 6 || value.length > 40) {
     return (
       <div className="alert alert-danger" role="alert">
-        The password must be between 6 and 40 characters.
+        비밀반호는 6자에서 40자 사이로 입력해주세요.
       </div>
     );
   }
@@ -40,7 +41,7 @@ const vname = value => {
   if (value.length < 2 || value.length > 40) {
     return (
       <div className="alert alert-danger" role="alert">
-        The name must be between 6 and 40 characters.
+       이름은 최소 1자에서 40자 사이로 입력해주세요.
       </div>
     );
   }
@@ -50,12 +51,11 @@ const vdept = value => {
   if (value.length < 0 || value.length > 40) {
     return (
       <div className="alert alert-danger" role="alert">
-        The dept must be between 6 and 40 characters.
+        부서명은 최소 6자에서 40자 사이로 입력해주세요.
       </div>
     );
   }
 };
-
 
 export default class Register extends Component {
 
@@ -69,7 +69,7 @@ export default class Register extends Component {
       password: "",
       name:"",
       dept:"",
-      group:"USER",
+      group:"",
       successful: false,
       message: ""
     };
@@ -88,7 +88,7 @@ export default class Register extends Component {
       password: "",
       name:"",
       dept:"",
-      group:"USER",
+      group:"",
       successful: false,
       message: ""
     })
@@ -122,7 +122,7 @@ export default class Register extends Component {
             name: this.state.name,
             email: this.state.userid,
             login: this.state.name,
-            password: this.state.password
+            password: this.state.password,
           }
           ).then(res => console.log(res));
           axios.post(process.env.REACT_APP_API+"/user/upthistory",
@@ -168,8 +168,8 @@ export default class Register extends Component {
           >
             {!this.state.successful && (
               <div>
-                <div className="form-group">
-                  <label htmlFor="userid">userid</label>
+                <div className="form-group mb-3">
+                  <label htmlFor="userid">유저ID</label>
                   <Input
                     type="text"
                     className="form-control"
@@ -180,7 +180,7 @@ export default class Register extends Component {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group mb-3">
                   <label htmlFor="password">패스워드</label>
                   <Input
                     type="password"
@@ -192,7 +192,7 @@ export default class Register extends Component {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group mb-3">
                   <label htmlFor="name">사용자명</label>
                   <Input
                     type="text"
@@ -204,7 +204,7 @@ export default class Register extends Component {
                   />
                 </div>
 
-                <div className="form-group">
+                <div className="form-group mb-3">
                   <label htmlFor="dept">부서명</label>
                   <Input
                     type="text"
@@ -216,14 +216,16 @@ export default class Register extends Component {
                   />
                 </div>
 
-                  <Input
-                    type="hidden"
-                    name="group"
-                    value={this.state.group}
-                    onChange={this.onChangeValue}
-                  />
+                <div className="form-group mb-5">
+                  <label htmlFor="dept">그룹</label>
+                  <Select className="form-control" name="group" value={this.state.group} onChange={this.onChangeValue} validations={[required]}>
+                    <option disabled={true} selected value="">--그룹 선택--</option>
+                    <option value="ADMIN">어드민</option>
+                    <option value="USER">유저</option>
+                  </Select>
+                </div>
   
-                <div className="action-btn mt-3">
+                <div className="action-btn d-flex justify-content-center align-items-center mt-3">
                     <button className="btn btn-primary btn-block me-2">회원 가입</button>
                     <button type="button" className="btn btn-primary btn-block" onClick={this.handleCancelClick}>Cancel</button>
                   </div>

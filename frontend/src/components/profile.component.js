@@ -143,7 +143,7 @@ export default class Profile extends Component {
     <canvas className="star_black"></canvas>
      <div className="profile col-md-12">
       <svg id="universe" viewBox="0 0 700 700">
-        <ellipse id="orbit" cx="350" cy="400" rx="350" ry="120" fill="none" stroke="none" stroke-Width="3" />
+        <ellipse id="orbit" cx="350" cy="400" rx="350" ry="120" fill="none" stroke="none" strokeWWidth="3" />
       </svg>
       <svg id="rocket" viewBox="0 0 512.016 512.016" style={{enableBackground:"new 0 0 512.016 512.016"}}>
         <g>

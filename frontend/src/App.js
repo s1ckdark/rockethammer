@@ -68,9 +68,6 @@ class App extends Component {
     return (
       <div className="main" ref={el => { this.container = el;}}>
       <Seo />
-    {currentUser ? 
-      currentUser.group === 'ADMIN' ?
-      (
         <nav className="navbar navbar-expand navbar-dark bg-dark">
           <span className="navbar-brand">
             <img src={'./img/rh_logo.png'} alt="ROCKETHAMMER" className="logo"/>
@@ -110,16 +107,20 @@ class App extends Component {
                   <img alt="metric" src={'./img/promethus.png'} />
                 <p>메트릭<br/>수집기</p>
                 </Link>
-              </li>
-              <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
-                <Link to={"/admin"} className="nav-link">
-                  <img alt="service" src={'./img/admin-white.png'} />
-                <p>설정</p>
-                </Link>
-              </li>             
+              </li>         
             </div>
         
-            <div className="navbar-nav ml-auto">
+          <div className="navbar-nav ml-auto">
+            {currentUser && currentUser.group === 'ADMIN' ?
+                        <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
+                        <Link to={"/admin"} className="nav-link">
+                          <img alt="service" src={'./img/admin-white.png'} />
+                        <p>설정</p>
+                        </Link>
+                      </li>    
+          :<></>}
+        {currentUser ? 
+        <>
               <li className="nav-item">
                 <Link to={"/profile"} className="nav-link">
                   {currentUser.name}님
@@ -130,11 +131,9 @@ class App extends Component {
                   Log out
                 </a>
               </li>
+        </>:<></>}
             </div>
          </nav>
-          ) :null 
-      : null
-    }
         <div className="container mt-3">
           <Routes>
             <Route path="/" element={<Home />} />
