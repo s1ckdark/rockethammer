@@ -125,7 +125,7 @@ export default class Weblog extends Component {
                             <thead>
                                 <tr className="text-center p-3">
                                     <th scope="col" className="col-md-1">번호</th>
-                                    <th scope="col" className="col-md-6" data-tooltip="User-Agent: Mozilla/5.0 (<system-information>) <platform> (<platform-details>) <extensions>">로그</th>
+                                    <th scope="col" className="col-md-6" data-tooltip="User-Agent: Mozilla/5.0 (<system-information>) <platform> (<platform-details>) <extensions>">로그<span className="info-icon">&#x24D8;</span></th>
                                     <th scope="col" className="col-md-2">접속IP</th>
                                     <th scope="col" className="col-md-1">유저ID</th>
                                     <th scope="col" className="col-md-2">로그인일시</th>
