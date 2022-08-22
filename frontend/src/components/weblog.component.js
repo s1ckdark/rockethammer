@@ -123,7 +123,7 @@ export default class Weblog extends Component {
                     <div className="logList col-md-12 my-5 transition">
                         <table className="metalist table table-hover">
                             <thead>
-                                <tr className="text-center p-3">
+                                <tr className="text-center my-3">
                                     <th scope="col" className="col-md-1">번호</th>
                                     <th scope="col" className="col-md-6" data-tooltip="User-Agent: Mozilla/5.0 (<system-information>) <platform> (<platform-details>) <extensions>">로그<span className="info-icon">&#x24D8;</span></th>
                                     <th scope="col" className="col-md-2">접속IP</th>
@@ -134,7 +134,7 @@ export default class Weblog extends Component {
                             <tbody>
                         {this.state.log.dataList && this.state.log.dataList.length > 0 ? this.state.log.dataList.map((item,index) => {
                             return(
-                                    <tr data-index={index} className="text-center" key={5*parseInt(this.state.log.current)+index+1}>
+                                    <tr data-index={index} className="text-center align-middle py-5" key={5*parseInt(this.state.log.current)+index+1}>
                                         <th scope="row">{5*parseInt(this.state.log.current)+index+1}</th>
                                         <td className="log">{item.log}</td>
                                         <td className="ipAddr">{item.ipAddr}</td>

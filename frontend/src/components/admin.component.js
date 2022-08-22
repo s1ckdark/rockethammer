@@ -296,9 +296,9 @@ export default class Admin extends Component {
       <div className={this.state.toggle ===1 ? "userManage active":"userManage"}>
     {this.state.user.show && !this.state.edit.show ? 
     <div className="userlist">
-        <table className="list table">
+        <table className="table w-100">
           <thead>
-          <tr className="text-center d-flex">
+          <tr className="text-center my-3">
             <th className="col-1">번호</th>
             <th className="col-2">유저ID</th>
             <th className="col-2">사용자명</th>
@@ -310,14 +310,14 @@ export default class Admin extends Component {
           </thead>
           <tbody>
             {this.state.user.totalcnt > 0 ? this.state.user.currentTableData.map((user,index)=>(
-              <tr className="text-center align-middle d-flex" key={index}>
-                <td className="index col-1"><p className="value">{index + this.state.user.pageSize * (this.state.user.currentPage - 1) + 1}</p></td>
-                <td className="userid col-2"><p className="value">{user.userid}</p></td>
-                <td className="name col-2"><p className="value">{user.name}</p></td>
-                <td className="dept col-1"><p className="value">{user.dept}</p></td>
-                <td className="group col-1"><p className="value">{user.group ==='ADMIN' ? "관리자":"일반"}</p></td>
-                <td className="last_login_dt col-3"><p className="value">{user.last_login_dt}</p></td>
-                <td className="action d-inline col-2">
+              <tr className="text-center align-middle py-5" key={index}>
+                <td className="index col-1">{index + this.state.user.pageSize * (this.state.user.currentPage - 1) + 1}</td>
+                <td className="userid col-2">{user.userid}</td>
+                <td className="name col-2">{user.name}</td>
+                <td className="dept col-1">{user.dept}</td>
+                <td className="group col-1">{user.group ==='ADMIN' ? "관리자":"일반"}</td>
+                <td className="last_login_dt col-3">{user.last_login_dt}</td>
+                <td className="action d-table-cell col-2">
                   <button className="btn btn-primary me-1" data-tooltip="사용자 수정" onClick={(e)=> this.action(e,"edit", user.userid, index)}>수정</button>
                   <button className="btn btn-danger" data-tooltip="사용자 삭제" onClick={(e)=> this.action(e,"delete",user.userid, index)}>삭제</button>
                 </td>
@@ -382,23 +382,23 @@ export default class Admin extends Component {
     <div className={this.state.toggle === 2  ? "history active":"history"}>
            <table className="table w-100">
            <thead>
-              <tr>
-              <th className="text-center my-3 p-3 col-md-1">NO</th>
-              <th className="text-center my-3 p-3 col-md-2">수정자</th>
-              <th className="text-center my-3 p-2 col-md-2">유저ID</th>
-              <th className="text-center my-3 p-3 col-md-4">수정내역</th>
-              <th className="text-center my-3 p-3 col-md-3">수정시간</th>
+              <tr className="text-center my-3">
+              <th className="text-center col-md-1">NO</th>
+              <th className="text-center col-md-2">수정자</th>
+              <th className="text-center col-md-2">유저ID</th>
+              <th className="text-center col-md-4">수정내역</th>
+              <th className="text-center col-md-3">수정시간</th>
               </tr>
               </thead>
               <tbody>
         {this.state.history.totalcnt > 0 ? this.state.history.currentTableData.map((log, index)=>{
           return (
-          <tr>
-            <td className="text-center my-3 p-3 col-md-1">{index + this.state.history.pageSize * (this.state.history.currentPage - 1) + 1}</td>
-            <td className="text-center my-3 p-3 col-md-2">admin</td>
-            <td className="text-center my-3 p-3 col-md-2">{log.userid}</td>
-            <td className="text-start my-3 p-3 col-md-4">{log.mod_item}</td>
-            <td className="text-center my-3 p-3 col-md-3">{log.mod_dt}</td>
+          <tr className="text-center align-middle py-5">
+            <td className="text-center col-md-1">{index + this.state.history.pageSize * (this.state.history.currentPage - 1) + 1}</td>
+            <td className="text-center col-md-2">admin</td>
+            <td className="text-center col-md-2">{log.userid}</td>
+            <td className="text-start col-md-4">{log.mod_item}</td>
+            <td className="text-center col-md-3">{log.mod_dt}</td>
           </tr>
           );
         }): <tr className="nothing"><td colspan="5"><h2 className="text-center">남겨진 내역이 없습니다</h2></td></tr>}

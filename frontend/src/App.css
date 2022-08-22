@@ -387,6 +387,13 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
 .admin .history td {
   white-space: pre-wrap;
 }
+.admin .history .table tbody tr, .admin .userManage .table tbody tr {
+  border-bottom-width: 1px;
+  height: 60px;
+}
+.admin .history .table tbody tr td, .admin .userManage .table tbody tr td {
+  border-bottom-width: 0;
+}
 
 .meta .separate-line {
   width: 1px;
@@ -421,6 +428,9 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
 }
 .meta .metalist table tr th td.value span {
   font-size: 18px;
+}
+.meta .metalist table .detailview .btn {
+  letter-spacing: -2px;
 }
 .meta .metalist table .detailview .info-group label {
   font-size: 11px;
