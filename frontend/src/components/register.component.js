@@ -71,7 +71,12 @@ export default class Register extends Component {
       dept:"",
       group:"",
       successful: false,
-      message: ""
+      message: "",
+      compare:{
+        newPassword:"",
+        confirmPassword:"",
+        result:false
+      },
     };
   }
 
@@ -89,6 +94,11 @@ export default class Register extends Component {
       name:"",
       dept:"",
       group:"",
+      compare:{
+        newPassword:"",
+        confirmPassword:"",
+        result:false
+      },
       successful: false,
       message: ""
     })
@@ -149,6 +159,19 @@ export default class Register extends Component {
     }
   }
 
+  onPasswordChangeValue = (e) => {
+    e.preventDefault()
+    this.setState({
+      ...this.state,
+      compare:{
+        ...this.state.compare,
+      [e.target.name]:e.target.value
+      }
+    },()=>{
+      this.state.compare.newPassword === this.state.compare.confirmPassword ? this.setState({...this.state,password:this.state.confirmPassword,compare:{...this.state.compare,result:true}}):this.setState({...this.state,compare:{...this.state.compare,result:false}})
+    })
+  }
+
   render() {
     return (
       <div className="register">
@@ -191,6 +214,13 @@ export default class Register extends Component {
                     validations={[required, vpassword]}
                   />
                 </div>
+                <div className="passwordLayer">
+                  <div className="comparePassword my-3">
+                    <input type="password" name="newPassword" className="form-control mb-3" onClick={this.clear} onChange={e=>this.onPasswordChangeValue(e)} value={this.state.compare.newPassword} placeholder="비밀번호를 입력하세요" validations={[required, vpassword]}/>
+                    <input type="password" name="confirmPassword" className="form-control" onClick={this.clear} onChange={e=>this.onPasswordChangeValue(e)} value={this.state.compare.confirmPassword} placeholder="비밀번호를 다시 입력해주세요" validations={[required, vpassword]}/>
+                  </div>
+                  <div className={this.state.compare.newPassword && this.state.compare.confirmPassword ? "d-block compareResult":"d-none"}>입력된 비밀번호가 {this.state.compare.result ? "일치합니다":"다릅니다"}</div>
+                </div>
 
                 <div className="form-group mb-3">
                   <label htmlFor="name">사용자명</label>
@@ -220,8 +250,8 @@ export default class Register extends Component {
                   <label htmlFor="dept">그룹</label>
                   <Select className="form-control" name="group" value={this.state.group} onChange={this.onChangeValue} validations={[required]}>
                     <option disabled={true} selected value="">--그룹 선택--</option>
-                    <option value="ADMIN">어드민</option>
-                    <option value="USER">유저</option>
+                    <option value="ADMIN">관리자</option>
+                    <option value="USER">일반</option>
                   </Select>
                 </div>
   

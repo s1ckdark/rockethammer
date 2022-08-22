@@ -305,7 +305,7 @@ export default class Admin extends Component {
             <th className="col-1">부서명</th>
             <th className="col-1">그룹명</th>
             <th className="col-3">마지막 접속일시</th>
-            <th className="col-2">기능g</th>
+            <th className="col-2">기능</th>
           </tr>
           </thead>
           <tbody>
@@ -315,7 +315,7 @@ export default class Admin extends Component {
                 <td className="userid col-2"><p className="value">{user.userid}</p></td>
                 <td className="name col-2"><p className="value">{user.name}</p></td>
                 <td className="dept col-1"><p className="value">{user.dept}</p></td>
-                <td className="group col-1"><p className="value">{user.group}</p></td>
+                <td className="group col-1"><p className="value">{user.group ==='ADMIN' ? "관리자":"일반"}</p></td>
                 <td className="last_login_dt col-3"><p className="value">{user.last_login_dt}</p></td>
                 <td className="action d-inline col-2">
                   <button className="btn btn-primary me-1" data-tooltip="사용자 수정" onClick={(e)=> this.action(e,"edit", user.userid, index)}>수정</button>
@@ -368,8 +368,8 @@ export default class Admin extends Component {
     <p className="field-label">그룹</p>
     <select className="form-control" name="group" onChange={e=>this.onChangeValue(e)} value={this.state.edit.data.group}>
       <option disabled hidden value=''>선택</option>
-      <option value="USER">Normal</option>
-      <option value="ADMIN">Admin</option>
+      <option value="ADMIN">관리자</option>
+      <option value="USER">일반</option>
     </select>
   </div>
   <div className="actionBtn d-flex justify-content-center align-items-center mt-5 mb-3">

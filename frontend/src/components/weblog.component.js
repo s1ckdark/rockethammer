@@ -58,6 +58,62 @@ export default class Weblog extends Component {
             })
         }
 
+    parseUA = () => {
+        //useragent strings are just a set of phrases each optionally followed by a set of properties encapsulated in paretheses
+        const part = /\s*([^\s/]+)(\/(\S+)|)(\s+\(([^)]+)\)|)/g;
+        //these properties are delimited by semicolons
+        const delim = /;\s*/;
+        //the properties may be simple key-value pairs if;
+        const single = [
+            //it is a single comma separation,
+            /^([^,]+),\s*([^,]+)$/,
+            //it is a single space separation,
+            /^(\S+)\s+(\S+)$/,
+            //it is a single colon separation,
+            /^([^:]+):([^:]+)$/,
+            //it is a single slash separation
+            /^([^/]+)\/([^/]+)$/,
+            //or is a special string
+            /^(.NET CLR|Windows)\s+(.+)$/
+        ];
+        //otherwise it is unparsable because everyone does it differently, looking at you iPhone
+        const many = / +/;
+        //oh yeah, bots like to use links
+        const link = /^\+(.+)$/;
+    
+        const inner = (properties, property) => {
+            let tmp;
+    
+            if (tmp = property.match(link)) {
+                properties.link = tmp[1];
+            }
+            else if (tmp = single.reduce((match, regex) => (match || property.match(regex)), null)) {
+                properties[tmp[1]] = tmp[2];
+            }
+            else if (many.test(property)) {
+                if (!properties.properties)
+                    properties.properties = [];
+                properties.properties.push(property);
+            }
+            else {
+                properties[property] = true;
+            }
+    
+            return properties;
+        };
+    
+        return (input) => {
+            const output = {};
+            for (let match; match = part.exec(input); '') {
+                output[match[1]] = {
+                    ...(match[5] && match[5].split(delim).reduce(inner, {})),
+                    ...(match[3] && {version:match[3]})
+                };
+            }
+            return output;
+        };
+    }
+    
     render()
     {
         return (
@@ -69,7 +125,7 @@ export default class Weblog extends Component {
                             <thead>
                                 <tr className="text-center p-3">
                                     <th scope="col" className="col-md-1">번호</th>
-                                    <th scope="col" className="col-md-6">로그</th>
+                                    <th scope="col" className="col-md-6" data-tooltip="User-Agent: Mozilla/5.0 (<system-information>) <platform> (<platform-details>) <extensions>">로그</th>
                                     <th scope="col" className="col-md-2">접속IP</th>
                                     <th scope="col" className="col-md-1">유저ID</th>
                                     <th scope="col" className="col-md-2">로그인일시</th>
@@ -77,7 +133,6 @@ export default class Weblog extends Component {
                             </thead>
                             <tbody>
                         {this.state.log.dataList && this.state.log.dataList.length > 0 ? this.state.log.dataList.map((item,index) => {
-                            console.log(item);
                             return(
                                     <tr data-index={index} className="text-center" key={5*parseInt(this.state.log.current)+index+1}>
                                         <th scope="row">{5*parseInt(this.state.log.current)+index+1}</th>
