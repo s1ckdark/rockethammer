@@ -364,14 +364,14 @@ export default class Admin extends Component {
   <p className="field-label">부서명</p>
     <input type="text" name="dept" className="form-control" onChange={e=>this.onChangeValue(e)} value={this.state.edit.data.dept} />
   </div>
-  <div className="form-group group">
+  {/* <div className="form-group group">
     <p className="field-label">그룹</p>
     <select className="form-control" name="group" onChange={e=>this.onChangeValue(e)} value={this.state.edit.data.group}>
       <option disabled hidden value=''>선택</option>
       <option value="ADMIN">관리자</option>
       <option value="USER">일반</option>
     </select>
-  </div>
+  </div> */}
   <div className="actionBtn d-flex justify-content-center align-items-center mt-5 mb-3">
     <button className="btn btn-primary me-1" onClick={(e)=> this.action(e,"update", this.state.edit.data.userid)}>수정</button>
     <button className="btn btn-primary" onClick={this.onCancel}>취소</button>

@@ -69,7 +69,7 @@ export default class Register extends Component {
       password: "",
       name:"",
       dept:"",
-      group:"",
+      group:"USER",
       successful: false,
       message: "",
       compare:{
@@ -93,7 +93,7 @@ export default class Register extends Component {
       password: "",
       name:"",
       dept:"",
-      group:"",
+      group:"USER",
       compare:{
         newPassword:"",
         confirmPassword:"",
@@ -138,7 +138,7 @@ export default class Register extends Component {
           axios.post(process.env.REACT_APP_API+"/user/upthistory",
             {
               userid: this.state.userid,
-              mod_item: this.state.userid+" 사용자 등록"
+              mod_item: "사용자 등록"
             }
           ).then( res => {this.props.fetchData();this.props.fetchHistoryData()})
         },
@@ -246,18 +246,18 @@ export default class Register extends Component {
                   />
                 </div>
 
-                <div className="form-group mb-5">
+                {/* <div className="form-group mb-5">
                   <label htmlFor="dept">그룹</label>
                   <Select className="form-control" name="group" value={this.state.group} onChange={this.onChangeValue} validations={[required]}>
                     <option disabled={true} selected value="">--그룹 선택--</option>
                     <option value="ADMIN">관리자</option>
                     <option value="USER">일반</option>
                   </Select>
-                </div>
+                </div> */}
   
-                <div className="action-btn d-flex justify-content-center align-items-center mt-3">
+                <div className="action-btn d-flex justify-content-center align-items-center mt-5">
                     <button className="btn btn-primary btn-block me-2">회원 가입</button>
-                    <button type="button" className="btn btn-primary btn-block" onClick={this.handleCancelClick}>Cancel</button>
+                    <button type="button" className="btn btn-danger btn-block" onClick={this.handleCancelClick}>취소</button>
                   </div>
               </div>
             )}
