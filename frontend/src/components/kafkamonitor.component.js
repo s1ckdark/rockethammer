@@ -15,7 +15,7 @@ export default class Kafkamonitor extends Component {
     return (
       <div className="kafkamonitor">
       <div className="container">
-        <Iframe url="http://10.20.19.76:3000/"
+        <Iframe url={process.env.REACT_APP_GRAFANA}
         id="KafkaMonitor"
         className="cors-iframe"/>
       </div>

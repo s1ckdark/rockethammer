@@ -1,3 +1,4 @@
+import { processArrayType } from "json-to-avro/src/jsonToAvro";
 import React, { Component } from "react";
 import Iframe from 'react-iframe'
 import UserService from "../services/user.service";
@@ -30,7 +31,7 @@ export default class Kafkaadmin extends Component {
     return (
       <div className="kafkadmin" onLoad={this.runAfterRender}>
       <div className="container">
-        <Iframe url="http://10.20.19.62:8084/"
+        <Iframe url={process.env.REACT_APP_KAFAKUI}
         id="KafkaAdmin"
         className="cors-iframe"/>
       </div>

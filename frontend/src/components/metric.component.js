@@ -1,3 +1,4 @@
+import { processArrayType } from "json-to-avro/src/jsonToAvro";
 import React, { Component } from "react";
 import Iframe from 'react-iframe'
 
@@ -13,19 +14,14 @@ export default class Metric extends Component {
   }
 
   componentDidMount(){
-    // this.test()
-    // document.querySelector("nav[role='navigation']").style.display="none"
-    // document.querySelector("main").style.marginTop=0
   }
 
-  // test = async() => {
-  //   await axios.post("http://localhost:8080/api/grafana/user").then( res => console.log(res))
-// }
+
   render() {
     return (
       <div className="metric">
       <div className="container">
-        <Iframe url="http://10.20.19.76:9090/graph?g0.expr=&g0.tab=1&g0.stacked=0&g0.show_exemplars=0&g0.range_input=1h"
+        <Iframe url={process.env.REACT_APP_PROMETHEUS}
         id="metric"
         className="cors-iframe"/>
       </div>
