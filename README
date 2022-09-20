@@ -1,1 +1,0 @@
-nohup java -jar spring-boot-security-jwt-mongodb-0.0.6-SNAPSHOT.jar &
