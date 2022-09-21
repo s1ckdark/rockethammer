@@ -168,7 +168,7 @@ export default class Register extends Component {
       [e.target.name]:e.target.value
       }
     },()=>{
-      this.state.compare.newPassword === this.state.compare.confirmPassword ? this.setState({...this.state,password:this.state.confirmPassword,compare:{...this.state.compare,result:true}}):this.setState({...this.state,compare:{...this.state.compare,result:false}})
+      this.state.compare.newPassword === this.state.compare.confirmPassword ? this.setState({...this.state,password:this.state.compare.confirmPassword,compare:{...this.state.compare,result:true}}):this.setState({...this.state,compare:{...this.state.compare,result:false}})
     })
   }
 

@@ -42,7 +42,7 @@
 >git clone https://github.com/pdev-gd/rockethammer-admin.git
 
 # Frontend
-
+env.template를 수정하여 환경설정 진행
 > cd rockethammer-admin/frontend
 > cp env.template .env
 > vim .env
@@ -61,7 +61,7 @@ REACT_APP_KAFAKUI={url}
 # Backend
 ## JAVA JDK 1.8
 ```
+app.properties template을 수정하여 환경 설정 후 실행한다.
 > cd rockethammer-admin
-> nohup java -jar -Dspring.config.location={/path/to/properties} 
-spring-boot-security-jwt-mongodb-0.2.7-SNAPSHOT.jar &
+> nohup java -jar -Dspring.config.location={/path/to/properties} spring-boot-security-jwt-mongodb-0.2.7-SNAPSHOT.jar &
 ```
