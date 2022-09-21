@@ -52,13 +52,16 @@ REACT_APP_PROMETHEUS={url}
 REACT_APP_GRAFANA={url}
 REACT_APP_KAFAKUI={url}
 ```
-
+```
 > npm install
 > npm run build
-
+```
 ---
 
 # Backend
 ## JAVA JDK 1.8
+```
 > cd rockethammer-admin
-> nohup java -jar spring-boot-security-jwt-mongodb-0.2.7-SNAPSHOT.jar {mongodb-uri} {allow-origin} &
+> nohup java -jar -Dspring.config.location={/path/to/properties} 
+spring-boot-security-jwt-mongodb-0.2.7-SNAPSHOT.jar &
+```
