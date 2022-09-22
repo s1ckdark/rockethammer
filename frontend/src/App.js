@@ -78,12 +78,12 @@ class App extends Component {
                   <img alt="Home" src={'./img/home.png'} />
               <p>홈</p></Link>
             </li>
-              <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
+              {/* <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
               <Link to={"/confluent"}  className="nav-link">
                <img alt="Confluent" src={'./img/confluent-white.png'} />
               <p>C3 </p>
               </Link>
-              </li>     
+              </li>      */}
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
                 <Link to={"/meta"} className="nav-link">
                   <img alt="Meta" src={'./img/meta-white.png'} />
