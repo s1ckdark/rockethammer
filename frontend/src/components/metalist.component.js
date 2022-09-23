@@ -61,13 +61,15 @@ export default class Metalist extends Component {
               after:''
           },
           typeVIEW:false,
-          type:'',
-          listtype:'',
+          type:'list',
+          listtype:'list',
           view:false,
           sectionVIEW:'',
           delete:{}
         };
         this.handleMetaPageChange = this._handleMetaPageChange.bind(this);
+        this.detailView = this.detailView.bind(this);
+        this.closeWrite = this.closeWrite.bind(this);
     }
     
     _handleMetaPageChange(pageNumber) {
@@ -122,7 +124,7 @@ export default class Metalist extends Component {
         
         if(typeofapi === 'api1' || typeofapi ==='api3'){    //확인
                 try {
-                    const response = await axios.post(url, {keyword:JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).subject})
+                    axios.post(url, {keyword:JSON.parse(this.state.meta['dataList'][this.state.select.idx].schema).subject}).then(res => console.log(res))
                 } catch(err) {
                     console.log("error", err);
                 }
@@ -135,29 +137,6 @@ export default class Metalist extends Component {
                 console.log("error", err);
             }
         }
-
-        // if(typeofapi === 'api1') {
-        //     this.setState({
-        //         ...this.state,
-        //         history:{
-        //             topic_name:this.state.detail.topic_name,
-        //             before:JSON.stringify(this.state.detail),
-        //             after:{},
-        //             last_mod_dt:(new Date).toISOString(),
-        //             last_mod_id:AuthService.getCurrentUser().userid
-        //         }
-        //     })
-            // const response2 = await axios.post(process.env.REACT_APP_API+"/history/inserthistory/", {})
-            // if(response2.status ===200){
-                // await axios.post(process.env.REACT_APP_API+"/history/history_del", {topic_name:this.state.detail.topic_name, reg_dt:(new Date).toISOString(),user_id:AuthService.getCurrentUser().userid,op:"delete"})
-                //     localStorage.removeItem('type');
-                //     localStorage.removeItem('data');
-                //     alert("삭제가 완료되었습니다");
-                //     setTimeout(() => { 
-                //         window.location.reload(false);
-                // }, 1000)
-            // }
-        // }
     
         await axios.post(process.env.REACT_APP_API+"/history/history_del", {topic_name:this.state.detail.topic_name, reg_dt:(new Date).toISOString(),user_id:AuthService.getCurrentUser().userid,op:"delete"})
         localStorage.removeItem('type');
@@ -176,7 +155,6 @@ export default class Metalist extends Component {
         if(this.state.type ==='list'){
         await axios.post(process.env.REACT_APP_API+"/schema/getallschema",{size:5,page:page})
             .then(res => {
-                console.log(res);
               this.setState({
                 ...this.state,
                 listtype:'list',
@@ -187,7 +165,6 @@ export default class Metalist extends Component {
         } else {
             await axios.post(process.env.REACT_APP_API+"/schema/search",{keyword:this.state.keyword, size:5,page:page})
             .then(res => {
-                console.log(res);
                 this.setState({
                 ...this.state,
                 listtype:'search',
@@ -285,7 +262,9 @@ export default class Metalist extends Component {
                 subject:topic_name
             }
         })
+        console.log(tn)
         axios.post(process.env.REACT_APP_API+"/meta/getmeta",{keyword:tn}).then(res => {
+            console.log(res.data);
             if(res.data && res.data.length > 0) {
                 this.setState({...this.state, detail:res.data[0],delete:res.data[0],show:true, type:'update'})
             } else {
@@ -404,9 +383,9 @@ export default class Metalist extends Component {
         })
     }
 
-    closeWrite = (e) => {
+    closeWrite = (e, idx=this.state.select.idx, topic_name=this.state.detail.topic_name) => {
         e.preventDefault();
-        this.detailView(e,this.state.select.idx, this.state.detail.topic_name);
+        this.detailView(e,idx, topic_name);
         this.setState({
             ...this.state,
            type:'',
@@ -450,7 +429,7 @@ export default class Metalist extends Component {
     {
         return (
             <>
-                <div className={this.state.view ? "metalist d-none":"metalist"}>
+                <div className={this.state.view ? "list d-none":"metalist"}>
                 <div className="find mx-auto my-5 text-center d-block">
                     <div className="d-flex justify-content-center col-md-12 mx-auto">
                         <input className="search px-3 col-md-3" name="search" value={this.state.search} onChange = {this.onChangeKeyword} />
@@ -459,18 +438,18 @@ export default class Metalist extends Component {
                 </div>
                 <div className="d-flex justify-content-around">
                     <div className={ this.state.detailVIEW ? "schemaList col-md-9 my-5 transition":"schemaList col-md-12 my-5 transition"}>
-                        <table className="metalist table table-hover">
+                        <table className="table-list table table-hover">
                             <thead>
                                 <tr className="text-center p-3">
                                     <th scope="col" className="col-md-1">번호</th>
-                                    <th scope="col" className="col-md-2" data-tooltip="물리 스키마 변경 여부입니다. 값이 O 이면 등록되어 있는 물리 스키마 버전이 최신이 아니므로 변경 등록 해주세요!">변경(물리)<span className="info-icon">&#x24D8;</span></th>
+                                    <th scope="col" className="col-md-2" data-tooltip="물리 스키마 변경 여부입니다. 값이 Y 이면 등록되어 있는 물리 스키마 버전이 최신이 아니므로 변경 등록 해주세요!">변경(물리)<span className="info-icon">&#x24D8;</span></th>
                                     <th scope="col" className="col-md-4">토픽명</th>
                                     <th scope="col" className="col-md-3">등록일시</th>
-                                    <th scope="col" className="col-md-2" data-tooltip="물리 스키마 삭제 여부입니다. 값이 “O”이면 물리 스키마 삭제된 상태이므로 논리 메타를 삭제해주세요!">삭제(물리)<span className="info-icon">&#x24D8;</span></th>
+                                    <th scope="col" className="col-md-2" data-tooltip="물리 스키마 삭제 여부입니다. 값이 Y 이면 물리 스키마 삭제된 상태이므로 논리 메타를 삭제해주세요!">삭제(물리)<span className="info-icon">&#x24D8;</span></th>
                                 </tr>
                             </thead>
                             <tbody>
-                        {this.state.meta.dataList && this.state.meta.dataList.length > 0 ? this.state.meta.dataList.map((item,index) => {
+                        {this.state.meta && this.state.meta.dataList && this.state.meta.dataList.length > 0 ? this.state.meta.dataList.map((item,index) => {
                             var temp = {};
                             var mapping = {};
                             var schema = JSON.parse(item.schema), meta_join = item.meta_join !=='undefined' ? JSON.parse(item.meta_join):null;   
@@ -522,7 +501,7 @@ export default class Metalist extends Component {
                                 </div>
                                 <div className="info-group">
                                     <label className="me-2">마지막 수정 일시</label>
-                                    <p>{this.state.detail.last_mod_dt.split('.')[0].replace('T', ' ')}</p>
+                                    <p>{this.state.detail.last_mod_dt ? this.state.detail.last_mod_dt.split('.')[0].replace('T', ' ') : <></>}</p>
                                 </div>
                                 </>
                                 :<></>}
@@ -559,8 +538,8 @@ export default class Metalist extends Component {
                 </div>
                 : <></>}
 		       {this.state.view && this.state.sectionVIEW === 'json' ?
-                <div className="jsonView">
-                    <div className="d-flex pb-5">
+                <div className="jsonViewLayer">
+                    <div className="jsonView d-flex overflow-scroll">
                     <AceEditor
                         mode="json"
                         theme="tomorrow"
@@ -572,7 +551,7 @@ export default class Metalist extends Component {
                         width="100%"
                     />
                     </div>
-                     <div className="btnArea d-flex justify-content-center">
+                     <div className="mt-5 btnArea d-flex justify-content-center">
                         <button type="button" className="btn btn-secondary" onClick={this.closeVIEW}>뒤로가기</button>
                     </div>
                 </div>

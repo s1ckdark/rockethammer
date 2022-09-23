@@ -25,14 +25,14 @@ export default class Admin extends Component {
         data:[],
         totalcnt:0,
         currentPage: 1,
-        pageSize:10,
+        pageSize:5,
         currentTableData:[],
       },
       user:{
         data:[],
         totalcnt:0,
         currentPage: 1,
-        pageSize:10,
+        pageSize:5,
         currentTableData:[],
         show:true,
         select:''
@@ -158,6 +158,7 @@ export default class Admin extends Component {
 
   async action(e, type, userid, index) {
     e.preventDefault();
+    console.log(e,type,userid,index)
     let conType, historytype;
     if(type === 'update') { conType = "업데이트";}
     else if(type ==='delete') {conType = "삭제";}
@@ -181,7 +182,12 @@ export default class Admin extends Component {
           this.state.edit.data)
         ele.forEach(item => {
           this.writeHistory(e, item , userid, index)
-        })} else {
+        })
+        this._handleUserPageChange(this.state.user.currentPage);
+        // setTimeout(() => { 
+          // window.location.reload(false);
+      // }, 1000)
+        } else {
         alert("취소됩니다");
         } 
         this.setState({...this.state,user:{...this.state.user,show:true},edit:{show:false,dept:'',group:'',password:'',userid:'',name:''}})
@@ -200,6 +206,7 @@ export default class Admin extends Component {
             show:true
           }
         })
+
         console.log("edit/save");
         break;
       case 'delete':
@@ -310,7 +317,7 @@ export default class Admin extends Component {
           </thead>
           <tbody>
             {this.state.user.totalcnt > 0 ? this.state.user.currentTableData.map((user,index)=>(
-              <tr className="text-center align-middle py-5" key={index}>
+              <tr className="text-center align-middle py-5" key={index + this.state.user.pageSize * (this.state.user.currentPage - 1) + 1}>
                 <td className="index col-1">{index + this.state.user.pageSize * (this.state.user.currentPage - 1) + 1}</td>
                 <td className="userid col-2">{user.userid}</td>
                 <td className="name col-2">{user.name}</td>
@@ -318,8 +325,8 @@ export default class Admin extends Component {
                 <td className="group col-1">{user.group ==='ADMIN' ? "관리자":"일반"}</td>
                 <td className="last_login_dt col-3">{user.last_login_dt}</td>
                 <td className="action d-table-cell col-2">
-                  <button className="btn btn-primary me-1" data-tooltip="사용자 수정" onClick={(e)=> this.action(e,"edit", user.userid, index)}>수정</button>
-                  <button className="btn btn-danger" data-tooltip="사용자 삭제" onClick={(e)=> this.action(e,"delete",user.userid, index)}>삭제</button>
+                  <button className="btn btn-primary me-1" data-tooltip="사용자 수정" onClick={(e)=> this.action(e,"edit", user.userid, index + this.state.user.pageSize * (this.state.user.currentPage - 1))}>수정</button>
+                  <button className="btn btn-danger" data-tooltip="사용자 삭제" onClick={(e)=> this.action(e,"delete",user.userid, index + this.state.user.pageSize * (this.state.user.currentPage - 1))}>삭제</button>
                 </td>
               </tr>
               )): <tr><td colspan="9"><h3 className="text-center">등록된 사용자가 없습니다</h3></td></tr>}
@@ -373,7 +380,7 @@ export default class Admin extends Component {
     </select>
   </div> */}
   <div className="actionBtn d-flex justify-content-center align-items-center mt-5 mb-3">
-    <button className="btn btn-primary me-1" onClick={(e)=> this.action(e,"update", this.state.edit.data.userid)}>수정</button>
+    <button className="btn btn-primary me-1" onClick={(e)=> this.action(e,"update", this.state.edit.data.userid+this.state.user.pageSize)}>수정</button>
     <button className="btn btn-primary" onClick={this.onCancel}>취소</button>
   </div>
   </div>

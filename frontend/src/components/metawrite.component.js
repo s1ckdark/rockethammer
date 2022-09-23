@@ -519,7 +519,7 @@ export default class Metawrite extends Component {
                         <div className="action text-center">
                         { this.state.preview === false ? 
                         <>
-                            <button type="button" className="btn btn-primary me-1" onClick={e=>this.onPreview(e, this.state.type)}>미리 보기</button><button type="button" className="btn btn-secondary" onClick={e=>this.props.closeWrite(e)}>뒤로가기</button></>
+                            <button type="button" className="btn btn-primary me-1" onClick={e=>this.onPreview(e, this.state.type)}>저장 전 미리 보기</button><button type="button" className="btn btn-secondary" onClick={e=>this.props.closeWrite(e)}>뒤로가기</button></>
                             :<><button type="button" className="btn btn-primary me-1" onClick={e=>this.onSubmit(e, this.state.type)}>{ this.state.type === 'reg' ? "등록":"저장"}</button><button type="button" className="btn btn-secondary" onClick={e=>this.onPreviewClose(e)}>뒤로가기</button></>}
                            
                         </div>

@@ -393,6 +393,9 @@ button, th {
       .metalist {
         margin:0 auto;
         // overflow: hidden;
+        .jsonView {
+          height: calc(100vh - 300px);
+        }
         table {
           tr {
             th {
