@@ -168,25 +168,24 @@ export default class Admin extends Component {
         if(this.state.compare.result === false) {alert("비밀번호를 확인해주세요");return false;}
         if(window.confirm(userid+"업데이트 하겠습니까?")) {
         let ele = [];
-        await axios.post(process.env.REACT_APP_API+"/user/get",{
+        axios.post(process.env.REACT_APP_API+"/user/get",{
           userid:userid
         }).then(res => {
+          console.log(res);
+          console.log(this.state);
             if(this.state.compare.work) ele.push("비밀번호 변경")
-            if(res.data.name !== this.state.edit.data.name) ele.push("이름을 {"+res.data.name+"} -> {"+this.state.edit.data.name+"} "+conType)
-            if(res.data.dept !== this.state.edit.data.dept) ele.push("소속을 {"+res.data.dept+"} -> {"+this.state.edit.data.dept+"} "+conType)
-            if(res.data.group !== this.state.edit.data.group) ele.push("그룹을 {"+res.data.group+"} -> {"+this.state.edit.data.group+"} "+conType)
+            if(res.data.name !== this.state.user.data[index].name) ele.push("이름을 {"+res.data.name+"} -> {"+this.state.user.data[index].name+"} "+conType)
+            if(res.data.dept !== this.state.user.data[index].dept) ele.push("소속을 {"+res.data.dept+"} -> {"+this.state.user.data[index].dept+"} "+conType)
+            if(res.data.group !== this.state.user.data[index].group) ele.push("그룹을 {"+res.data.group+"} -> {"+this.state.user.data[index].group+"} "+conType)
         })
         console.log(ele);
         // historytype = ele.join("\r\n");
         axios.post(process.env.REACT_APP_API+"/user/update/"+userid,
-          this.state.edit.data)
+          this.state.edit.data).then(res => res.status === 200 ? this.fetchData():null)
         ele.forEach(item => {
           this.writeHistory(e, item , userid, index)
         })
         this._handleUserPageChange(this.state.user.currentPage);
-        // setTimeout(() => { 
-          // window.location.reload(false);
-      // }, 1000)
         } else {
         alert("취소됩니다");
         } 
@@ -380,7 +379,7 @@ export default class Admin extends Component {
     </select>
   </div> */}
   <div className="actionBtn d-flex justify-content-center align-items-center mt-5 mb-3">
-    <button className="btn btn-primary me-1" onClick={(e)=> this.action(e,"update", this.state.edit.data.userid+this.state.user.pageSize)}>수정</button>
+    <button className="btn btn-primary me-1" onClick={(e)=> this.action(e,"update", this.state.edit.data.userid, this.state.user.select)}>수정</button>
     <button className="btn btn-primary" onClick={this.onCancel}>취소</button>
   </div>
   </div>

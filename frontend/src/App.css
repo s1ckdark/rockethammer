@@ -424,7 +424,8 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
   margin: 0 auto;
 }
 .meta .metalist .jsonView {
-  height: calc(100vh - 300px);
+  max-height: calc(100vh - 300px);
+  height: 100%;
 }
 .meta .metalist table tr th {
   position: relative;
