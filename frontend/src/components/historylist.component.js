@@ -11,6 +11,7 @@ import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/ext-language_tools";
 import Pagination from "react-js-pagination";
 import ReactDiffViewer from 'react-diff-viewer';
+import helpers from './helpers.component';
 
 export default class Historylist extends Component {
     constructor(props) {
@@ -182,7 +183,7 @@ export default class Historylist extends Component {
                                             {item.last_mod_id}                                     
                                             </td>
                                             <td className="last_mod_id value form-group">
-                                            {item.last_mod_dt.split('.')[0].replace('T', ' ')}
+                                            {helpers.krDateTime(item.last_mod_dt)}
                                             </td>
                                         </tr>
                                     );
