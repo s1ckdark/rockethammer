@@ -15,6 +15,7 @@ import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/ext-language_tools"
+import helpers from "./helpers.component";
 // import { ThemeConsumer } from "react-bootstrap/esm/ThemeProvider";
 
 export default class Metawrite extends Component {
@@ -33,7 +34,7 @@ export default class Metawrite extends Component {
                 is_used: true,
                 op_name:'',
                 service:'',
-                related_topics:[],
+                related_topics:'',
                 topic_desc:'',
                 key:[],
                 value:[]
@@ -44,7 +45,21 @@ export default class Metawrite extends Component {
             json:{},
             jsonerr:[],
             type:'',
-            preview: false
+            preview: false,
+            error:{
+                topic_name:'',
+                subject:'',
+                schema_id:'',
+                schema_version:'',
+                meta_version:'',
+                revision:'',
+                last_mod_id:'',
+                last_mod_dt:'',
+                is_used: true,
+                op_name:'',
+                service:'',
+                topic_desc:''
+            }
         };
     }
 
@@ -121,64 +136,6 @@ export default class Metawrite extends Component {
     }
     }
 
-    trans = (name) => {
-        var defineName = {
-            "_id":"_id",
-            "topic_name":"토픽명",
-            "schema_id":"물리스키마ID",
-            "schema_version":"물리스키마버전",
-            "meta_version":"메타버전",
-            "op_name":"관리부서",
-            "service":"업무시스템",
-            "related_topics":"연관토픽",
-            "last_mod_dt":"최종수정시간",
-            "last_mod_id":"최종수정자",
-            "schema":"스키마명",
-            "revision":"논리스키마버전",
-            "p_name":"물리명",
-            "p_type":"데이터 타입",
-            "l_name":"논리명",
-            "l_def":"설명",
-            "is_null":"널 여부",
-            "default":"기본값",
-            "memo":"메모",
-            "topic_desc":"토픽설명"
-        }
-        return  defineName[name] ? defineName[name]:name;
-    }
-
-    iterateObj = (dupeObj) => {
-        var retObj = new Object();
-        if (typeof (dupeObj) == 'object') {
-            if (typeof (dupeObj.length) == 'number')
-                retObj = new Array();
-    
-            for (var objInd in dupeObj) {
-                if (dupeObj[objInd] == null)
-                    dupeObj[objInd] = "Empty";
-                if (typeof (dupeObj[objInd]) == 'object') {
-                    retObj[objInd] = this.iterateObj(dupeObj[objInd]);
-                } else if (typeof (dupeObj[objInd]) == 'string') {
-                    retObj[objInd] = dupeObj[objInd];
-                } else if (typeof (dupeObj[objInd]) == 'number') {
-                    retObj[objInd] = dupeObj[objInd];
-                } else if (typeof (dupeObj[objInd]) == 'boolean') {
-                    ((dupeObj[objInd] == true) ? retObj[objInd] = true : retObj[objInd] = false);
-                }       
-            }
-        }
-        return retObj;
-    }
-
-    IsJsonString = (str) => {
-        try {
-            JSON.parse(str);
-        } catch (e) {
-            return false;
-        }
-        return true;
-    }
-
     onChangeValue = (e, field) =>{
         e.preventDefault();
         this.setState(prevState => ({
@@ -191,7 +148,6 @@ export default class Metawrite extends Component {
 
     onChangeValueTemp = (e, index, field) =>{
         e.preventDefault();
-        // console.log(index, e.target.name, e.target.value)
         let metas = [...this.state.data[field]];
         metas.map((ele, idx) => {
             if(idx === index) {
@@ -222,7 +178,6 @@ export default class Metawrite extends Component {
             }
             temp.last_mod_dt = (new Date).toISOString();
             temp.last_mod_id = AuthService.getCurrentUser().userid;
-            console.log(temp);
             this.setState(prevState => ({
                     data: temp
                 }),()=>{
@@ -259,12 +214,50 @@ export default class Metawrite extends Component {
                 }
             )
         }
+       
+        if(!this.onValidation(this.state.data, ["topic_name","subject","schema_id","schema_version","meta_version","op_name","service","revision","topic_desc","last_mod_dt","last_mod_id","is_used"])) return false
         this.setState({
             ...this.state,
             preview: true
         })
     }
+    onValidation = (obj, fields) => {
+        console.log("validation");
+        if ('object' !== typeof obj || null == obj) {
+            console.log('Object is not valid');
+            return false;
+        }
 
+        const hasOnlyTheKeys = Array.isArray(fields) ? JSON.stringify(Object.keys(obj).filter(x => fields.includes(x)).sort()) ===  JSON.stringify(fields.sort()) : false
+        if (false === hasOnlyTheKeys) return false;
+
+        let temp = {};
+        fields.map( prop => {
+            switch(obj[prop]){
+              case null:
+              case undefined:
+                console.log(prop + ' is undefined');
+                break;
+              case '':
+                console.log(prop + ' is empty string');
+                temp[prop] = helpers.translate(prop) + ' 값은 필수입력 항목 입니다';
+                break;
+              case 0:
+                console.log(prop + ' is 0');
+                break;
+              default:
+            }
+        })
+        this.setState({
+            ...this.state,
+            error:temp
+        })
+        return Object.keys(temp).length > 0 ? false:true
+    }
+
+    addattention = (field) => {
+        
+    }
     onPreviewClose = (e) => {
         this.setState({
             ...this.state,
@@ -322,7 +315,7 @@ export default class Metawrite extends Component {
     viewMode = (e, type) => {
         e.preventDefault();
         this.setState({...this.state, 
-            json:this.replaceKey(this.state.data, "entokr"),
+            json:helpers.replaceKey(this.state.data, "entokr"),
             viewmode:type})
     }
 
@@ -341,71 +334,7 @@ export default class Metawrite extends Component {
         let result = tmp.filter(ele => ele === name )
         return result.length > 0 ? "d-none" : "d-block"
     }
-    replaceKey = (data, mode)=>{
-        let swaps;
-        switch(mode) {
-            case "entokr":
-                swaps = {
-                    "_id":"_id",
-                    "topic_name":"토픽명",
-                    "schema_id":"스키마ID",
-                    "schema_version":"물리스키마버전",
-                    "meta_version":"메타버전",
-                    "revision":"논리스키마버전",
-                    "recycle_pol":"데이터삭제주기",
-                    "op_name":"관리부서",
-                    "service":"업무시스템",
-                    "related_topics":"연관토픽",
-                    "last_mod_dt":"최종수정시간",
-                    "last_mod_id":"최종수정자",
-                    "schema":"",
-                    "p_name":"물리명",
-                    "p_type":"데이터 타입",
-                    "l_name":"논리명",
-                    "l_def":"설명",
-                    "is_null":"널 여부",
-                    "default":"기본값",
-                    "memo":"메모",
-                    "topic_desc":"토픽설명"
-                };
-                break;
-            case "krtoen":
-                swaps = {
-                    "_id":"_id",
-                    "토픽명":"topic_name",
-                    "스키마ID":"schema_id",
-                    "스키마버전":"schema_version",
-                    "메타버전":"meta_version",
-                    "데이터삭제주기":"recycle_pol",
-                    "관리부서":"op_name",
-                    "업무시스템":"service",
-                    "연관토픽":"related_topics",
-                    "최종수정시간":"last_mod_dt",
-                    "최종수정자":"last_mod_id",
-                    "schema":"schema",               
-                    "물리명":"p_name",
-                    "데이터 타입":"p_type",
-                    "논리명":"l_name",
-                    "설명":"l_def",
-                    "널 여부":"is_null",
-                    "기본값":"default",
-                    "메모":"memo",
-                    "토픽설명":"topic_desc"
-                };
-                break;
-            default:
-                break;
-            }
-
-            const pattern = new RegExp(
-            Object.keys(swaps).map(e => `(?:"(${e})":)`).join("|"), "g"
-            );
-            const result = JSON.parse(
-                JSON.stringify(data).replace(pattern, m => `"${swaps[m.slice(1,-2)]}":`)
-            );
-            return result;
-    }
-
+    
     render()
     {
         return (
@@ -421,19 +350,21 @@ export default class Metawrite extends Component {
                                 if(field === 'topic_desc') {
                                     return (
                                         <div className={this.hideField(field)+" form-group col-md-12 mb-5 "+field}>
-                                            <div className={field}><p className="field-label">{this.trans(field)}</p></div>
+                                            <div className={field}><p className="field-label">{helpers.translate(field)}</p></div>
                                             <div className={"value-"+field+" value"}>
                                                 <textarea name={field} className={"input-"+field+" input-value w-100"} value={data[field]} onChange={(e)=> this.onChangeValue(e, field)} readOnly={this.readonly(field)}/>
                                             </div>
+                                            <span className={"text-danger "+field}>{this.state.error[field]}</span>
                                         </div>
                                     )
                                 } else {
                                     return (
                                         <div className={this.hideField(field)+" form-group col-md-3 mb-5 "+field}>
-                                            <div className={field}><p className="field-label">{this.trans(field)}</p></div>
+                                            <div className={field}><p className="field-label">{helpers.translate(field)}</p></div>
                                             <div className={"value-"+field+" value"}>
                                                 <input type="text" name={field} className={"input-"+field+" input-value w-75"} value={data[field]} onChange={(e)=> this.onChangeValue(e, field)} readOnly={this.readonly(field)}/>
                                             </div>
+                                            <span className={"text-danger "+field}>{this.state.error[field]}</span>
                                         </div>
                                     )
                                 }
@@ -441,10 +372,11 @@ export default class Metawrite extends Component {
                                 if(field === 'related_topics'){
                                     return (
                                         <div className="form-group field col-md-3 mb-5">
-                                                <div className={field}><p className="field-label">{this.trans(field)}</p></div>
+                                                <div className={field}><p className="field-label">{helpers.translate(field)}</p></div>
                                                 <div className={"value-"+field+" value"}>
                                                     <input type="text" name={field} className={"input-"+field+" input-value w-75"} value={data[field]} onChange={(e)=> this.onChangeValue(e, field)} readOnly={this.readonly(field)}/>
                                                 </div>
+                                                <span className={"text-danger "+field}>{this.state.error[field]}</span>
                                             </div>
                                         )
                                     } else {
@@ -456,8 +388,7 @@ export default class Metawrite extends Component {
                                                     {data[field].map((meta_field, index) => {
                                                         return (
                                                             <>
-                                                            {index === 0 ?
-                                                            <> 
+                                                             {index === 0 ?
                                                                 <thead>
                                                                     <tr>
                                                                         <th scope="col">번호</th>
@@ -465,13 +396,15 @@ export default class Metawrite extends Component {
                                                                            var tmp = field === "value" ? [2, 1, 2, 3, 1, 1, 2] : [3,3,3,3];
                                                                             return (
                                                                                 <>
-                                                                                    <th scope="col" className={"text-center col-"+tmp[index]}>{this.trans(field2)}</th>
+                                                                                    <th scope="col" className={"text-center col-"+tmp[index]}>{helpers.translate(field2)}</th>
                                                                                 </>
                                                                             );
                                                                         }) 
                                                                         }   
                                                                     </tr>
                                                                 </thead>
+                                                            :<></>}
+                                                           <tbody>
                                                                 <tr>
                                                                 <td scope="row">{index+1}</td>
                                                                 {Object.keys(meta_field).map((field2) => {
@@ -481,26 +414,11 @@ export default class Metawrite extends Component {
                                                                         
                                                                     }) 
                                                                 }   
-                                                            </tr>
-                                                            </>
-                                                            : <tr>
-                                                                <td scope="row">{index+1}</td>
-                                                                {Object.keys(meta_field).map((field2) => {
-                                                                        return (
-                                                                            <td><input type="text" name={field2} className={"field-input "+field2} value={data[field][index][field2]} onChange={(e)=>this.onChangeValueTemp(e, index, field)} readOnly={this.readonly(field2, field)} /></td>
-                                                                        );
-                                                                        
-                                                                    }) 
-                                                                }   
-                                                            </tr>
-                                                        }
-                                                           
-                                                            </>
-                                                        )
-                                                    })}
+                                                                </tr>
+                                                            </tbody>
+                                                        </>)})}
                                                 </table>
-                                                </div>
-                                            )
+                                                </div>)
                                         } else {
                                             return (
                                                 <>

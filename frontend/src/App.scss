@@ -5,6 +5,51 @@
   -o-transition:all 0.5s ease-in-out;
   transition:all 0.5s ease-in-out;
 }
+.opa-transition {
+  transition: opacity .25s ease-in-out;
+  -webkit-transition: opacity .25s ease-in-out;
+  -moz-transition: opacity .25s ease-in-out;
+  -o-transition: opacity .25s ease-in-out;
+}
+
+.fade-in {
+  animation: fadein 3s;
+  -moz-animation: fadein 3s; /* Firefox */
+  -webkit-animation: fadein 3s; /* Safari and Chrome */
+  -o-animation: fadein 3s; /* Opera */
+}
+@keyframes fadein {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@-moz-keyframes fadein { /* Firefox */
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@-webkit-keyframes fadein { /* Safari and Chrome */
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+@-o-keyframes fadein { /* Opera */
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
 .star_black {position:absolute;top:0;left:0;right:0;bottom:0;width:100%;height:100%;background-color: black;}
 .clickable {cursor: pointer;}
 
@@ -438,7 +483,8 @@ button, th {
         height: calc(100% - 60px);
         overflow-y: scroll;
         .onpreview {
-          @extend .transition;
+          @extend .fade-in;
+          // @extend .opa-transition;
           background: #fff;
           border: 1px solid #121212;
           box-shadow: 12px 12px 2px 1px rgb(0 0 255 / 20%);

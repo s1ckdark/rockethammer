@@ -105,15 +105,6 @@ export default class Historylist extends Component {
         })
     }
 
-    IsJsonString = (str) => {
-        try {
-            JSON.parse(str);
-        } catch (e) {
-            return false;
-        }
-        return true;
-    }
-
     closeHistoryDetail = (e) => {
         this.setState({
             ...this.state,
@@ -160,8 +151,8 @@ export default class Historylist extends Component {
     {
         return (
             <>
-                    <div className="history col-md-12 px-5 pt-5">
-                        <div className="container">
+                <div className="history col-md-12 px-5 pt-5">
+                    <div className="container">
                         <table className={ this.state.show ? "historylist bg-light table table-hover d-none" : "historylist bg-light table table-hover"}>
                             <thead>
                                 <tr className="text-center p-3">
@@ -179,7 +170,7 @@ export default class Historylist extends Component {
                                             <td className="value-subject value form-group">
                                             {item.topic_name}
                                             </td>
-                                            <td className="last_mod_dt value form-group">
+                                            <td className="last_mod_id value form-group">
                                             {item.last_mod_id}                                     
                                             </td>
                                             <td className="last_mod_id value form-group">
@@ -190,7 +181,7 @@ export default class Historylist extends Component {
                                 }): <h3 className="p-3 m-3 text-center">검색된 history data가 없습니다</h3>}
                             </tbody>
                         </table>
-                       
+                    
                         {this.state.show ? 
                         <div className="detailView mx-auto">
                             <ReactDiffViewer leftTitle="Before" rightTitle="After" oldValue={JSON.stringify(this.state.before, null, 2)} newValue={JSON.stringify(this.state.after, null, 2)} splitView={true} />
@@ -200,14 +191,11 @@ export default class Historylist extends Component {
                             </div>
                         </div>
                         : <div className="closeHistoryDetail d-flex justify-content-center my-5">
-                        <button type="button" onClick={this.props.closeVIEW} className="btn btn-warning">닫기</button>
-                         </div>}
-                       
-
+                            <button type="button" onClick={this.props.closeVIEW} className="btn btn-warning">닫기</button>
+                        </div>}
                     </div>
-                    </div>
-        </>
-
+                </div>
+            </>
 
         );
     }

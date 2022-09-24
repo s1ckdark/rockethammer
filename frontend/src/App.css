@@ -1,8 +1,38 @@
 /* animaton */
-.transition, .meta .form-group:focus-within .field-label, .meta .metawrite .onpreview, button[data-tooltip]:hover:before, button[data-tooltip]:hover:after, th[data-tooltip]:hover:before, th[data-tooltip]:hover:after {
+.transition, .meta .form-group:focus-within .field-label, button[data-tooltip]:hover:before, button[data-tooltip]:hover:after, th[data-tooltip]:hover:before, th[data-tooltip]:hover:after {
   transition: all 0.5s ease-in-out;
 }
 
+.opa-transition {
+  transition: opacity 0.25s ease-in-out;
+  -webkit-transition: opacity 0.25s ease-in-out;
+  -moz-transition: opacity 0.25s ease-in-out;
+  -o-transition: opacity 0.25s ease-in-out;
+}
+
+.fade-in, .meta .metawrite .onpreview {
+  animation: fadein 3s;
+  -moz-animation: fadein 3s; /* Firefox */
+  -webkit-animation: fadein 3s; /* Safari and Chrome */
+  -o-animation: fadein 3s; /* Opera */
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@-webkit-keyframes fadein { /* Safari and Chrome */
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 .star_black {
   position: absolute;
   top: 0;

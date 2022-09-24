@@ -89,33 +89,33 @@ export default class Metalist extends Component {
         this.fetchMetaData(0);    
     }
 
-    componentWillMount = () => {
-        /* attach listeners to google StreetView */
-        // window.addEventListener('popstate', (event) => {
-        //     event.preventDefault()
-        //     this.listenBackEvent();
-        // });
-        // console.log(history);
-      }
+    // componentWillMount = () => {
+    //     /* attach listeners to google StreetView */
+    //     // window.addEventListener('popstate', (event) => {
+    //     //     event.preventDefault()
+    //     //     this.listenBackEvent();
+    //     // });
+    //     // console.log(history);
+    //   }
 
-    listenBackEvent = () => {
-        // 뒤로가기 할 때 수행할 동작을 적는다
-        if(this.state.show){
-            this.setState({
-                ...this.state,
-                show: false
-            })
-        }
-        alert("show:false")
-    };
+    // listenBackEvent = () => {
+    //     // 뒤로가기 할 때 수행할 동작을 적는다
+    //     if(this.state.show){
+    //         this.setState({
+    //             ...this.state,
+    //             show: false
+    //         })
+    //     }
+    //     alert("show:false")
+    // };
   
-    unlistenHistoryEvent = history.listen(({ action }) => {
-        if (action === "POP") {
-          this.listenBackEvent();
-        }
-        // return this.unlistenHistoryEvent;
-    });
-//   componentWillReceiveProps(nextProps) {
+//     unlistenHistoryEvent = history.listen(({ action }) => {
+//         if (action === "POP") {
+//           this.listenBackEvent();
+//         }
+//         // return this.unlistenHistoryEvent;
+//     });
+// //   componentWillReceiveProps(nextProps) {
 //     this.setState({
 //         ...this.state,
 //         meta: nextProps.schema
@@ -271,7 +271,6 @@ export default class Metalist extends Component {
 
     detailView = (e, idx, topic_name) => {
         e.preventDefault();
-        // const tn = topic_name;
         if(topic_name) {
         const tn = topic_name.replace(/(-value|-key)/g, "");
         this.setState({
@@ -284,9 +283,8 @@ export default class Metalist extends Component {
                 subject:topic_name
             }
         })
-        console.log(tn)
         axios.post(process.env.REACT_APP_API+"/meta/getmeta",{keyword:tn}).then(res => {
-            console.log(res.data);
+            console.log(res);
             if(res.data && res.data.length > 0) {
                 this.setState({...this.state, detail:res.data[0],delete:res.data[0],show:true, type:'update'})
             } else {
@@ -301,7 +299,6 @@ export default class Metalist extends Component {
             }
         })
         axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:tn}).then(res => {
-            // console.log(res.data);
             if(res.data && res.data.value.length > 0) {
                 this.setState({...this.state, schema:res.data})
             } else {
@@ -329,46 +326,11 @@ export default class Metalist extends Component {
                 before: "",
                 after: ""
             },
-            show:false,
+            show:true,
             after:{},
             before:{},
             typeVIEW: false
         })
-    }
-
-    replaceKey = (data)=>{
-        const swaps = {
-            "_id":"_id",
-            "topic_name":"토픽명",
-            "schema_id":"스키마ID",
-            "meta_id":"메타ID",
-            "schema_version":"스키마버전",
-            "meta_version":"메타버전",
-            "revision":"논리스키마버전",
-            "op_name":"관리부서",
-            "service":"업무시스템",
-            "subject":"물리스키마명",
-            "related_topics":"연관토픽",
-            "last_mod_dt":"최종수정시간",
-            "last_mod_id":"최종수정자",
-            "schema":"스키마",
-            "p_name":"물리명",
-            "p_type":"데이터 타입",
-            "l_name":"논리명",
-            "l_def":"설명",
-            "is_null":"Null허용여부",
-            "default":"기본값",
-            "memo":"메모",
-            "topic_desc":"토픽설명",
-            "is_used":"사용여부"
-        };
-        const pattern = new RegExp(
-        Object.keys(swaps).map(e => `(?:"(${e})":)`).join("|"), "g"
-        );
-        const result = JSON.parse(
-        JSON.stringify(data).replace(pattern, m => `"${swaps[m.slice(1,-2)]}":`)
-        );
-        return result;
     }
 
     notiforchange = async (e, topic_name) => {
@@ -406,14 +368,16 @@ export default class Metalist extends Component {
         })
     }
 
-    closeWrite = (e, idx=this.state.select.idx, topic_name=this.state.detail.topic_name) => {
+    closeWrite = (e, idx=this.state.select.idx, topic_name=this.state.select.topic_name) => {
         e.preventDefault();
+        console.log(idx,topic_name);
         this.detailView(e,idx, topic_name);
         this.setState({
             ...this.state,
            type:'',
            typeVIEW:false,
-           changeVIEW:false
+           changeVIEW:false,
+           show:true
         })
         
     }
@@ -481,7 +445,7 @@ export default class Metalist extends Component {
                             })
                             return(
                                     <tr data-index={index} className={this.state.select.idx === index ? "table-active text-center":"text-center"} key={5*parseInt(this.state.meta.current)+index+1}>
-                                        <th scope="row">{5*parseInt(this.state.meta.current)+index+1}</th>
+                                        <td scope="row">{5*parseInt(this.state.meta.current)+index+1}</td>
                                         <td className="modified value">{meta_join && parseInt(schema.version.$numberLong) > parseInt(meta_join.schema_version) ? <span className="clickable" onClick={(e)=> this.notiforchange(e, schema.subject)}>Y</span> : <span>N</span>}</td>
                                         <td className="value-subject value form-group clickable" onClick={(e)=>this.detailView(e, index, schema.subject)}>
                                             {schema.subject.replace(/(-value|-key)/g, "")}
@@ -496,7 +460,7 @@ export default class Metalist extends Component {
                                         </td>
                                     </tr>
                                 );
-                            }): <tr><td colSpan="5"><h3 className="p-3 m-3 text-center">검색된 meta data가 없습니다</h3></td> </tr>
+                            }): <tr><td colSpan="5"><h3 className="p-3 m-3 text-center">검색된 meta data가 없습니다</h3></td></tr>
                             }
                             </tbody>
                         </table>
@@ -567,7 +531,7 @@ export default class Metalist extends Component {
                         mode="json"
                         theme="tomorrow"
                         name={this.state.json[`_id`]}
-                        value = {JSON.stringify(this.replaceKey(this.state.detail), null, 4)}
+                        value = {JSON.stringify(helpers.replaceKey(this.state.detail,"entokr"), null, 4)}
                         onChange={this.onChangeJSON}
                         maxLines={Infinity}
                         fontSize= {14}
@@ -582,7 +546,7 @@ export default class Metalist extends Component {
                 {this.state.view && this.state.sectionVIEW === 'change' ?
                 <div className="changeView">
                     <div className="d-flex pb-5">
-                        <ReactDiffViewer leftTitle="Before" rightTitle="After" oldValue={JSON.stringify(this.replaceKey(this.state.changed.before), null, 4)} newValue={JSON.stringify(this.replaceKey(this.state.changed.after), null, 4)} splitView={true} />
+                        <ReactDiffViewer leftTitle="Before" rightTitle="After" oldValue={JSON.stringify(helpers.replaceKey(this.state.changed.before,"entokr"), null, 4)} newValue={JSON.stringify(helpers.replaceKey(this.state.changed.after,"entokr"), null, 4)} splitView={true} />
                     </div>
                     <div className="btnArea d-flex justify-content-center mb-5">
                         <button type="button" className="btn btn-primary me-1" onClick={(e)=>this.write(e,"change")}>등록</button>

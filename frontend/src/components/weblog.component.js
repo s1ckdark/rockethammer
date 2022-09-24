@@ -15,6 +15,7 @@ import ReactDiffViewer from 'react-diff-viewer';
 import Pagination from "react-js-pagination";
 import Metawrite from "./metawrite.component";
 import Historylist from "./historylist.component";
+import helpers from "./helpers.component";
 
 export default class Weblog extends Component {
     constructor(props) {
@@ -138,7 +139,7 @@ export default class Weblog extends Component {
                                         <td className="log">{item.log}</td>
                                         <td className="ipAddr">{item.ipAddr}</td>
                                         <td className="userid">{item.userid}</td>
-                                        <td className="login_dt">{item.login_dt}</td>
+                                        <td className="login_dt">{helpers.krDateTime(item.login_dt)}</td>
                                     </tr>
                                 );
                             }): <tr><td colSpan="5"><h3 className="p-3 m-3 text-center">검색된 Log Data가 없습니다</h3></td> </tr>

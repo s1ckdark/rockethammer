@@ -9,7 +9,7 @@ import axios from "axios"
 import Pagination from "react-js-pagination";
 import Register from './register.component';
 import Weblog from './weblog.component';
-
+import helpers from "./helpers.component";
 import { Button } from 'react-bootstrap'
 
 export default class Admin extends Component {
@@ -320,7 +320,7 @@ export default class Admin extends Component {
                 <td className="name col-2">{user.name}</td>
                 <td className="dept col-1">{user.dept}</td>
                 <td className="group col-1">{user.group ==='ADMIN' ? "관리자":"일반"}</td>
-                <td className="last_login_dt col-3">{user.last_login_dt}</td>
+                <td className="last_login_dt col-3">{helpers.KrDateTime(user.last_login_dt)}</td>
                 <td className="action d-table-cell col-2">
                   <button className="btn btn-primary me-1" data-tooltip="사용자 수정" onClick={(e)=> this.action(e,"edit", user.userid, index + this.state.user.pageSize * (this.state.user.currentPage - 1))}>수정</button>
                   <button className="btn btn-danger" data-tooltip="사용자 삭제" onClick={(e)=> this.action(e,"delete",user.userid, index + this.state.user.pageSize * (this.state.user.currentPage - 1))}>삭제</button>
@@ -402,7 +402,7 @@ export default class Admin extends Component {
             <td className="text-center col-md-2">admin</td>
             <td className="text-center col-md-2">{log.userid}</td>
             <td className="text-start col-md-4">{log.mod_item}</td>
-            <td className="text-center col-md-3">{log.mod_dt}</td>
+            <td className="text-center col-md-3">{helpers.KrDateTime(log.mod_dt)}</td>
           </tr>
           );
         }): <tr className="nothing"><td colspan="5"><h2 className="text-center">남겨진 내역이 없습니다</h2></td></tr>}
