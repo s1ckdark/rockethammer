@@ -15,7 +15,8 @@ import ReactDiffViewer from 'react-diff-viewer';
 import Pagination from "react-js-pagination";
 import Metawrite from "./metawrite.component";
 import Historylist from "./historylist.component";
-window.React = React;
+import helpers from "./helpers.component";
+import history from "./history.component";
 
 export default class Metalist extends Component {
     constructor(props) {
@@ -88,6 +89,32 @@ export default class Metalist extends Component {
         this.fetchMetaData(0);    
     }
 
+    componentWillMount = () => {
+        /* attach listeners to google StreetView */
+        // window.addEventListener('popstate', (event) => {
+        //     event.preventDefault()
+        //     this.listenBackEvent();
+        // });
+        // console.log(history);
+      }
+
+    listenBackEvent = () => {
+        // 뒤로가기 할 때 수행할 동작을 적는다
+        if(this.state.show){
+            this.setState({
+                ...this.state,
+                show: false
+            })
+        }
+        alert("show:false")
+    };
+  
+    unlistenHistoryEvent = history.listen(({ action }) => {
+        if (action === "POP") {
+          this.listenBackEvent();
+        }
+        // return this.unlistenHistoryEvent;
+    });
 //   componentWillReceiveProps(nextProps) {
 //     this.setState({
 //         ...this.state,
@@ -229,19 +256,14 @@ export default class Metalist extends Component {
             ...this.state,
            typeVIEW: true,
            type:type,
-           changeVIEW:false
+           sectionVIEW:'',
+           changeVIEW:false,
+           view:false
         })
     }
 
 
-    IsJsonString = (str) => {
-        try {
-            JSON.parse(str);
-        } catch (e) {
-            return false;
-        }
-        return true;
-    }
+
 
     onChangeJSON = (newValue) => {
         console.log("change", newValue);
@@ -309,7 +331,8 @@ export default class Metalist extends Component {
             },
             show:false,
             after:{},
-            before:{}
+            before:{},
+            typeVIEW: false
         })
     }
 
@@ -454,7 +477,7 @@ export default class Metalist extends Component {
                             var mapping = {};
                             var schema = JSON.parse(item.schema), meta_join = item.meta_join !=='undefined' ? JSON.parse(item.meta_join):null;   
                             Object.keys(item.schema).map((res,index) => {
-                                    this.IsJsonString(item[res]) ? temp[res] = JSON.parse(item[res]): temp[res]=item[res]
+                                    helpers.IsJsonString(item[res]) ? temp[res] = JSON.parse(item[res]): temp[res]=item[res]
                             })
                             return(
                                     <tr data-index={index} className={this.state.select.idx === index ? "table-active text-center":"text-center"} key={5*parseInt(this.state.meta.current)+index+1}>
@@ -464,7 +487,7 @@ export default class Metalist extends Component {
                                             {schema.subject.replace(/(-value|-key)/g, "")}
                                         </td>
                                         <td className="value-id value form-group">
-                                            {schema.reg_dt.substring(0,19)}
+                                            {helpers.krDateTime(schema.reg_dt).substring(0,19)}
                                             {/* {new Date(schema.reg_dt).toISOString().substring(0,16)} */}
                                         </td>
                                         <td className="value-id value form-group">
@@ -501,7 +524,7 @@ export default class Metalist extends Component {
                                 </div>
                                 <div className="info-group">
                                     <label className="me-2">마지막 수정 일시</label>
-                                    <p>{this.state.detail.last_mod_dt ? this.state.detail.last_mod_dt.split('.')[0].replace('T', ' ') : <></>}</p>
+                                    <p>{this.state.detail.last_mod_dt ? helpers.krDateTime(this.state.detail.last_mod_dt) : <></>}</p>
                                 </div>
                                 </>
                                 :<></>}

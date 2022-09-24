@@ -12,8 +12,6 @@ import "ace-builds/src-noconflict/ext-language_tools";
 import Pagination from "react-js-pagination";
 import ReactDiffViewer from 'react-diff-viewer';
 
-window.React = React;
-
 export default class Historylist extends Component {
     constructor(props) {
         super(props);

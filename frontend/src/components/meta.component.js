@@ -22,10 +22,6 @@ import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
 import Metalist from './metalist.component';
 
-
-
-window.React = React;
-
 export default class Meta extends Component {
   constructor(props) {
     super(props);

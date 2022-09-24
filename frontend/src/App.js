@@ -22,6 +22,7 @@ import K8Monitor from "./components/k8monitor.component";
 import Metric from "./components/metric.component";
 import Admin from "./components/admin.component.js";
 import Metawrite from "./components/metawrite.component";
+import helpers from "./components/helpers.component";
 
 class App extends Component {
   constructor(props) {

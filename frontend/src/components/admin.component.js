@@ -12,8 +12,6 @@ import Weblog from './weblog.component';
 
 import { Button } from 'react-bootstrap'
 
-window.React = React;
-
 export default class Admin extends Component {
 
   constructor(props) {

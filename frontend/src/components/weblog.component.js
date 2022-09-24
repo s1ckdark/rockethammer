@@ -15,7 +15,6 @@ import ReactDiffViewer from 'react-diff-viewer';
 import Pagination from "react-js-pagination";
 import Metawrite from "./metawrite.component";
 import Historylist from "./historylist.component";
-window.React = React;
 
 export default class Weblog extends Component {
     constructor(props) {
