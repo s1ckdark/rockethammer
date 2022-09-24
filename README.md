@@ -70,6 +70,7 @@ app.properties template을 수정하여 환경 설정 후 실행한다.
 spring.data.mongodb.uri={mongodb uri}
 spring.data.mongodb.database=web
 spring.data.setAllowedOrigins={rockethammer server ip}
+server.port= 8085 
 
 # App Properties
 goodusdata.app.jwtSecret=goodusSecretKey
