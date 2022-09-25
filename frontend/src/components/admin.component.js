@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import {useHistory} from 'react-router-dom';
 import AuthService from "../services/auth.service";
 import UserService from "../services/user.service";
-import { Redirect, Link } from "react-router-dom";
+import { Redirect, Link, Navigate } from "react-router-dom";
 
 import axios from "axios"
 import Pagination from "react-js-pagination";
@@ -136,12 +136,23 @@ export default class Admin extends Component {
   }
 
   componentDidMount() {
-    const currentUser = AuthService.getCurrentUser();
-    setInterval(this.update, 1000)
-    this.fetchData()
-    this.fetchHistoryData(currentUser.id)
-    if (!currentUser) this.setState({ redirect: "/home" });
-    this.setState({ currentUser: currentUser, userReady: true })
+    const user = AuthService.getCurrentUser();
+    console.log(user)
+    if (user !== null ) {
+      this.setState({
+        ...this.state,
+        currentUser: user,
+      })
+      setInterval(this.update, 1000)
+      this.fetchData()
+      this.fetchHistoryData(user.id)
+    } else {
+      console.log("not")
+      this.setState({
+        ...this.state,
+        redirect: true
+      })
+    } 
     }
 
   writeHistory(e, type, userid, index){
@@ -290,6 +301,7 @@ export default class Admin extends Component {
   render() {
     return (
       <div className="admin">
+         {this.state.redirect ? <Navigate to='/home' />:<></>}
         <h1 className="heading-1">관리자모드</h1>
         <div className="tab d-flex justify-content-center mb-5">
           <div className={this.state.toggle === 3 ? "active border tab addusertab mx-2 px-5 py-3": "border addusertab mx-2 px-5 py-3"} onClick={(e)=>this.toggle(3)}>사용자 생성</div>
@@ -320,7 +332,7 @@ export default class Admin extends Component {
                 <td className="name col-2">{user.name}</td>
                 <td className="dept col-1">{user.dept}</td>
                 <td className="group col-1">{user.group ==='ADMIN' ? "관리자":"일반"}</td>
-                <td className="last_login_dt col-3">{helpers.KrDateTime(user.last_login_dt)}</td>
+                <td className="last_login_dt col-3">{helpers.krDateTime(user.last_login_dt)}</td>
                 <td className="action d-table-cell col-2">
                   <button className="btn btn-primary me-1" data-tooltip="사용자 수정" onClick={(e)=> this.action(e,"edit", user.userid, index + this.state.user.pageSize * (this.state.user.currentPage - 1))}>수정</button>
                   <button className="btn btn-danger" data-tooltip="사용자 삭제" onClick={(e)=> this.action(e,"delete",user.userid, index + this.state.user.pageSize * (this.state.user.currentPage - 1))}>삭제</button>
@@ -402,7 +414,7 @@ export default class Admin extends Component {
             <td className="text-center col-md-2">admin</td>
             <td className="text-center col-md-2">{log.userid}</td>
             <td className="text-start col-md-4">{log.mod_item}</td>
-            <td className="text-center col-md-3">{helpers.KrDateTime(log.mod_dt)}</td>
+            <td className="text-center col-md-3">{helpers.krDateTime(log.mod_dt)}</td>
           </tr>
           );
         }): <tr className="nothing"><td colspan="5"><h2 className="text-center">남겨진 내역이 없습니다</h2></td></tr>}

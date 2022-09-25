@@ -3,26 +3,17 @@ import ReactDOM from 'react-dom';
 import {useHistory} from 'react-router-dom';
 import AuthService from "../services/auth.service";
 import UserService from "../services/user.service";
-import { Redirect, Link } from "react-router-dom";
-
+import { Redirect, Link, Navigate } from "react-router-dom";
+import { WithRouter } from "./withRouter.component";
 import axios from "axios"
-import PropTypes from 'prop-types';
-import { library } from '@fortawesome/fontawesome-svg-core'
-import {
-  faTrashAlt,
-  faUserEdit,
-  faLockOpen,
-  faLock,
-  faSmileBeam
-} from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import Register from './register.component'
 import { Button,Modal } from 'react-bootstrap'
 import JSONInput from 'react-json-editor-ajrm';
 import locale from 'react-json-editor-ajrm/locale/en';
 import Metalist from './metalist.component';
+import Metawrite from './metawrite.component';
 
-export default class Meta extends Component {
+class Meta extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -37,7 +28,7 @@ export default class Meta extends Component {
       keyword:'',
       save:false,
       update:false,
-
+      redirect:false
     };
   this.handleSchemaPageChange = this._handleSchemaPageChange.bind(this);
 }
@@ -54,14 +45,20 @@ _handleSchemaPageChange(pageNumber) {
 }
 
   componentDidMount() {
+    const user = AuthService.getCurrentUser();
+    if (user !== null ) {
+      this.setState({
+        ...this.state,
+        currentUser: user,
+      })
+    } else {
+      console.log("not")
+      this.setState({
+        ...this.state,
+        redirect: true
+      })
+    } 
     this.fetchMetaData(0);
-  }
-
-  onChangeKeyword = (e,index) =>{
-    this.setState({
-      ...this.state,
-      keyword:e.target.value
-    }) 
   }
 
 fetchMetaData = async(page) => {
@@ -73,39 +70,22 @@ fetchMetaData = async(page) => {
       })
   }
 
-onMetaSearch = async()=> {
-  await axios.post(process.env.REACT_APP_API+"/schema/search",{keyword:this.state.keyword})
-  .then(res => {
-    console.log(res);
-    this.setState({
-      ...this.state,
-      schema:res.data
-    }) 
-  })
-}
-
-onHistorySearch = async()=> {
-  await axios.post(process.env.REACT_APP_API+"/history/search",{keyword:this.state.keyword})
-  .then(res => {
-    console.log(res);
-    this.setState({
-      ...this.state,
-      history:res.data
-    }) 
-  })
-}
   render() {
     return (
       <div className="meta">
+        {this.state.redirect ? <Navigate to='/home' />:<></>}
         <div className="metalist">
           {this.state.schema.count > 0 ? 
           <>
             <Metalist/>
+            {/* <Metawrite/> */}
           </>
           : <></>
           }
         </div>
-      </div>
+    </div>
     );
   }
 }
+
+export default WithRouter(Meta);

@@ -77,7 +77,7 @@ class Login extends Component {
           const user = AuthService.getCurrentUser();
           console.log(user);
           axios.post("/api/user/insertsesshistory",{userid:user.userid,name:user.name,log:this.userAgent(),login_dt:new Date().toISOString(), ipAddr:this.internalIp}).then(res => {
-            if(res.status === 200) {this.props.navigate("/profile");window.location.reload();}
+            if(res.status === 200) {this.props.navigate("/profile");}
           })
         },
         error => {

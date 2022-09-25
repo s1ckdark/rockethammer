@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect, Component } from 'react'
 import { gsap } from "gsap/all";
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, Navigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
@@ -22,6 +22,8 @@ import K8Monitor from "./components/k8monitor.component";
 import Metric from "./components/metric.component";
 import Admin from "./components/admin.component.js";
 import Metawrite from "./components/metawrite.component";
+import Metalist from "./components/metalist.component";
+import Historylist from "./components/historylist.component";
 import helpers from "./components/helpers.component";
 
 class App extends Component {
@@ -41,6 +43,8 @@ class App extends Component {
       this.setState({
         currentUser: user,
       });
+    } else {
+      return <Navigate to="/home"/>
     }
   }
 
@@ -71,12 +75,12 @@ class App extends Component {
       <Seo />
         <nav className="navbar navbar-expand navbar-dark bg-dark">
           <span className="navbar-brand">
-            <img src={'./img/rh_logo.png'} alt="ROCKETHAMMER" className="logo"/>
+            <img src={process.env.PUBLIC_URL+'/img/rh_logo.png'} alt="ROCKETHAMMER" className="logo"/>
           </span>
           <div className="navbar-nav mx-auto">
             <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
               <Link to={"/home"} className="nav-link">
-                  <img alt="Home" src={'./img/home.png'} />
+                  <img alt="Home" src={process.env.PUBLIC_URL+'/img/home.png'} />
               <p>홈</p></Link>
             </li>
               {/* <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
@@ -87,25 +91,25 @@ class App extends Component {
               </li>      */}
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
                 <Link to={"/meta"} className="nav-link">
-                  <img alt="Meta" src={'./img/meta-white.png'} />
+                  <img alt="Meta" src={process.env.PUBLIC_URL+'/img/meta-white.png'} />
                 <p>메타관리</p>
                 </Link>
               </li>
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
                 <Link to={"/kafkaadmin"} className="nav-link">
-                  <img alt="kafkadmin" src={'./img/kafka-ui.png'} />
+                  <img alt="kafkadmin" src={process.env.PUBLIC_URL+'/img/kafka-ui.png'} />
                 <p>카프카<br/>어드민</p>
                 </Link>
               </li> 
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
                 <Link to={"/kafkamonitor"} className="nav-link">
-                  <img alt="kafkamonitor" src={'./img/grafana.png'} />
+                  <img alt="kafkamonitor" src={process.env.PUBLIC_URL+'/img/grafana.png'} />
                 <p>카프카<br/>모니터링</p>
                 </Link>
               </li>              
               <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
                 <Link to={"/metric"} className="nav-link">
-                  <img alt="metric" src={'./img/promethus.png'} />
+                  <img alt="metric" src={process.env.PUBLIC_URL+'/img/promethus.png'} />
                 <p>메트릭<br/>수집기</p>
                 </Link>
               </li>         
@@ -115,7 +119,7 @@ class App extends Component {
             {currentUser && currentUser.group === 'ADMIN' ?
                         <li className="nav-item" onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
                         <Link to={"/admin"} className="nav-link">
-                          <img alt="service" src={'./img/admin-white.png'} />
+                          <img alt="service" src={process.env.PUBLIC_URL+'/img/admin-white.png'} />
                         <p>설정</p>
                         </Link>
                       </li>    
@@ -137,13 +141,15 @@ class App extends Component {
          </nav>
         <div className="container mt-3">
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Navigate replace to="/home"/>} />
             <Route path="/home" element={<Home />} />
             <Route path="/register" element={<Register />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/confluent" element={<Confluent />} />
             <Route path="/meta" element={<Meta />} />
-            <Route path="/metawrite" element={<Metawrite />} />
+            <Route path="/meta/list" element={<Metalist />} />
+            <Route path="/historylist" element={<Historylist/>} />
+            <Route path="/meta/write" element={<Metawrite />} />
             <Route path="/kafkaadmin" element={<KafkaAdmin />} />
             <Route path="/kafkamonitor" element={<KafkaMonitor />} />
             <Route path="/k8monitor" element={<K8Monitor />} />

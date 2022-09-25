@@ -2,6 +2,9 @@ import { processArrayType } from "json-to-avro/src/jsonToAvro";
 import React, { Component } from "react";
 import Iframe from 'react-iframe'
 import UserService from "../services/user.service";
+import AuthService from "../services/auth.service";
+import {Navigate} from 'react-router-dom'
+
 
 
 export default class Kafkaadmin extends Component {
@@ -9,12 +12,25 @@ export default class Kafkaadmin extends Component {
     super(props);
 
     this.state = {
-      content: ""
+      content: "",
+      redirect:false
     };
   }
 
   componentDidMount(){
-
+    const user = AuthService.getCurrentUser();
+    if (user !== null ) {
+      this.setState({
+        ...this.state,
+        currentUser: user,
+      })
+    } else {
+      console.log("not")
+      this.setState({
+        ...this.state,
+        redirect: true
+      })
+    } 
   }
 
   runAfterRender = () => {
@@ -29,7 +45,8 @@ export default class Kafkaadmin extends Component {
   render() {
     this.runAfterRender()
     return (
-      <div className="kafkadmin" onLoad={this.runAfterRender}>
+      <div className="kafkadmin">
+        {this.state.redirect ? <Navigate to='/home' />:<></>}
       <div className="container">
         <Iframe url={process.env.REACT_APP_KAFAKUI}
         id="KafkaAdmin"

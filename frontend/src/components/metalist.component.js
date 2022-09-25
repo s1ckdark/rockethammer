@@ -89,38 +89,31 @@ export default class Metalist extends Component {
         this.fetchMetaData(0);    
     }
 
-    // componentWillMount = () => {
-    //     /* attach listeners to google StreetView */
-    //     // window.addEventListener('popstate', (event) => {
-    //     //     event.preventDefault()
-    //     //     this.listenBackEvent();
-    //     // });
-    //     // console.log(history);
-    //   }
+    componentWillMount = () => {
+        /* attach listeners to google StreetView */
+        window.addEventListener('popstate', (event) => {
+        //     event.preventDefault()
+            this.listenBackEvent();
+        });
+        // console.log(history);
+      }
 
-    // listenBackEvent = () => {
-    //     // 뒤로가기 할 때 수행할 동작을 적는다
-    //     if(this.state.show){
-    //         this.setState({
-    //             ...this.state,
-    //             show: false
-    //         })
-    //     }
-    //     alert("show:false")
-    // };
+    listenBackEvent = () => {
+        // 뒤로가기 할 때 수행할 동작을 적는다
+        if(this.state.show){
+            this.setState({
+                ...this.state,
+                show: false
+            })
+        }
+    };
   
-//     unlistenHistoryEvent = history.listen(({ action }) => {
-//         if (action === "POP") {
-//           this.listenBackEvent();
-//         }
-//         // return this.unlistenHistoryEvent;
-//     });
-// //   componentWillReceiveProps(nextProps) {
-//     this.setState({
-//         ...this.state,
-//         meta: nextProps.schema
-//     })  
-//   }
+    unlistenHistoryEvent = history.listen(({ action }) => {
+        if (action === "POP") {
+          this.listenBackEvent();
+        }
+        // return this.unlistenHistoryEvent;
+    });
 
     useConfirm = (e, message, onConfirm, onCancel) => {
         e.preventDefault()
