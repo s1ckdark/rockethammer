@@ -1,5 +1,5 @@
 /* animaton */
-.transition, .meta .form-group:focus-within .field-label, button[data-tooltip]:hover:before, button[data-tooltip]:hover:after, th[data-tooltip]:hover:before, th[data-tooltip]:hover:after {
+.transition, .form-group:focus-within .field-label, button[data-tooltip]:hover:before, button[data-tooltip]:hover:after, th[data-tooltip]:hover:before, th[data-tooltip]:hover:after {
   transition: all 0.5s ease-in-out;
 }
 
@@ -10,7 +10,7 @@
   -o-transition: opacity 0.25s ease-in-out;
 }
 
-.fade-in, .meta .metawrite .onpreview {
+.fade-in, .metawrite .onpreview {
   animation: fadein 3s;
   -moz-animation: fadein 3s; /* Firefox */
   -webkit-animation: fadein 3s; /* Safari and Chrome */
@@ -450,31 +450,33 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
   top: 80px;
   right: 30px;
 }
-.meta .metalist {
+
+.metalist {
   margin: 0 auto;
 }
-.meta .metalist .jsonView {
+.metalist .jsonView {
   max-height: calc(100vh - 300px);
   height: 100%;
   border: 1px solid #ccc;
   padding: 5px 0;
 }
-.meta .metalist table tr th {
+.metalist table tr th {
   position: relative;
 }
-.meta .metalist table tr th td.value span {
+.metalist table tr th td.value span {
   font-size: 18px;
 }
-.meta .metalist table .detailview .btn {
+.metalist table .detailview .btn {
   letter-spacing: -2px;
 }
-.meta .metalist table .detailview .info-group label {
+.metalist table .detailview .info-group label {
   font-size: 11px;
 }
-.meta .metalist table .detailview .info-group p {
+.metalist table .detailview .info-group p {
   margin-bottom: 8px;
 }
-.meta .metawrite {
+
+.metawrite {
   position: fixed;
   top: 60px;
   right: 0;
@@ -485,7 +487,7 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
   height: calc(100% - 60px);
   overflow-y: scroll;
 }
-.meta .metawrite .onpreview {
+.metawrite .onpreview {
   background: #fff;
   border: 1px solid #121212;
   box-shadow: 12px 12px 2px 1px rgba(0, 0, 255, 0.2);
@@ -495,16 +497,18 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
   left: 50%;
   transform: translate(-50%, -50%);
 }
-.meta .metawrite table th, .meta .metawrite table td {
+.metawrite table th, .metawrite table td {
   min-width: 50px;
 }
-.meta .viewJSON {
+
+.viewJSON {
   width: 100%;
   height: 100%;
   background-color: #c8c8c8;
   z-index: 998;
 }
-.meta .viewHistory {
+
+.viewHistory {
   position: absolute;
   top: 60px;
   left: 0;
@@ -513,128 +517,141 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
   z-index: 100;
   background-color: #fff;
 }
-.meta .viewHistory .detailView table tr:first-child td {
+.viewHistory .detailView table tr:first-child td {
   text-align: center;
 }
-.meta .viewHistory .detailView table tr td {
+.viewHistory .detailView table tr td {
   text-align: left;
 }
-.meta .viewHistory .detailView table tr td:first-child {
+.viewHistory .detailView table tr td:first-child {
   text-align: center;
 }
-.meta .viewHistory .detailView table tr td:nth-child(4) {
+.viewHistory .detailView table tr td:nth-child(4) {
   text-align: center;
 }
-.meta .schemaTypeBtn {
+
+.schemaTypeBtn {
   position: fixed;
   top: 30px;
   z-index: 100;
 }
-.meta .keySchemaJson {
+
+.keySchemaJson {
   right: 190px;
 }
-.meta .valueSchemaJson {
+
+.valueSchemaJson {
   right: 110px;
 }
-.meta .closeHistoryDetail {
+
+.closeHistoryDetail {
   z-index: 101;
 }
-.meta button:disabled,
-.meta button[disabled] {
+
+button:disabled,
+button[disabled] {
   opacity: 0.5;
   background: rgba(0, 0, 0, 0.3);
   border: none;
   color: rgba(0, 0, 0, 0.5);
 }
-.meta .select {
+
+.select {
   background-color: #6c757d;
 }
-.meta .layer {
+
+.layer {
   margin-top: 30px;
   z-index: 998;
   background: #fff;
 }
-.meta input, .meta textarea {
+
+input, textarea {
   border-radius: 10px;
   border: 1px solid #ccc;
   padding: 0.5em;
   background: #fff;
 }
-.meta textarea {
+
+textarea {
   min-height: 100px;
 }
-.meta textarea[readonly] {
+textarea[readonly] {
   background-color: transparent;
   border: none;
   outline: none;
 }
-.meta input[readonly] {
+
+input[readonly] {
   background-color: transparent;
   border: none;
   outline: none;
 }
-.meta input[readonly]:focus {
+input[readonly]:focus {
   background-color: transparent;
   border-color: transparent;
   box-shadow: none;
   outline: none;
 }
-.meta input[readonly]::-moz-selection {
+input[readonly]::-moz-selection {
   background: none;
   color: #000;
   outline: none;
 }
-.meta input[readonly]::selection {
+input[readonly]::selection {
   background: none;
   color: #000;
   outline: none;
 }
-.meta input[readonly]::-moz-selection {
+input[readonly]::-moz-selection {
   background: none;
   color: #000;
 }
-.meta input[name=is_null] {
+input[name=is_null] {
   text-transform: uppercase;
 }
-.meta table tr td, .meta table tr th {
+
+table tr td, table tr th {
   vertical-align: middle;
   text-align: center;
   padding: 15px 0;
   margin: 10px auto;
 }
-.meta table tr p {
+table tr p {
   margin: 0;
 }
-.meta table tr input {
+table tr input {
   text-align: center;
   width: 80%;
   margin: 0 auto;
 }
-.meta table tr input[readonly] {
+table tr input[readonly] {
   text-align: center;
 }
-.meta .changeView tr:first-child td, .meta .changeView tr:first-child th {
+
+.changeView tr:first-child td, .changeView tr:first-child th {
   text-align: center;
 }
-.meta .changeView tr td, .meta .changeView tr th {
+.changeView tr td, .changeView tr th {
   vertical-align: middle;
   text-align: left;
   padding: 15px 0;
   margin: 10px auto;
 }
-.meta .changeView tr td:first-child, .meta .changeView tr th:first-child {
+.changeView tr td:first-child, .changeView tr th:first-child {
   text-align: center;
 }
-.meta .form-group:focus-within .field-label {
+
+.form-group:focus-within .field-label {
   font-size: 14px;
 }
-.meta .form-group p.field-label {
+.form-group p.field-label {
   font-size: 11px;
   font-weight: 500;
   margin-bottom: 0.5rem;
   height: 20px;
 }
-.meta .schema-field {
+.schema-field {
   text-transform: uppercase;
   padding: 0 0 1rem;
   display: inline-block;

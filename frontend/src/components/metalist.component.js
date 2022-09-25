@@ -1,6 +1,7 @@
 import React, { Component, useMemo } from "react";
 import { isCompositeComponent } from "react-dom/test-utils";
-import { Link, useHistory, useNavigate, useLocation, useParams } from 'react-router-dom';
+import { Link, useHistory, useNavigate, useLocation, useParams} from 'react-router-dom';
+import { createBrowserHistory } from "history";
 import axios from 'axios';
 import AuthService from "../services/auth.service";
 
@@ -17,8 +18,9 @@ import Metawrite from "./metawrite.component";
 import Historylist from "./historylist.component";
 import helpers from "./helpers.component";
 import history from "./history.component";
+import { withRouter } from "./withRouter.component";
 
-export default class Metalist extends Component {
+class Metalist extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -71,6 +73,8 @@ export default class Metalist extends Component {
         this.handleMetaPageChange = this._handleMetaPageChange.bind(this);
         this.detailView = this.detailView.bind(this);
         this.closeWrite = this.closeWrite.bind(this);
+        this.isBackButtonClicked = false;
+        this.handleNavigateBack = this.handleNavigateBack.bind(this);
     }
     
     _handleMetaPageChange(pageNumber) {
@@ -81,39 +85,59 @@ export default class Metalist extends Component {
               ...this.state.meta,
               current: pageNumber-1
           },
-          detailVIEW:false
+          view:false
       }, ()=>{this.fetchMetaData(pageNumber-1);})
     }
       
     componentDidMount(){
         this.fetchMetaData(0);    
+        window.history.pushState(null, null, window.location.pathname);
+        window.addEventListener('popstate', this.onBackButtonEvent);
+        window.addEventListener("popstate", this.handleNavigateBack);
+    }
+    
+    componentWillUnmount = () => {
+        window.removeEventListener('popstate', this.onBackButtonEvent);
+        window.removeEventListener("popstate", this.handleNavigateBack);
     }
 
-    componentWillMount = () => {
-        /* attach listeners to google StreetView */
-        window.addEventListener('popstate', (event) => {
-        //     event.preventDefault()
-            this.listenBackEvent();
-        });
-        // console.log(history);
+    
+
+    handleNavigateBack(event) {
+        // console.log("inside callback", event);
+       // change arguments as you want
+       this.setState({
+        ...this.state,
+        show:false,
+        view: false,
+        typeVIEW: false
+    })
+        this.deleteHeldResorts(null, false);
+      }
+    
+      deleteHeldResorts(ReservedInventoryID = null, refreshHeldResorts = true) {
+        // your function goes down there content
+        console.log("inside deleteHeldResorts");
       }
 
-    listenBackEvent = () => {
-        // 뒤로가기 할 때 수행할 동작을 적는다
-        if(this.state.show){
-            this.setState({
-                ...this.state,
-                show: false
-            })
-        }
-    };
-  
-    unlistenHistoryEvent = history.listen(({ action }) => {
-        if (action === "POP") {
-          this.listenBackEvent();
-        }
-        // return this.unlistenHistoryEvent;
-    });
+    // onBackButtonEvent = (e) => {
+    //     e.preventDefault();
+    
+    //     if (!this.isBackButtonClicked) {
+    //         if (window.confirm("Do you want to save your changes")) {
+    //             this.isBackButtonClicked = true;
+    //             this.setState({
+    //                 ...this.state,
+    //                 show:false,
+    //                 view: false
+    //             })
+    //         }
+    //         else {
+    //             window.history.pushState(null, null, window.location.pathname);
+    //             this.isBackButtonClicked = false;
+    //         }
+    //     }
+    // }
 
     useConfirm = (e, message, onConfirm, onCancel) => {
         e.preventDefault()
@@ -253,6 +277,7 @@ export default class Metalist extends Component {
            changeVIEW:false,
            view:false
         })
+        // this.props.navigate('/meta/write')
     }
 
 
@@ -372,7 +397,6 @@ export default class Metalist extends Component {
            changeVIEW:false,
            show:true
         })
-        
     }
 
     closeChanged = (e) => {
@@ -557,3 +581,4 @@ export default class Metalist extends Component {
     }
 }
 
+export default withRouter(Metalist)

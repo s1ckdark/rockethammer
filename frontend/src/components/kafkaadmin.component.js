@@ -1,11 +1,8 @@
 import { processArrayType } from "json-to-avro/src/jsonToAvro";
 import React, { Component } from "react";
 import Iframe from 'react-iframe'
-import UserService from "../services/user.service";
 import AuthService from "../services/auth.service";
 import {Navigate} from 'react-router-dom'
-
-
 
 export default class Kafkaadmin extends Component {
   constructor(props) {

@@ -3,7 +3,7 @@ import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
 import { Navigate } from "react-router-dom";
-import { WithRouter } from "./withRouter.component";
+import { withRouter } from "./withRouter.component";
 import AuthService from "../services/auth.service";
 import axios from "axios";
 
@@ -77,7 +77,7 @@ class Login extends Component {
           const user = AuthService.getCurrentUser();
           console.log(user);
           axios.post("/api/user/insertsesshistory",{userid:user.userid,name:user.name,log:this.userAgent(),login_dt:new Date().toISOString(), ipAddr:this.internalIp}).then(res => {
-            if(res.status === 200) {this.props.navigate("/profile");}
+            if(res.status === 200) {this.props.navigate("/profile");;}
           })
         },
         error => {
@@ -224,4 +224,4 @@ class Login extends Component {
   }
 }
 
-export default WithRouter(Login);
+export default withRouter(Login);

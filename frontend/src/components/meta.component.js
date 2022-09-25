@@ -2,9 +2,8 @@ import React, { Component } from "react";
 import ReactDOM from 'react-dom';
 import {useHistory} from 'react-router-dom';
 import AuthService from "../services/auth.service";
-import UserService from "../services/user.service";
 import { Redirect, Link, Navigate } from "react-router-dom";
-import { WithRouter } from "./withRouter.component";
+import { withRouter } from "./withRouter.component";
 import axios from "axios"
 import Register from './register.component'
 import { Button,Modal } from 'react-bootstrap'
@@ -88,4 +87,4 @@ fetchMetaData = async(page) => {
   }
 }
 
-export default WithRouter(Meta);
+export default withRouter(Meta);

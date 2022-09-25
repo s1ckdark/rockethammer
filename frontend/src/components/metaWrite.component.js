@@ -2,21 +2,9 @@ import React, { Component } from "react";
 import { isCompositeComponent } from "react-dom/test-utils";
 import {useNavigate, withRouter,  Redirect, Link, useLocation } from 'react-router-dom';
 import AuthService from "../services/auth.service";
-import UserService from "../services/user.service";
-
 import axios from "axios"
-import PropTypes from 'prop-types';
-import Pagination from "react-js-pagination";
-import JSONInput from 'react-json-editor-ajrm';
-import locale from 'react-json-editor-ajrm/locale/en';
-import AceEditor from "react-ace";
-// import Metapreview from "./metapreview.component";
-import "ace-builds/src-noconflict/mode-json";
-import "ace-builds/src-noconflict/theme-github";
-import "ace-builds/src-noconflict/theme-tomorrow";
-import "ace-builds/src-noconflict/ext-language_tools"
 import helpers from "./helpers.component";
-// import { ThemeConsumer } from "react-bootstrap/esm/ThemeProvider";
+// import { withRouter } from "./withRouter.component";
 
 export default class Metawrite extends Component {
     constructor(props) {
@@ -255,9 +243,6 @@ export default class Metawrite extends Component {
         return Object.keys(temp).length > 0 ? false:true
     }
 
-    addattention = (field) => {
-        
-    }
     onPreviewClose = (e) => {
         this.setState({
             ...this.state,
@@ -446,3 +431,5 @@ export default class Metawrite extends Component {
         );
     }
 } 
+
+// export default withRouter(Metawrite)
