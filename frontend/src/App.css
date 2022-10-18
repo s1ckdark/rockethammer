@@ -1,5 +1,7 @@
 /* animaton */
-.transition, .form-group:focus-within .field-label, button[data-tooltip]:hover:before, button[data-tooltip]:hover:after, th[data-tooltip]:hover:before, th[data-tooltip]:hover:after {
+.transition, .form-group:focus-within .field-label, button[data-tooltip]:hover:before, button[data-tooltip]:hover:after,
+th[data-tooltip]:hover:before,
+th[data-tooltip]:hover:after {
   transition: all 0.5s ease-in-out;
 }
 
@@ -25,7 +27,8 @@
     opacity: 1;
   }
 }
-@-webkit-keyframes fadein { /* Safari and Chrome */
+@-webkit-keyframes fadein {
+  /* Safari and Chrome */
   from {
     opacity: 0;
   }
@@ -61,22 +64,27 @@
   color: inherit;
 }
 
-button, th {
+button,
+th {
   position: relative;
 }
-button[data-tooltip], th[data-tooltip] {
+button[data-tooltip],
+th[data-tooltip] {
   z-index: 2;
   cursor: pointer;
   /* Hide the tooltip content by default */
 }
-button[data-tooltip]:before, button[data-tooltip]:after, th[data-tooltip]:before, th[data-tooltip]:after {
+button[data-tooltip]:before, button[data-tooltip]:after,
+th[data-tooltip]:before,
+th[data-tooltip]:after {
   visibility: hidden;
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
   opacity: 0;
   pointer-events: none;
 }
-button[data-tooltip]:before, th[data-tooltip]:before {
+button[data-tooltip]:before,
+th[data-tooltip]:before {
   position: absolute;
   bottom: 100%;
   left: 50%;
@@ -95,7 +103,8 @@ button[data-tooltip]:before, th[data-tooltip]:before {
   font-size: 14px;
   line-height: 1.2;
 }
-button[data-tooltip]:after, th[data-tooltip]:after {
+button[data-tooltip]:after,
+th[data-tooltip]:after {
   position: absolute;
   bottom: 100%;
   left: 50%;
@@ -109,16 +118,20 @@ button[data-tooltip]:after, th[data-tooltip]:after {
   font-size: 0;
   line-height: 0;
 }
-button[data-tooltip]:hover:before, button[data-tooltip]:hover:after, th[data-tooltip]:hover:before, th[data-tooltip]:hover:after {
+button[data-tooltip]:hover:before, button[data-tooltip]:hover:after,
+th[data-tooltip]:hover:before,
+th[data-tooltip]:hover:after {
   visibility: visible;
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
   filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
   opacity: 1;
 }
-button[data-tooltip].visible, th[data-tooltip].visible {
+button[data-tooltip].visible,
+th[data-tooltip].visible {
   opacity: 1;
 }
-button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
+button[data-tooltip] .info-icon,
+th[data-tooltip] .info-icon {
   vertical-align: bottom;
   margin-left: 2px;
   font-weight: 600;
@@ -127,10 +140,10 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
 }
 
 .card-container {
-  width: 600px;
+  width: 400px;
   height: auto;
   background-color: #f7f7f7;
-  padding: 50px;
+  padding: 30px;
   margin: 0 auto;
   border-radius: 20px;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.3);
@@ -159,13 +172,17 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
   margin: 30px 0 15px;
 }
 
-.profile, .login, .register {
+.profile,
+.login,
+.register {
   display: flex;
   justify-content: center;
   align-items: center;
   height: calc(100vh - 60px - 1rem);
 }
-.profile #universe, .login #universe, .register #universe {
+.profile #universe,
+.login #universe,
+.register #universe {
   position: absolute;
   width: 600px;
   top: 50%;
@@ -174,28 +191,38 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
   transform: translate(-50%, -50%);
   z-index: 10;
 }
-.profile #universe #orbit, .login #universe #orbit, .register #universe #orbit {
+.profile #universe #orbit,
+.login #universe #orbit,
+.register #universe #orbit {
   fill: none;
   stroke: #ffffff;
   z-index: 10;
 }
-.profile #rocket, .login #rocket, .register #rocket {
+.profile #rocket,
+.login #rocket,
+.register #rocket {
   width: 50px;
   z-index: 10;
   overflow: visible;
   position: absolute;
 }
-.profile .saturn, .login .saturn, .register .saturn {
+.profile .saturn,
+.login .saturn,
+.register .saturn {
   position: relative;
 }
-.profile .saturn .planet, .login .saturn .planet, .register .saturn .planet {
+.profile .saturn .planet,
+.login .saturn .planet,
+.register .saturn .planet {
   position: relative;
   width: 400px;
   height: 400px;
   border-radius: 50%;
   background-color: #cc5803;
 }
-.profile .saturn .planet:before, .login .saturn .planet:before, .register .saturn .planet:before {
+.profile .saturn .planet:before,
+.login .saturn .planet:before,
+.register .saturn .planet:before {
   position: absolute;
   width: 400px;
   height: 50px;
@@ -206,7 +233,9 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
   left: 40px;
   box-shadow: 120px 0 #f29559, -150px 50px #cc5803, 90px 50px #cc5803, -40px 50px #f29559, 0 100px #f29559, 120px 100px #f29559, -80px 150px #cc5803, 160px 150px #cc5803, 60px 150px #f29559;
 }
-.profile .saturn .planet:after, .login .saturn .planet:after, .register .saturn .planet:after {
+.profile .saturn .planet:after,
+.login .saturn .planet:after,
+.register .saturn .planet:after {
   content: "";
   position: absolute;
   width: 400px;
@@ -216,7 +245,9 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
   border-radius: 50%;
   box-shadow: inset -20px 20px rgba(0, 0, 0, 0.2);
 }
-.profile .saturn .up, .login .saturn .up, .register .saturn .up {
+.profile .saturn .up,
+.login .saturn .up,
+.register .saturn .up {
   position: absolute;
   width: 400px;
   z-index: 10;
@@ -226,7 +257,9 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
   top: 0;
   overflow: hidden;
 }
-.profile .saturn .up:before, .login .saturn .up:before, .register .saturn .up:before {
+.profile .saturn .up:before,
+.login .saturn .up:before,
+.register .saturn .up:before {
   position: absolute;
   width: 200px;
   height: 50px;
@@ -235,7 +268,9 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
   background-color: #f29559;
   box-shadow: -150px 50px #cc5803, 90px 50px #cc5803, -40px 50px #f29559, 0 100px #f29559, -160px 100px #f29559, -220px 150px #cc5803, 60px 150px #cc5803, -100px 150px #f29559;
 }
-.profile .saturn .up:after, .login .saturn .up:after, .register .saturn .up:after {
+.profile .saturn .up:after,
+.login .saturn .up:after,
+.register .saturn .up:after {
   content: "";
   background: transparent;
   position: absolute;
@@ -245,7 +280,9 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
   border-radius: 200px 200px 0 0;
   box-shadow: inset -20px 20px rgba(0, 0, 0, 0.2);
 }
-.profile .saturn .info-text, .login .saturn .info-text, .register .saturn .info-text {
+.profile .saturn .info-text,
+.login .saturn .info-text,
+.register .saturn .info-text {
   position: absolute;
   left: 50%;
   top: 50%;
@@ -254,24 +291,32 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
   max-width: 300px;
   max-height: 300px;
 }
-.profile .saturn .info-text .jumbotron, .login .saturn .info-text .jumbotron, .register .saturn .info-text .jumbotron {
+.profile .saturn .info-text .jumbotron,
+.login .saturn .info-text .jumbotron,
+.register .saturn .info-text .jumbotron {
   position: absolute;
   top: -200px;
   left: 0;
   opacity: 0;
   visibility: hidden;
 }
-.profile .saturn .info-text .text, .login .saturn .info-text .text, .register .saturn .info-text .text {
+.profile .saturn .info-text .text,
+.login .saturn .info-text .text,
+.register .saturn .info-text .text {
   color: #fff;
   padding: 15px 0;
   text-align: center;
 }
-.profile .saturn .info-text .text p, .login .saturn .info-text .text p, .register .saturn .info-text .text p {
+.profile .saturn .info-text .text p,
+.login .saturn .info-text .text p,
+.register .saturn .info-text .text p {
   font-size: 1rem;
   margin-bottom: 0;
   line-height: 1.6;
 }
-.profile .saturn .info-text .text label, .login .saturn .info-text .text label, .register .saturn .info-text .text label {
+.profile .saturn .info-text .text label,
+.login .saturn .info-text .text label,
+.register .saturn .info-text .text label {
   margin-top: 10px;
   margin-right: 15px;
 }
@@ -314,10 +359,16 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
 .navbar {
   z-index: 999;
 }
+.navbar ul {
+  display: flex;
+  margin: 0;
+  padding: 0;
+}
 .navbar .nav-item {
   position: relative;
   padding: 0 5px;
   text-align: center;
+  display: block;
 }
 .navbar .nav-item .nav-link {
   margin: 0 5px;
@@ -339,6 +390,7 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
   font-size: 11px;
   width: 100%;
   text-align: center;
+  z-index: 99;
 }
 
 .counter {
@@ -380,6 +432,11 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
   background: #fff;
 }
 
+.home video {
+  width: 100%;
+  height: calc(100vh - 60px);
+}
+
 .admin .heading-1 {
   color: #000;
   text-align: center;
@@ -411,17 +468,22 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
 .admin .active {
   display: block !important;
 }
-.admin .userManage, .admin .history, .admin .adduser, .admin .weblog {
+.admin .userManage,
+.admin .history,
+.admin .adduser,
+.admin .weblog {
   display: none;
 }
 .admin .history td {
   white-space: pre-wrap;
 }
-.admin .history .table tbody tr, .admin .userManage .table tbody tr {
+.admin .history .table tbody tr,
+.admin .userManage .table tbody tr {
   border-bottom-width: 1px;
   height: 60px;
 }
-.admin .history .table tbody tr td, .admin .userManage .table tbody tr td {
+.admin .history .table tbody tr td,
+.admin .userManage .table tbody tr td {
   border-bottom-width: 0;
 }
 
@@ -497,7 +559,8 @@ button[data-tooltip] .info-icon, th[data-tooltip] .info-icon {
   left: 50%;
   transform: translate(-50%, -50%);
 }
-.metawrite table th, .metawrite table td {
+.metawrite table th,
+.metawrite table td {
   min-width: 50px;
 }
 
@@ -566,7 +629,8 @@ button[disabled] {
   background: #fff;
 }
 
-input, textarea {
+input,
+textarea {
   border-radius: 10px;
   border: 1px solid #ccc;
   padding: 0.5em;
@@ -611,7 +675,8 @@ input[name=is_null] {
   text-transform: uppercase;
 }
 
-table tr td, table tr th {
+table tr td,
+table tr th {
   vertical-align: middle;
   text-align: center;
   padding: 15px 0;
@@ -629,16 +694,19 @@ table tr input[readonly] {
   text-align: center;
 }
 
-.changeView tr:first-child td, .changeView tr:first-child th {
+.changeView tr:first-child td,
+.changeView tr:first-child th {
   text-align: center;
 }
-.changeView tr td, .changeView tr th {
+.changeView tr td,
+.changeView tr th {
   vertical-align: middle;
   text-align: left;
   padding: 15px 0;
   margin: 10px auto;
 }
-.changeView tr td:first-child, .changeView tr th:first-child {
+.changeView tr td:first-child,
+.changeView tr th:first-child {
   text-align: center;
 }
 

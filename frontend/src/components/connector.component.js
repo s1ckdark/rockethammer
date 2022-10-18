@@ -1,24 +1,5 @@
 import React, { Component } from "react";
-import ReactDOM from 'react-dom';
-import {useHistory} from 'react-router-dom';
-import AuthService from "../services/auth.service";
-import UserService from "../services/user.service";
-import { Redirect, Link } from "react-router-dom";
 import axios from "axios"
-import PropTypes from 'prop-types';
-import Pagination from "react-js-pagination";
-import { library } from '@fortawesome/fontawesome-svg-core'
-import {
-  faTrashAlt,
-  faUserEdit,
-  faLockOpen,
-  faLock
-} from '@fortawesome/free-solid-svg-icons'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import Register from './register.component'
-import { Button,Modal } from 'react-bootstrap'
-import JSONInput from 'react-json-editor-ajrm';
-import locale from 'react-json-editor-ajrm/locale/en';
 
 export default class Meta extends Component {
   constructor(props) {
@@ -85,14 +66,3 @@ onSearch = async()=> {
     );
   }
 }
-
-
- 
-{/* <JSONInput
-id          = {this.state.data[index]._id}
-placeholder = {res}
-locale      = { locale }
-height      = '550px'
-onChange    = {this.onChangeValue}
-/> */}
-

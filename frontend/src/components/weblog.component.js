@@ -1,20 +1,9 @@
-import React, { Component, useMemo } from "react";
-import { isCompositeComponent } from "react-dom/test-utils";
-import { Link, useHistory, useNavigate, useLocation, useParams } from 'react-router-dom';
+import React, { Component } from "react";
 import axios from 'axios';
 import AuthService from "../services/auth.service";
 
-import JSONInput from 'react-json-editor-ajrm';
-import locale from 'react-json-editor-ajrm/locale/en';
-import AceEditor from "react-ace";
-import "ace-builds/src-noconflict/mode-json";
-import "ace-builds/src-noconflict/theme-github";
-import "ace-builds/src-noconflict/theme-tomorrow";
-import "ace-builds/src-noconflict/ext-language_tools";
-import ReactDiffViewer from 'react-diff-viewer';
 import Pagination from "react-js-pagination";
-import Metawrite from "./metawrite.component";
-import Historylist from "./historylist.component";
+
 import helpers from "./helpers.component";
 
 export default class Weblog extends Component {
@@ -84,10 +73,10 @@ export default class Weblog extends Component {
         const inner = (properties, property) => {
             let tmp;
     
-            if (tmp = property.match(link)) {
+            if (tmp === property.match(link)) {
                 properties.link = tmp[1];
             }
-            else if (tmp = single.reduce((match, regex) => (match || property.match(regex)), null)) {
+            else if (tmp === single.reduce((match, regex) => (match || property.match(regex)), null)) {
                 properties[tmp[1]] = tmp[2];
             }
             else if (many.test(property)) {

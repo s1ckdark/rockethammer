@@ -14,21 +14,16 @@ import ReactDiffViewer from 'react-diff-viewer';
 import helpers from './helpers.component';
 import { withRouter } from "./withRouter.component";
 
-class Historylist extends Component {
+class Historyview extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            data:{
-                totalcnt:0,
-                current:0,
-                activePage: 1,
-                pageSize:5,
-                dataList:[]
-            },
-            idx: '',
-            json: {},
-            before: {},
-            after: {}
+          history: [],
+          idx: '',
+		  show: false,
+          json: {},
+          before: {},
+          after: {}
         };
         this.handleUserPageChange = this._handleUserPageChange.bind(this);
         this.handleHistoryPageChange = this._handleHistoryPageChange.bind(this);
@@ -77,15 +72,6 @@ class Historylist extends Component {
         })
     }
 
-    closeHistoryDetail = (e) => {
-        this.setState({
-            ...this.state,
-            show:false,
-            after:{},
-            before:{}
-        })
-    }
-
     render()
     {
         return (
@@ -117,7 +103,7 @@ class Historylist extends Component {
                                             </td>
                                         </tr>
                                     );
-                                }): <tr><td colspan="4"><h3 className="p-3 m-3 text-center">검색된 history data가 없습니다</h3></td></tr>}
+                                }): <h3 className="p-3 m-3 text-center">검색된 history data가 없습니다</h3>}
                             </tbody>
                         </table>
 
@@ -139,4 +125,4 @@ class Historylist extends Component {
         );
     }
 }
-export default withRouter(Historylist)
+export default withRouter(Historyview)

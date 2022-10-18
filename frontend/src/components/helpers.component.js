@@ -1,5 +1,5 @@
-import React, { Component} from 'react';
-import {useNavigate, Navigate} from 'react-router-dom';
+import React from 'react';
+import {useNavigate} from 'react-router-dom';
 
 export default {
     krDateTime : (date) => {
@@ -12,12 +12,6 @@ export default {
             return false;
         }
         return true;
-    },
-    goBack : () => {
-        useNavigate(-1);
-    },
-    goForward : () => {
-        useNavigate(1);
     },
     replaceKey : (data, mode)=>{
         let swaps;
@@ -60,7 +54,7 @@ export default {
                     "연관토픽":"related_topics",
                     "최종수정시간":"last_mod_dt",
                     "최종수정자":"last_mod_id",
-                    "schema":"schema",               
+                    "schema":"schema",
                     "물리명":"p_name",
                     "데이터 타입":"p_type",
                     "논리명":"l_name",
@@ -76,27 +70,26 @@ export default {
             }
 
             const pattern = new RegExp(
-            Object.keys(swaps).map(e => `(?:"(${e})":)`).join("|"), "g"
+                Object.keys(swaps).map(e => `(?:"(${e})":)`).join("|"), "g"
             );
-            const result = JSON.parse(
-                JSON.stringify(data).replace(pattern, m => `"${swaps[m.slice(1,-2)]}":`)
-            );
+            const result = JSON.stringify(data, null, 4).replace(pattern, m => `"${swaps[m.slice(1,-2)]}":`)
             return result;
     },
     translate : (name) => {
         var defineName = {
             "_id":"_id",
             "topic_name":"토픽명",
-            "schema_id":"물리스키마ID",
+            "schema_id":"스키마ID",
             "schema_version":"물리스키마버전",
             "meta_version":"메타버전",
+            "revision":"논리스키마버전",
+            "recycle_pol":"데이터삭제주기",
             "op_name":"관리부서",
             "service":"업무시스템",
             "related_topics":"연관토픽",
             "last_mod_dt":"최종수정시간",
             "last_mod_id":"최종수정자",
-            "schema":"스키마명",
-            "revision":"논리스키마버전",
+            "schema":"",
             "p_name":"물리명",
             "p_type":"데이터 타입",
             "l_name":"논리명",
@@ -128,24 +121,46 @@ export default {
     },
     iterateObj : (dupeObj) => {
         var retObj = new Object();
-        if (typeof (dupeObj) == 'object') {
+        if (typeof (dupeObj) === 'object') {
             if (typeof (dupeObj.length) == 'number')
                 retObj = new Array();
-    
             for (var objInd in dupeObj) {
-                if (dupeObj[objInd] == null)
+                if (dupeObj[objInd] === null)
                     dupeObj[objInd] = "Empty";
-                if (typeof (dupeObj[objInd]) == 'object') {
+                if (typeof (dupeObj[objInd]) === 'object') {
                     retObj[objInd] = this.iterateObj(dupeObj[objInd]);
-                } else if (typeof (dupeObj[objInd]) == 'string') {
+                } else if (typeof (dupeObj[objInd]) === 'string') {
                     retObj[objInd] = dupeObj[objInd];
-                } else if (typeof (dupeObj[objInd]) == 'number') {
+                } else if (typeof (dupeObj[objInd]) === 'number') {
                     retObj[objInd] = dupeObj[objInd];
-                } else if (typeof (dupeObj[objInd]) == 'boolean') {
-                    ((dupeObj[objInd] == true) ? retObj[objInd] = true : retObj[objInd] = false);
-                }       
+                } else if (typeof (dupeObj[objInd]) === 'boolean') {
+                    ((dupeObj[objInd] === true) ? retObj[objInd] = true : retObj[objInd] = false);
+                }
             }
         }
         return retObj;
+    },
+    movetolink : (link) => {
+        return link === window.location.pathname ? true:false
+    },
+    updateState : (key, value) => {
+        this.setState({
+            ...this.state,
+            [key]:[value]
+        })
+    },
+    parseNested : (str) => {
+        try {
+            return JSON.parse(str, (_, val) => {
+                if (typeof val === 'string')
+                    return this.parseNested(val)
+                return val
+            })
+        } catch (exc) {
+            return str
+        }
+    },
+    parseData : (str) => {
+        return JSON.parse(str);
     }
 }

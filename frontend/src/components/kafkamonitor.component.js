@@ -23,7 +23,6 @@ class Kafkamonitor extends Component {
         currentUser: user,
       })
     } else {
-      console.log("not")
       this.setState({
         ...this.state,
         redirect: true
@@ -34,11 +33,9 @@ class Kafkamonitor extends Component {
     return (
       <div className="kafkamonitor">
         {this.state.redirect ? <Navigate to='/home' />:<></>}
-      <div className="container">
         <Iframe url={process.env.REACT_APP_GRAFANA}
         id="KafkaMonitor"
         className="cors-iframe"/>
-      </div>
       </div>
     );
   }

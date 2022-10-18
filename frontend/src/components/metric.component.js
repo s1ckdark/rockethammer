@@ -1,4 +1,3 @@
-import { processArrayType } from "json-to-avro/src/jsonToAvro";
 import React, { Component } from "react";
 import Iframe from 'react-iframe'
 
@@ -24,7 +23,6 @@ export default class Metric extends Component {
         currentUser: user,
       })
     } else {
-      console.log("not")
       this.setState({
         ...this.state,
         redirect: true
@@ -37,11 +35,9 @@ export default class Metric extends Component {
     return (
       <div className="metric">
         {this.state.redirect ? <Navigate to='/home' />:<></>}
-      <div className="container">
         <Iframe url={process.env.REACT_APP_PROMETHEUS}
         id="metric"
         className="cors-iframe"/>
-      </div>
       </div>
     );
   }

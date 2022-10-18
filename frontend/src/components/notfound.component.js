@@ -1,14 +1,9 @@
 import React, { Component } from "react";
+import { withRouter } from "../common/withRouter";
 
-import UserService from "../services/user.service";
-
-export default class Home extends Component {
+class Notfound extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      content: ""
-    };
   }
 
   componentDidMount() {
@@ -16,11 +11,13 @@ export default class Home extends Component {
 
   render() {
     return (
-      <div className="home">
+      <div className="container">
         <header className="jumbotron">
+          <h3>404 Not found</h3>
         </header>
-        <h3>Welcome RocketHammer</h3>
       </div>
     );
   }
 }
+
+export default withRouter(Notfound)

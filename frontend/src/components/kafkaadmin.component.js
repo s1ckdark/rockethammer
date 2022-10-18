@@ -1,4 +1,3 @@
-import { processArrayType } from "json-to-avro/src/jsonToAvro";
 import React, { Component } from "react";
 import Iframe from 'react-iframe'
 import AuthService from "../services/auth.service";
@@ -22,7 +21,6 @@ export default class Kafkaadmin extends Component {
         currentUser: user,
       })
     } else {
-      console.log("not")
       this.setState({
         ...this.state,
         redirect: true
@@ -44,11 +42,9 @@ export default class Kafkaadmin extends Component {
     return (
       <div className="kafkadmin">
         {this.state.redirect ? <Navigate to='/home' />:<></>}
-      <div className="container">
         <Iframe url={process.env.REACT_APP_KAFAKUI}
         id="KafkaAdmin"
         className="cors-iframe"/>
-      </div>
       </div>
     );
   }
