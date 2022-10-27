@@ -54,7 +54,7 @@ REACT_APP_GRAFANA={url:port}
 REACT_APP_KAFAKUI={url:port}
 ```
 ```
-> npm install
+> npm i --force
 > npm run build
 ```
 ---

@@ -34,8 +34,6 @@ class Navigation extends Component {
     if (user) {
       this.setState({
         currentUser: user,
-        // showModeratorBoard: user.roles.includes("ROLE_MODERATOR"),
-        // showAdminBoard: user.roles.includes("ROLE_ADMIN"),
       });
     } else {
       return <Navigate to="/home"/>
@@ -65,8 +63,6 @@ class Navigation extends Component {
  logOut() {
     AuthService.logout();
     this.setState({
-      // showModeratorBoard: false,
-      // showAdminBoard: false,
       currentUser: undefined,
     });
   }
@@ -130,9 +126,9 @@ class Navigation extends Component {
                 </Link>
               </li>
               <li className="nav-item">
-                <a href="/register" className="nav-link" onClick={this.props.logOut}>
+                <Link to="/register" className="nav-link" onClick={this.props.logOut}>
                  회원등록
-                </a>
+                </Link>
               </li>!
         </>:
         <>
@@ -142,9 +138,9 @@ class Navigation extends Component {
                 </Link>
               </li>
               <li className="nav-item">
-                <a href="/home" className="nav-link" onClick={this.props.logOut}>
+                <Link className="nav-link" onClick={this.props.logOut}>
                   Log out
-                </a>
+                </Link>
               </li>
         </>}
             </div>

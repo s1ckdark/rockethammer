@@ -51,13 +51,13 @@ class Meta extends Component {
     const viewType = () => {
       switch(type){
         case "list":
-          return <Navigate to="/meta/list" pass={this.handleCallback}/>
+          return <Navigate to="/meta/list/1"/>
         case "write":
-          return <Navigate to="/meta/write" pass={this.handleCallback}/>
+          return <Navigate to="/meta/write"/>
         case "view":
-          return <Navigate to="/meta/view" pass={this.handleCallback} />;
+          return <Navigate to="/meta/view" />;
         default:
-          return <Navigate to="/meta/list" pass={this.handleCallback}/>
+          return <Navigate to="/meta/list"/>
       }
     }
     return (

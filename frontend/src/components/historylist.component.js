@@ -23,116 +23,98 @@ class Historylist extends Component {
                 current:0,
                 activePage: 1,
                 pageSize:5,
-                dataList:[]
+                list:[]
             },
             idx: '',
-            json: {},
-            before: {},
-            after: {}
         };
-        this.handleUserPageChange = this._handleUserPageChange.bind(this);
-        this.handleHistoryPageChange = this._handleHistoryPageChange.bind(this);
+        this.handlePageChange = this._handlePageChange.bind(this);
     }
 
-    _handleUserPageChange(pageNumber) {
+    _handlePageChange(pageNumber) {
         console.log(`active page is ${pageNumber}`);
-        this.setState({
-        ...this.state,
-        user:{
-            ...this.state.user,
-            currentPage: pageNumber
-        }
-        });
-        this.fetchData();
-    }
+        this.fetchData(pageNumber-1);
+      }
 
-    _handleHistoryPageChange(pageNumber) {
-        console.log(`active page is ${pageNumber}`);
-        this.setState({
-            ...this.state,
-            history:{
-                ...this.state.history,
-                currentPage: pageNumber
-            }
-        });
-        this.fetchHistoryData();
+
+    fetchData = (topic_name,page) => {
+        axios.post(process.env.REACT_APP_API+"/history/gethistory",{keyword:topic_name,size:10,page:page}).then(res => {
+            this.setState({
+                ...this.state,
+                data:res.data,
+            })
+        })
     }
 
     componentDidMount(){
-        // console.log(this.props);
-    }
-    exist = (json,key) => {
-        json.map((res,index)=>{
-          res.hasOwnProperty(key) ? console.log(index, key):console.log("no")
-        })
-      }
-
-    detailView = (e, idx, before, after) => {
-        console.log(idx);
-        this.setState({
-            ...this.state,
-            show:true,
-            before: before !=='' ? this.replaceKey(JSON.parse(before)):{},
-            after: this.replaceKey(JSON.parse(after))
-        })
+        console.log("history list",this.props);
+        const { currentPage, topic_name } = this.props.router.params;
+        this.fetchData(topic_name)
     }
 
-    closeHistoryDetail = (e) => {
-        this.setState({
-            ...this.state,
-            show:false,
-            after:{},
-            before:{}
-        })
+    detailView = (e, idx, topic_name) => {
+        e.preventDefault();
+        this.props.router.navigate('/meta/view/history/view/'+topic_name,{state:{data:this.state.data.list[idx]}})
     }
 
-    render()
-    {
+    render(){
+        const { currentPage, topic_name } = this.props.router.params;
+        const { data } = this.state;
+        console.log(data)
+        const { count, current, list, pageCount, size } = data;
+        console.log(list)
         return (
             <>
-                <div className="history col-md-12 px-5 pt-5">
-                    <div className="container">
-                        <table className={ this.state.show ? "historylist bg-light table table-hover d-none" : "historylist bg-light table table-hover"}>
-                            <thead>
-                                <tr className="text-center p-3">
-                                    <th scope="col" className="col-md-1">번호</th>
-                                    <th scope="col" className="col-md-3">토픽명</th>
-                                    <th scope="col" className="col-md-3">수정자</th>
-                                    <th scope="col" className="col-md-3">수정일시</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {this.props.data.length > 0 ? this.props.data.map((item,index) => {
-                                    return(
-                                        <tr data-index={index} className="text-center" key={item.hist_id} onClick={(e)=>{this.detailView(e, index, item.before, item.after)}}>
-                                            <th scope="row">{index+1}</th>
-                                            <td className="value-subject value form-group">
-                                            {item.topic_name}
-                                            </td>
-                                            <td className="last_mod_id value form-group">
-                                            {item.last_mod_id}
-                                            </td>
-                                            <td className="last_mod_id value form-group">
-                                            {helpers.krDateTime(item.last_mod_dt)}
-                                            </td>
-                                        </tr>
-                                    );
-                                }): <tr><td colspan="4"><h3 className="p-3 m-3 text-center">검색된 history data가 없습니다</h3></td></tr>}
-                            </tbody>
-                        </table>
-
-                        {this.state.show ?
-                        <div className="detailView mx-auto">
-                            <ReactDiffViewer leftTitle="Before" rightTitle="After" oldValue={helpers.replaceKey(this.state.before,"entokr")} newValue={helpers.replaceKey(this.state.after, "entokr")} splitView={true} />
-                            <div className="closeHistoryDetail d-flex justify-content-center my-5">
-                                <button type="button" onClick={this.closeHistoryDetail} className="btn btn-warning me-1">뒤로가기</button>
-                                <button type="button" onClick={this.props.closeVIEW} className="btn btn-warning">닫기</button>
+                <div className="history list col-md-12 px-5 pt-5">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item"><a href="#">Meta</a></li>
+                            <li class="breadcrumb-item"><a href="#">View</a></li>
+                            <li class="breadcrumb-item"><a href="#">History</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">List</li>
+                        </ol>
+                    </nav>
+                    <table className="bg-light table table-hover">
+                        <thead>
+                            <tr className="text-center p-3">
+                                <th scope="col" className="col-md-1">번호</th>
+                                <th scope="col" className="col-md-3">토픽명</th>
+                                <th scope="col" className="col-md-3">수정자</th>
+                                <th scope="col" className="col-md-3">수정일시</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {list.length > 0 ? list.map((item,index) => {
+                                return(
+                                    <tr data-index={index} className="text-center" key={item.hist_id} onClick={(e)=>{this.detailView(e, index, item.topic_name)}}>
+                                        <th scope="row">{index+1}</th>
+                                        <td className="value-subject value form-group">
+                                        {item.topic_name}
+                                        </td>
+                                        <td className="last_mod_id value form-group">
+                                        {item.last_mod_id}
+                                        </td>
+                                        <td className="last_mod_id value form-group">
+                                        {helpers.krDateTime(item.last_mod_dt)}
+                                        </td>
+                                    </tr>
+                                );
+                            }): <tr><td colspan="4"><h3 className="p-3 m-3 text-center">검색된 history data가 없습니다</h3></td></tr>}
+                        </tbody>
+                    </table>
+                    <div className="paging text-center mx-auto py-2">
+                                <Pagination
+                                    activePage={data.current+1}
+                                    itemsCountPerPage={data.size}
+                                    totalItemsCount={data.count}
+                                    pageRangeDisplayed={5}
+                                    onChange={this.handleMetaPageChange}
+                                    itemClass="page-item"
+                                    activeLinkClass="page-active"
+                                    linkClass="page-link"
+                                    innerClass="pagination d-flex justify-content-center"
+                            />
                             </div>
-                        </div>
-                        : <div className="closeHistoryDetail d-flex justify-content-center my-5">
-                            <button type="button" onClick={()=>this.props.router.navigate(-1)} className="btn btn-warning">닫기</button>
-                        </div>}
-                    </div>
                 </div>
             </>
 

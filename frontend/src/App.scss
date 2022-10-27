@@ -563,15 +563,9 @@ th {
 	}
 }
 .metawrite {
-	position: fixed;
-	top: 60px;
-	right: 0;
-	bottom: 0;
-	left: 0;
 	z-index: 998;
 	width: 100%;
 	height: calc(100% - 60px);
-	overflow-y: scroll;
 	.onpreview {
 		@extend .fade-in;
 		// @extend .opa-transition;
@@ -601,21 +595,17 @@ th {
 	z-index: 998;
 }
 
-.viewHistory {
-	position: absolute;
-	top: 60px;
-	left: 0;
-	right: 0;
-	bottom: 0;
+.history {
 	z-index: 100;
 	background-color: #fff;
-	.historylist {
+	&.list {
 	}
-	.detailView {
+	&.view {
 		table {
 			tr {
 				&:first-child {
 					td {
+						width: 50%;
 						text-align: center;
 					}
 				}

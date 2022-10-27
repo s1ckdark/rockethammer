@@ -539,15 +539,9 @@ th[data-tooltip] .info-icon {
 }
 
 .metawrite {
-  position: fixed;
-  top: 60px;
-  right: 0;
-  bottom: 0;
-  left: 0;
   z-index: 998;
   width: 100%;
   height: calc(100% - 60px);
-  overflow-y: scroll;
 }
 .metawrite .onpreview {
   background: #fff;
@@ -571,25 +565,21 @@ th[data-tooltip] .info-icon {
   z-index: 998;
 }
 
-.viewHistory {
-  position: absolute;
-  top: 60px;
-  left: 0;
-  right: 0;
-  bottom: 0;
+.history {
   z-index: 100;
   background-color: #fff;
 }
-.viewHistory .detailView table tr:first-child td {
+.history.view table tr:first-child td {
+  width: 50%;
   text-align: center;
 }
-.viewHistory .detailView table tr td {
+.history.view table tr td {
   text-align: left;
 }
-.viewHistory .detailView table tr td:first-child {
+.history.view table tr td:first-child {
   text-align: center;
 }
-.viewHistory .detailView table tr td:nth-child(4) {
+.history.view table tr td:nth-child(4) {
   text-align: center;
 }
 

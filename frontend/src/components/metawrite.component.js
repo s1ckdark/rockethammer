@@ -63,6 +63,7 @@ class Metawrite extends Component {
         const {type, data, schemas} = this.props.router.location.state;
         const schema = parseNested(JSON.stringify(data.schema))
         let meta = typeof(data.meta_join) === 'string' ? parseNested(JSON.stringify(data.meta_join)):{}
+        console.log(type,meta)
         if(data && ( type === 'reg' || type ==='change')){
             meta = {
                 ...this.state.data,
@@ -71,12 +72,12 @@ class Metawrite extends Component {
                 schema_id: schema.id.$numberLong,
                 schema_version: schema.version.$numberLong,
                 meta_version: type ==='reg' ? 1: meta.meta_version + 1,
-                revision:1, 
+                revision:1,
                 last_mod_dt: new Date().toISOString(),
                 last_mod_id:AuthService.getCurrentUser().userid,
                 is_used: true
             }
-            
+
             Object.keys(schemas).map( kind => {
                 if(schemas[kind].length > 0){
                     let toJson = JSON.parse(schemas[kind][0].schema);
@@ -87,14 +88,16 @@ class Metawrite extends Component {
                         json.p_type = item.type;
                         if(kind === 'value') json.l_name = '';
                         if(kind === 'value') json.l_def = '';
-                        json.is_null = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'y': 'n' 
+                        json.is_null = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'y': 'n'
                         json.default = item.default ? item.default : ''
                         if(kind === 'value') json.memo = '';
                         jsons[idx] = json;
+                        json.pii = '';
+                        json.retension = '';
                     })
-                    meta[kind]=jsons
-                } 
-            })  
+                    console.log("jsons",jsons);
+                }
+            })
             this.setState({
                 ...this.state,
                 data:meta,
@@ -134,7 +137,7 @@ class Metawrite extends Component {
                 let meta = {...metas[index]};
                 meta[e.target.name] = e.target.value;
                 metas[idx] = meta;
-            } 
+            }
         }
         )
         this.setState({
@@ -142,7 +145,7 @@ class Metawrite extends Component {
             data: {
                 ...this.state.data,
                 [field]:metas
-            }   
+            }
         })
     }
     onPreview = async(e, type) => {
@@ -150,7 +153,7 @@ class Metawrite extends Component {
         let temp = this.state.data;
         if(type === 'reg' || type ==='change'){
             if(type === 'reg') {
-                temp.meta_version = 1;   
+                temp.meta_version = 1;
                 console.log(type);
             } else {
                 let meta_versionInt = this.state.prevData.meta_version + 1;
@@ -183,7 +186,7 @@ class Metawrite extends Component {
             temp.last_mod_dt = new Date().toISOString();
             temp.last_mod_id = AuthService.getCurrentUser().userid;
             this.setState({
-                    ...this.state,    
+                    ...this.state,
                 data: temp
                 },()=>{
                 this.setState({
@@ -199,7 +202,7 @@ class Metawrite extends Component {
                 }
             )
         }
-       
+
         if(this.onValidation(this.state.data, ["topic_name","subject","schema_id","schema_version","meta_version","op_name","service","revision","topic_desc","last_mod_dt","last_mod_id","is_used"])) {
             this.setState({
                 ...this.state,
@@ -279,14 +282,14 @@ class Metawrite extends Component {
                     localStorage.removeItem('type');
                     localStorage.removeItem('data');
                     alert("등록 완료");
-                setTimeout(() => { 
+                setTimeout(() => {
                     this.props.router.navigate(-1)
                 }, 1000);}
                 })
             })
         } else if(type === 'update'){
             let prevData = this.state.prevData, nextData= this.state.data;
-            if(JSON.stringify(prevData) === JSON.stringify(temp)){ 
+            if(JSON.stringify(prevData) === JSON.stringify(temp)){
                 localStorage.removeItem('type');
                 localStorage.removeItem('data');
                 alert("변경된 내용이 없습니다.");
@@ -300,7 +303,7 @@ class Metawrite extends Component {
                         localStorage.removeItem('type');
                         localStorage.removeItem('data');
                         alert("수정 완료");
-                        setTimeout(() => { 
+                        setTimeout(() => {
                         this.props.closeWrite(e);
                     }, 1000);}
                     })
@@ -308,7 +311,7 @@ class Metawrite extends Component {
             }
         }
     }
-    
+
     onChangeValueJSON = (e, index, whatisit) =>{
         e.preventDefault();
         this.setState({
@@ -320,10 +323,10 @@ class Metawrite extends Component {
     readonly = (name, schema=null) => {
         if(!this.state.preview) {
         // console.log(name, schema);
-            if(schema !== 'key') { 
+            if(schema !== 'key') {
                 var tmp = ["p_name","p_type","topic_name","schema_id","schema_version","_id","is_null","default","revision","schema_id","meta_version","last_mod_id","last_mod_dt","subject"];
                 let result = tmp.filter(ele => ele === name)
-                return result.length > 0 ? true : false 
+                return result.length > 0 ? true : false
             } else { return true; }
         } else { return true;}
     }
@@ -339,8 +342,15 @@ class Metawrite extends Component {
     {
         return (
             <div className="metawrite">
+                <nav aria-label="breadcrumb">
+                    <ol className="breadcrumb">
+                        <li className="breadcrumb-item"><a href="#">Home</a></li>
+                        <li className="breadcrumb-item"><a href="#">Meta</a></li>
+                        <li className="breadcrumb-item active" aria-current="page">Write</li>
+                    </ol>
+                </nav>
                 <div className={ this.state.preview ? "onpreview":"write"}>
-                        <div className="d-flex flex-wrap my-5"> 
+                        <div className="d-flex flex-wrap my-5">
                         {Object.keys(this.state.data).map(field => {
                             // common field
                             const data = this.state.data;
@@ -398,8 +408,8 @@ class Metawrite extends Component {
                                                                                     <th scope="col" className={"text-center col-"+tmp[index]}>{helpers.translate(field2,"entokr")}</th>
                                                                                 </>
                                                                             );
-                                                                        }) 
-                                                                        }   
+                                                                        })
+                                                                        }
                                                                     </tr>
                                                                 </thead>
                                                             :<></>}
@@ -410,9 +420,9 @@ class Metawrite extends Component {
                                                                         return (
                                                                             <td><input type="text" name={field2} className={"field-input "+field2} value={data[field][index][field2]} onChange={(e)=>this.onChangeValueTemp(e, index, field)} readOnly={this.readonly(field2, field)} /></td>
                                                                         );
-                                                                        
-                                                                    }) 
-                                                                }   
+
+                                                                    })
+                                                                }
                                                                 </tr>
                                                             </tbody>
                                                         </>)})}
@@ -433,16 +443,16 @@ class Metawrite extends Component {
                         }
                         </div>
                         <div className="action text-center">
-                        { this.state.preview === false ? 
+                        { this.state.preview === false ?
                         <>
                             <button type="button" className="btn btn-primary me-1" onClick={e=>this.onPreview(e, this.state.type)}>저장 전 미리 보기</button><button type="button" className="btn btn-secondary" onClick={this.goBack}>뒤로가기</button></>
                             :<><button type="button" className="btn btn-primary me-1" onClick={e=>this.onSubmit(e, this.state.type)}>{ this.state.type === 'reg' ? "등록":"저장"}</button><button type="button" className="btn btn-secondary" onClick={e=>this.onPreviewClose(e)}>뒤로가기</button></>}
-                           
+
                         </div>
                     </div>
                 </div>
         );
     }
-} 
+}
 
 export default withRouter(Metawrite)

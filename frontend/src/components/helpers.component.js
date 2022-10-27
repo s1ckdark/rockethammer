@@ -68,12 +68,20 @@ export default {
             default:
                 break;
             }
-
+            console.log(data, );
+            let str = typeof(data) === 'string' && data != ''  ? JSON.parse(data):data
             const pattern = new RegExp(
                 Object.keys(swaps).map(e => `(?:"(${e})":)`).join("|"), "g"
             );
-            const result = JSON.stringify(data, null, 4).replace(pattern, m => `"${swaps[m.slice(1,-2)]}":`)
+            const result = JSON.stringify(str, null, 4).replace(pattern, m => `"${swaps[m.slice(1,-2)]}":`)
             return result;
+    },
+    isEmpty : ( str ) => {
+        return (str == '' || str == undefined || str == null || str == 'null' );
+    },
+
+    isNotEmpty : (str) => {
+        return !this.isEmpty(str);
     },
     translate : (name) => {
         var defineName = {

@@ -1,6 +1,5 @@
 import React, { Component} from "react";
-import { Link, useHistory, useNavigate, useLocation, useParams} from 'react-router-dom';
-import { createBrowserHistory } from "history";
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import AuthService from "../services/auth.service";
 
@@ -11,12 +10,8 @@ import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/ext-language_tools";
-import ReactDiffViewer from 'react-diff-viewer';
 import Pagination from "react-js-pagination";
-import Metawrite from "./metawrite.component";
-import Historylist from "./historylist.component";
 import helpers from "./helpers.component";
-import history from "./historyview.component";
 import { withRouter } from "./withRouter.component";
 
 class Metalist extends Component {
@@ -26,11 +21,9 @@ class Metalist extends Component {
           data:{
               totalcnt:0,
               current:0,
-              activePage: 1,
               pageSize:5,
-              dataList:[]
+              list:[]
           },
-          schema:{},
           schemas:{},
           keyword:'',
           select:{
@@ -39,46 +32,38 @@ class Metalist extends Component {
             subject:"",
             schema: false
           },
-		  show:false,
           type:'list',
-          view:"list",
           detail:{},
           changed:{
               before:'',
               after:''
           },
-          delete:{},
-          pass:{}
+          delete:{}
         };
-        this.handleMetaPageChange = this._handleMetaPageChange.bind(this);
+        this.handlePageChange = this.handlePageChange.bind(this);
+        this.fetchData = this.fetchData.bind(this);
         this.detailView = this.detailView.bind(this);
     }
 
-    _handleMetaPageChange(pageNumber) {
-      console.log(`active page is ${pageNumber}`);
-      this.setState({
-          ...this.state,
-          data:{
-              ...this.state.data,
-              current: pageNumber-1
-          },
-          view:false
-      }, ()=>{this.fetchMetaData(pageNumber-1);})
+    handlePageChange(pageNumber) {
+        console.log(`active page is ${pageNumber}`);
+        this.props.router.navigate('/meta/list/'+pageNumber)
+        this.fetchData(pageNumber-1)
     }
 
     componentDidMount(){
         console.log("metaview",this.props);
-        this.fetchMetaData(0);
+        this.fetchData(0);
     }
 
     useConfirm = (e, message, onConfirm, onCancel) => {
         e.preventDefault()
         if(window.confirm(message)) {
-                onConfirm();
-            } else {
-                onCancel();
-            }
+            onConfirm();
+        } else {
+            onCancel();
         }
+    }
 
     onDel = async (typeofapi, topic_name) => {
         console.log(typeofapi, topic_name);
@@ -99,13 +84,13 @@ class Metalist extends Component {
 
         if(typeofapi === 'api1' || typeofapi ==='api3'){    //확인
                 try {
-                    axios.post(url, {keyword:JSON.parse(this.state.data['dataList'][this.state.select.idx].schema).subject}).then(res => console.log(res))
+                    axios.post(url, {keyword:JSON.parse(this.state.data['list'][this.state.select.idx].schema).subject}).then(res => console.log(res))
                 } catch(err) {
                     console.log("error", err);
                 }
         } else {
             try {
-                Promise.all(url.map(async (endpoint) => await axios.post(endpoint, {keyword:JSON.parse(this.state.data['dataList'][this.state.select.idx].schema).subject}))).then((response1, response2) => {
+                Promise.all(url.map(async (endpoint) => await axios.post(endpoint, {keyword:JSON.parse(this.state.data['list'][this.state.select.idx].schema).subject}))).then((response1, response2) => {
                     console.log(response1, response2)
                 })
             } catch(err) {
@@ -116,25 +101,22 @@ class Metalist extends Component {
         await axios.post(process.env.REACT_APP_API+"/history/history_del", {topic_name:this.state.detail.topic_name, reg_dt:(new Date).toISOString(),user_id:AuthService.getCurrentUser().userid,op:"delete"})
         localStorage.removeItem('type');
         localStorage.removeItem('data');
-        alert("삭제가 완료되었습니다");
-        setTimeout(() => {
-            window.location.reload(false);
-        }, 1000)
+        // alert("삭제가 완료되었습니다");
+        // setTimeout(() => {
+        //     window.location.reload(false);
+        // }, 1000)
     }
 
-    onCancel = () => {
-        console.log("cancel");
-    }
-
-    fetchMetaData = async(page) => {
+    fetchData = async(page) => {
+        console.log("page",page, this.state.type)
         if(this.state.type ==='list'){
-        await axios.post(process.env.REACT_APP_API+"/schema/getallschema",{size:10,page:page})
+        await axios.post(process.env.REACT_APP_API+"/schema/getallschema",{size:5,page:page})
             .then(res => {
+                console.log(res)
               this.setState({
                 ...this.state,
                 list:'list',
                 data: res.data,
-                show:false
               })
             })
         } else if(this.state.type ==='search'){
@@ -143,118 +125,43 @@ class Metalist extends Component {
                 this.setState({
                 ...this.state,
                 list:'search',
-                meta:res.data,
-                show:false
+                data:res.data,
                 })
             })
         }
-        }
+    }
 
-        onChangeKeyword = (e,index) =>{
-            this.setState({
-              ...this.state,
-              keyword:e.target.value
-            })
-          }
+    onChangeKeyword = (e,index) =>{
+        this.setState({
+            ...this.state,
+            keyword:e.target.value
+        })
+    }
 
-        onMetaSearch = async(e)=> {
-            e.preventDefault();
-            if(this.state.keyword.length !=null){
-                await axios.post(process.env.REACT_APP_API+"/schema/search",{keyword:this.state.keyword})
-                .then(res => {
-                    console.log(res);
-                    this.setState({
-                    ...this.state,
-                    type:'search',
-                    meta:res.data
-                    })
+    onMetaSearch = async(e)=> {
+        e.preventDefault();
+        if(this.state.keyword.length !=null){
+            await axios.post(process.env.REACT_APP_API+"/schema/search",{keyword:this.state.keyword})
+            .then(res => {
+                console.log(res);
+                this.setState({
+                ...this.state,
+                type:'search',
+                meta:res.data
                 })
-            }
-        }
-
-      fetchHistoryData = () => {
-          const firstPageIndex = (this.state.history.activePage - 1) * this.state.history.pageSize;
-          const lastPageIndex = firstPageIndex + this.state.history.pageSize;
-
-          if(this.state.history.data.length > 0){
-          this.setState({
-              ...this.state,
-              history:{
-                ...this.state.history,
-                totalcnt: this.state.history.data.length,
-                currentTableData:this.state.history.data.slice(firstPageIndex, lastPageIndex)
-              }
-            })
-        } else {
-          this.setState({
-              ...this.state,
-              history:{
-                ...this.state.history,
-                data: [],
-                totalcnt: 0,
-                currentTableData:[]
-              }
             })
         }
-      }
+    }
 
-    write = (e, type)=> {
+    write = (e, type, topic_name)=> {
         e.preventDefault();
-        this.setState({
-            ...this.state,
-           type:type,
-           view:"list",
-           pass:{
-            ...this.state.pass,
-            type:"write"
-           }
-        }, () => {this.props.router.navigate('/meta/write', {state:{data:this.state.data.dataList[this.state.select.idx],type:type,schemas:this.state.schemas}})})
+        this.props.router.navigate('/meta/write/'+topic_name, {state:{data:this.state.data.list[this.state.select.idx],type:type,schemas:this.state.schemas}})
     }
 
-    view = (e, type) => {
-        // this.setState({
-        //     ...this.state,
-        //     view:type,
-        // })
-        this.props.router.navigate('/meta/view/'+type, {state:{data:this.state.data.dataList[this.state.select.idx],type:type,schemas:this.state.schemas}})
+    view = (e, type, topic_name, currentPage = 1) => {
+        let url = type ==='history' ? 'history/list/'+topic_name+'/'+currentPage : type+'/'+topic_name
+        this.props.router.navigate('/meta/view/'+url, type !== 'history' ? {state:{data:this.state.data.list[this.state.select.idx],type:type,schemas:this.state.schemas}}:{state:{}})
     }
-
-    close = () => {
-        this.setState({
-            ...this.state,
-            view:false,
-            changed:{
-                ...this.state.changed,
-                before: "",
-                after: ""
-            },
-            show:false,
-            view:"list",
-            after:{},
-            before:{},
-            type:"list",
-            pass:{
-                ...this.state.pass,
-                type: "list"
-            }
-        })
-    }
-
-    closeWrite = (e, idx=this.state.select.idx, topic_name=this.state.select.topic_name) => {
-        e.preventDefault();
-        console.log(idx,topic_name);
-        this.detailView(e,idx, topic_name);
-        this.setState({
-            ...this.state,
-           type:'',
-           typeVIEW:false,
-           changeVIEW:false,
-           show:true
-        })
-        this.fetchMetaData(this.state.data.currrent)
-    }
-
-
 
     onChangeJSON = (newValue) => {
         console.log("change", newValue);
@@ -264,19 +171,16 @@ class Metalist extends Component {
         e.preventDefault();
         if(topic_name) {
             const tn = topic_name.replace(/(-value|-key)/g, "");
-            const schema = JSON.parse(this.state.data.dataList[idx].schema)
-            const meta_join = JSON.parse(this.state.data.dataList[idx].meta_join) || {}
+            const schema = JSON.parse(this.state.data.list[idx].schema)
+            const meta_join = JSON.parse(this.state.data.list[idx].meta_join) || {}
+
             if(meta_join != null > 0) {
-                console.log("schema",schema)
-                console.log("meta_join",meta_join)
                 axios.post(process.env.REACT_APP_API+"/history/gethistory",{keyword:tn}).then(res => {
                     this.setState({
                         ...this.state,
                         schema:schema,
                         detail:meta_join,
                         delete:meta_join,
-                        show:true,
-                        type:'update',
                         history:res.data,
                         select:{
                             idx:idx,
@@ -303,33 +207,22 @@ class Metalist extends Component {
                         last_mod_dt:''
                     },
                     delete:{},
-                    type:'reg',
-                    show:true,
                     history:{}
                 })
             }
-
-        axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:tn}).then(res => {
-            if(res.data && res.data.value.length > 0) {
-                this.setState({...this.state, schemas:res.data})
-            } else {
-                this.setState({...this.state, schemas:{}})
-            }
-        })
+        }
     }
-}
 
     notiforchange = async (e, index, topic_name) => {
         e.preventDefault();
         //schemas의 before, after를 api call로 가져와야한다.
         // api call limit(2), sort(reg_dt, -1)
-        const meta_join = JSON.parse(this.state.data.dataList[index].meta_join)
-        const schema = JSON.parse(this.state.data.dataList[index].schema)
+        const meta_join = JSON.parse(this.state.data.list[index].meta_join)
+        const schema = JSON.parse(this.state.data.list[index].schema)
 
         const tn = topic_name.replace(/(-value|-key)/g, "");
-        await axios.post(process.env.REACT_APP_API+"/schema/changed", {"keyword":topic_name}).then(
-            res => {
-                if(res.data.length > 1) {
+        await axios.post(process.env.REACT_APP_API+"/schema/changed", {"keyword":topic_name}).then(res => {
+            if(res.data.length > 1) {
                 let temp = [];
                 res.data.map((item,index) => {
                     temp[index] = item;
@@ -337,22 +230,22 @@ class Metalist extends Component {
                 })
                 this.setState({
                     ...this.state,
-                    view:'change',
                     changed:{
-                      ...this.state.changed,
-                      before: temp[1],
-                      after: temp[0]
+                        ...this.state.changed,
+                        before: temp[1],
+                        after: temp[0]
                     },
-                    detail:JSON.parse(this.state.data.dataList[index].meta_join),
+                    detail:JSON.parse(this.state.data.list[index].meta_join),
                     select:{
                         idx: index,
                         topic_name: topic_name,
                         subject: tn,
                         changed: this.changed(meta_join, schema)
                     }
-                  })
-                }}
-        )
+                })
+            }
+        })
+
         axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:tn}).then(res => {
             console.log(res.data);
             if(res.data && res.data.value.length > 0) {
@@ -361,11 +254,6 @@ class Metalist extends Component {
                 this.setState({...this.state, schema:{}})
             }
         })
-    }
-
-    pass = (e, data, key) => {
-        e.preventDefault()
-        this.props.pass(data,key)
     }
 
     tooltip = (e, action) => {
@@ -383,10 +271,19 @@ class Metalist extends Component {
 
     render(){
         const { data } = this.state;
-        const { detail } = this.state
+        const { detail } = this.state;
+        const topic_name = this.state.select.subject.replace(/(-value|-key)/g, "");
+        console.log(this.props);
         return (
             <>
                 <div className="metalist">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item"><a href="#">Meta</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">List</li>
+                        </ol>
+                    </nav>
                     <div className="find mx-auto my-5 text-center d-block">
                         <div className="d-flex justify-content-center col-md-12 mx-auto">
                             <input className="search px-3 col-md-3" name="search" value={this.state.search} onChange = {this.onChangeKeyword} />
@@ -406,7 +303,7 @@ class Metalist extends Component {
                                     </tr>
                                 </thead>
                                 <tbody>
-                            {data && data.dataList && data.dataList.length > 0 ? data.dataList.map((item,index) => {
+                            {data && data.list && data.list.length > 0 ? data.list.map((item,index) => {
                                 var schema = JSON.parse(item.schema), meta_join = item.meta_join !=='undefined' ? JSON.parse(item.meta_join):null;
                                 return(
                                         <tr data-index={index} scope="row" className={this.state.select.idx === index ? "table-active text-center":"text-center"} key={5*parseInt(data.current)+index+1}>
@@ -433,7 +330,7 @@ class Metalist extends Component {
                                     itemsCountPerPage={data.size}
                                     totalItemsCount={data.count}
                                     pageRangeDisplayed={5}
-                                    onChange={this.handleMetaPageChange}
+                                    onChange={this.handlePageChange}
                                     itemClass="page-item"
                                     activeLinkClass="page-active"
                                     linkClass="page-link"
@@ -449,28 +346,28 @@ class Metalist extends Component {
                                 </div>
                                     <div className="info-group schema_id">
                                         <label className="me-2">물리 스키마 버전</label>
-                                        <p>{this.state.detail.schema_id ? this.state.detail.schema_id : "물리 스키마 버전입니다"}</p>
+                                        <p>{this.state.detail.is_used && this.state.detail.schema_id ? this.state.detail.schema_id : "물리 스키마 버전입니다"}</p>
                                     </div>
                                     <div className="info-group revision">
                                         <label className="me-2">논리 스키마 버전</label>
-                                        <p>{this.state.detail.revision ? this.state.detail.revision : "메타 수정 버전입니다"}</p>
+                                        <p>{this.state.detail.is_used && this.state.detail.revision ? this.state.detail.revision : "메타 수정 버전입니다"}</p>
                                     </div>
                                     <div className="info-group last_mod_id">
                                         <label className="me-2">마지막 수정자</label>
-                                        <p>{this.state.detail.last_mod_id ?this.state.detail.last_mod_id:"마지막 수정한 ID입니다" }</p>
+                                        <p>{this.state.detail.is_used && this.state.detail.last_mod_id ?this.state.detail.last_mod_id:"마지막 수정한 ID입니다" }</p>
                                     </div>
                                     <div className="info-group last_mod_dt">
                                         <label className="me-2">마지막 수정 일시</label>
-                                        <p>{this.state.detail.last_mod_dt ? helpers.krDateTime(this.state.detail.last_mod_dt) : "최종수정시각입니다"}</p>
+                                        <p>{this.state.detail.is_used && this.state.detail.last_mod_dt ? helpers.krDateTime(this.state.detail.last_mod_dt) : "최종수정시각입니다"}</p>
                                     </div>
                                 {this.state.select.subject ?
                                 <div className="d-flex">
-                                    <button type="button" className="btn btn-success me-1" onClick={e=>this.view(e, 'json')} disabled={Object.keys(this.state.detail).length > 0 ? false:true}>조회</button>
-                                    {Object.keys(this.state.detail).length  > 0 ? <button type="button" className="btn btn-info me-1" onClick={e=>this.write(e,"update")}>수정</button>:<button type="button" className="btn btn-primary me-1" onClick={e=>this.write(e,"reg")}  disabled={JSON.parse(data['dataList'][this.state.select.idx].schema).schema ? false:true}>등록</button>}
-                                    {JSON.parse(data['dataList'][this.state.select.idx].schema).schema && Object.keys(this.state.detail).length >= 0 ? <button type="button" className="btn btn-secondary me-1" onClick={e=> this.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, "api1", this.state.select.topic_name), this.onCancel)} role="api1" disabled={Object.keys(this.state.detail).length > 0 ? false:true}>삭제</button>:<></>}
-                                    {!JSON.parse(data['dataList'][this.state.select.idx].schema).schema && Object.keys(this.state.detail).length > 0  ? <button type="button" className="btn btn-secondary me-1" onClick={e=> this.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, "api2", this.state.select.topic_name), this.onCancel)} role="api2">삭제</button>:<></>}
-                                    {!JSON.parse(data['dataList'][this.state.select.idx].schema).schema && Object.keys(this.state.detail).length === 0  ? <button type="button" className="btn btn-secondary me-1" onClick={e=> this.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, "api3", this.state.select.subject), this.onCancel)} role="api3">삭제</button>:<></>}
-                                    <button type="button" className="btn btn-danger searchbtn" onClick={(e)=>this.view(e, 'history')} disabled={this.state.history && this.state.history.length >0 ? false:true}>이력</button>
+                                    <button type="button" className="btn btn-success me-1" onClick={e=>this.view(e, 'json', topic_name)} disabled={Object.keys(this.state.detail).length > 0 ? false:true}>조회</button>
+                                    {Object.keys(this.state.detail).length  > 0 ? <button type="button" className="btn btn-info me-1" onClick={e=>this.write(e,"update", topic_name)}>수정</button>:<button type="button" className="btn btn-primary me-1" onClick={e=>this.write(e,"reg", topic_name)}  disabled={JSON.parse(data['list'][this.state.select.idx].schema).schema ? false:true}>등록</button>}
+                                    {JSON.parse(data['list'][this.state.select.idx].schema).schema && this.state.detail.is_used ? <button type="button" className="btn btn-secondary me-1" onClick={e=> this.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, "api1", this.state.select.topic_name), this.onCancel)} role="api1" disabled={Object.keys(this.state.detail).length > 0 ? false:true}>삭제</button>:<></>}
+                                    {!JSON.parse(data['list'][this.state.select.idx].schema).schema && !this.state.detail.is_used ? <button type="button" className="btn btn-secondary me-1" onClick={e=> this.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, "api2", this.state.select.topic_name), this.onCancel)} role="api2">삭제</button>:<></>}
+                                    {!JSON.parse(data['list'][this.state.select.idx].schema).schema && !this.state.detail.is_used ? <button type="button" className="btn btn-secondary me-1" onClick={e=> this.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, "api3", this.state.select.subject), this.onCancel)} role="api3">삭제</button>:<></>}
+                                    <button type="button" className="btn btn-danger searchbtn" onClick={(e)=>this.view(e, 'history', topic_name)} disabled={Object.keys(this.state.detail).length > 0 ? false:true}>이력</button>
                                 </div>
                                 :<></>}
                             </div>
