@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import AuthService from "../services/auth.service";
 import { Redirect, Link, Navigate } from "react-router-dom";
-import { withRouter } from "./withRouter.component";
+import { withRouter } from "../common/withRouter";
 import axios from "axios"
 
 import Historylist from './historylist.component';

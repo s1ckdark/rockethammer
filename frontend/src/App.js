@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { gsap } from "gsap/all";
-import { Routes, Route, Link, Navigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 
@@ -11,7 +11,7 @@ import Container from "./layout/Container";
 import Footer from "./layout/Footer";
 
 import Seo from "./components/seo.component";
-import helpers from "./components/helpers.component";
+import helpers from "./common/helpers";
 import EventBus from "./common/EventBus";
 
 class App extends Component {

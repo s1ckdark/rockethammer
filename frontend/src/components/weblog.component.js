@@ -4,7 +4,7 @@ import AuthService from "../services/auth.service";
 
 import Pagination from "react-js-pagination";
 
-import helpers from "./helpers.component";
+import helpers from "../common/helpers";
 
 export default class Weblog extends Component {
     constructor(props) {
@@ -20,7 +20,7 @@ export default class Weblog extends Component {
         };
         this.handleMetaPageChange = this._handleMetaPageChange.bind(this);
     }
-    
+
     _handleMetaPageChange(pageNumber) {
       console.log(`active page is ${pageNumber}`);
       this.setState({
@@ -32,9 +32,9 @@ export default class Weblog extends Component {
           detailVIEW:false
       }, ()=>{this.fetchLogData(pageNumber-1);})
     }
-      
+
     componentDidMount(){
-        this.fetchLogData(0);    
+        this.fetchLogData(0);
     }
 
     fetchLogData = async(page) => {
@@ -69,10 +69,10 @@ export default class Weblog extends Component {
         const many = / +/;
         //oh yeah, bots like to use links
         const link = /^\+(.+)$/;
-    
+
         const inner = (properties, property) => {
             let tmp;
-    
+
             if (tmp === property.match(link)) {
                 properties.link = tmp[1];
             }
@@ -87,10 +87,10 @@ export default class Weblog extends Component {
             else {
                 properties[property] = true;
             }
-    
+
             return properties;
         };
-    
+
         return (input) => {
             const output = {};
             for (let match; match = part.exec(input); '') {
@@ -102,7 +102,7 @@ export default class Weblog extends Component {
             return output;
         };
     }
-    
+
     render()
     {
         return (

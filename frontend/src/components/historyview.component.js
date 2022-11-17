@@ -11,8 +11,8 @@ import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/ext-language_tools";
 import Pagination from "react-js-pagination";
 import ReactDiffViewer from 'react-diff-viewer';
-import helpers from './helpers.component';
-import { withRouter } from "./withRouter.component";
+import helpers from '../common/helpers';
+import { withRouter } from "../common/withRouter";
 
 class Historyview extends Component {
     constructor(props) {

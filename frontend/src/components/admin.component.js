@@ -9,7 +9,7 @@ import axios from "axios"
 import Pagination from "react-js-pagination";
 import Register from './register.component';
 import Weblog from './weblog.component';
-import helpers from "./helpers.component";
+import helpers from "../common/helpers";
 import { Button } from 'react-bootstrap'
 
 export default class Admin extends Component {
@@ -87,7 +87,7 @@ export default class Admin extends Component {
 
   fetchData = () => {
     axios.post(process.env.REACT_APP_API+"/user/getall")
-      .then(res => 
+      .then(res =>
         {
           const firstPageIndex = (this.state.user.currentPage - 1) * this.state.user.pageSize;
           const lastPageIndex = firstPageIndex + this.state.user.pageSize;
@@ -152,7 +152,7 @@ export default class Admin extends Component {
         ...this.state,
         redirect: true
       })
-    } 
+    }
     }
 
   writeHistory(e, type, userid, index){
@@ -197,7 +197,7 @@ export default class Admin extends Component {
         this._handleUserPageChange(this.state.user.currentPage);
         } else {
         alert("취소됩니다");
-        } 
+        }
         this.setState({...this.state,user:{...this.state.user,show:true},edit:{show:false,dept:'',group:'',password:'',userid:'',name:''}})
         break;
       case 'edit':
@@ -222,7 +222,7 @@ export default class Admin extends Component {
           historytype = userid+"를 "+conType;
           if (window.confirm(userid+"를 정말 삭제합니까?")) {
             axios.delete(process.env.REACT_APP_API+'/user/delete/'+userid,
-          { headers: { 'authorization': localStorage.getItem('token') } }).then(res => {this.setState({...this.state,edit:{show:false,dept:'',group:'',password:'',userid:'',name:''}},()=>this.writeHistory(e, historytype, userid, index))}) 
+          { headers: { 'authorization': localStorage.getItem('token') } }).then(res => {this.setState({...this.state,edit:{show:false,dept:'',group:'',password:'',userid:'',name:''}},()=>this.writeHistory(e, historytype, userid, index))})
           } else {
             alert("취소합니다.");
           }
@@ -249,7 +249,7 @@ export default class Admin extends Component {
           [e.target.name]:e.target.value
         }
       }
-    }) 
+    })
   }
   toggle = (id) => {
     this.setState({
@@ -310,7 +310,7 @@ export default class Admin extends Component {
           <div className={this.state.toggle === 4 ? "active border tab weblogtab mx-2 px-5 py-3": "border weblogtab mx-2 px-5 py-3"} onClick={(e)=>this.toggle(4)}>사용자 로그</div>
       </div>
       <div className={this.state.toggle ===1 ? "userManage active":"userManage"}>
-    {this.state.user.show && !this.state.edit.show ? 
+    {this.state.user.show && !this.state.edit.show ?
     <div className="userlist">
         <table className="table w-100">
           <thead>
@@ -362,7 +362,7 @@ export default class Admin extends Component {
     <p className="field-label">비밀번호</p>
     <button className="btn btn-danger" onClick={(e)=> this.changePasswd(e)}>비밀번호 변경</button>
     <input type="hidden" name="password" className="form-control hidden" onClick={this.clear} onChange={e=>this.onChangeValue(e)} value={this.state.edit.data.password} />
-    {this.state.compare.show ? 
+    {this.state.compare.show ?
     <div className="passwordLayer">
       <div className="comparePassword my-3">
         <input type="password" name="newPassword" className="form-control mb-3" onClick={this.clear} onChange={e=>this.onPasswordChangeValue(e)} value={this.state.compare.newPassword} placeholder="변경할 비밀번호를 입력하세요" />

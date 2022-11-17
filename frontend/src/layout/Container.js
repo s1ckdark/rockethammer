@@ -16,11 +16,12 @@ import Admin from "../components/admin.component.js";
 import Metawrite from "../components/metawrite.component";
 import Metalist from "../components/metalist.component";
 import Metaview from "../components/metaview.component";
+import Metachanged from "../components/meta/changed.component";
 import History from "../components/history.component";
 import Historylist from "../components/historylist.component";
 import Historyview from "../components/historyview.component";
 import Notfound from "../components/notfound.component";
-import PrivateRoute from '../common/privateroute.component';
+import PrivateRoute from '../common/privateroute';
 
 class Container extends Component {
     constructor(props){
@@ -40,6 +41,7 @@ class Container extends Component {
               <Route path="/meta/list/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/login"><Metalist /></PrivateRoute>} />
               <Route path="/meta/view/:type/:topic_name" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/login"><Metaview /></PrivateRoute>} />
               <Route path="/meta/write/:topic_name" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/login"><Metawrite /></PrivateRoute>} />
+              <Route path="/meta/changed/:topic_name" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/login"><Metachanged /></PrivateRoute>} />
               <Route path="/meta/view/history/list/:topic_name/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/login"><Historylist/></PrivateRoute>} />
               <Route path="/meta/view/history/view/:topic_name" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/login"><Historyview/></PrivateRoute>} />
               <Route path="/kafkaadmin" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/login"><KafkaAdmin /></PrivateRoute>} />

@@ -11,8 +11,8 @@ import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/ext-language_tools";
 import Pagination from "react-js-pagination";
 import ReactDiffViewer from 'react-diff-viewer';
-import helpers from './helpers.component';
-import { withRouter } from "./withRouter.component";
+import helpers from '../common/helpers';
+import { withRouter } from "../common/withRouter";
 
 class Historylist extends Component {
     constructor(props) {
@@ -21,23 +21,26 @@ class Historylist extends Component {
             data:{
                 totalcnt:0,
                 current:0,
-                activePage: 1,
                 pageSize:5,
                 list:[]
             },
             idx: '',
+            topic_name:this.props.router.params.topic_name
         };
-        this.handlePageChange = this._handlePageChange.bind(this);
+        this.handlePageChange = this.handlePageChange.bind(this);
+        this.fetchData = this.fetchData.bind(this);
     }
 
-    _handlePageChange(pageNumber) {
+    handlePageChange(pageNumber) {
         console.log(`active page is ${pageNumber}`);
-        this.fetchData(pageNumber-1);
+        this.props.router.navigate('/meta/view/history/list/'+this.state.topic_name+'/'+pageNumber)
+        this.fetchData(this.state.topic_name, pageNumber-1);
       }
 
 
-    fetchData = (topic_name,page) => {
-        axios.post(process.env.REACT_APP_API+"/history/gethistory",{keyword:topic_name,size:10,page:page}).then(res => {
+    fetchData = (topic_name,page=0) => {
+        console.log(topic_name, page)
+        axios.post(process.env.REACT_APP_API+"/history/gethistory",{keyword:this.state.topic_name,size:5,page:page}).then(res => {
             this.setState({
                 ...this.state,
                 data:res.data,
@@ -108,7 +111,7 @@ class Historylist extends Component {
                                     itemsCountPerPage={data.size}
                                     totalItemsCount={data.count}
                                     pageRangeDisplayed={5}
-                                    onChange={this.handleMetaPageChange}
+                                    onChange={this.handlePageChange}
                                     itemClass="page-item"
                                     activeLinkClass="page-active"
                                     linkClass="page-link"

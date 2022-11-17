@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import {useNavigate, Redirect, Link, useLocation } from 'react-router-dom';
 import AuthService from "../services/auth.service";
 import axios from "axios"
-import helpers from "./helpers.component";
-import { withRouter } from "./withRouter.component";
+import helpers from "../common/helpers";
+import { withRouter } from "../common/withRouter";
 
 function parseNested(str) {
     try {

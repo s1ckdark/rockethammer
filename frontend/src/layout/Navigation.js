@@ -9,7 +9,7 @@ import Header from "./Header";
 import Container from "./Container";
 import Footer from "./Footer";
 
-import helpers from "../components/helpers.component";
+import helpers from "../common/helpers";
 import EventBus from "../common/EventBus";
 import { withRouter } from "../common/withRouter";
 

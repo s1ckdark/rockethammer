@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Iframe from 'react-iframe'
-import { withRouter } from "./withRouter.component";
+import { withRouter } from "../common/withRouter";
 import AuthService from "../services/auth.service";
 import { Navigate } from "react-router-dom";
 // import UserService from "../services/user.service";
@@ -27,7 +27,7 @@ class Kafkamonitor extends Component {
         ...this.state,
         redirect: true
       })
-    } 
+    }
   }
   render() {
     return (

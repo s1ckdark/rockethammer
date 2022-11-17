@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import {useHistory} from 'react-router-dom';
 import AuthService from "../services/auth.service";
 import { Redirect, Link, Navigate } from "react-router-dom";
-import { withRouter } from "./withRouter.component";
+import { withRouter } from "../common/withRouter";
 import axios from "axios"
 import Register from './register.component'
 import { Button,Modal } from 'react-bootstrap'

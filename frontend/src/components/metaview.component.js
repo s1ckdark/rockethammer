@@ -10,9 +10,9 @@ import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/ext-language_tools";
 import ReactDiffViewer from 'react-diff-viewer';
 import Historylist from "./historylist.component";
-import helpers from "./helpers.component";
+import helpers from "../common/helpers";
 import history from "./historyview.component";
-import { withRouter } from "./withRouter.component";
+import { withRouter } from "../common/withRouter";
 
 class Metaview extends Component {
     constructor(props) {
@@ -23,17 +23,16 @@ class Metaview extends Component {
               current:0,
               activePage: 1,
               pageSize:5,
-              dataList:[]
+              List:[]
           },
           history:{
-              data:[],
               totalcnt:0,
+              current:0,
               activePage: 1,
               pageSize:5,
-              currentTableData:[]
+              List:[]
           },
           schema:{},
-          schemas:{},
           keyword:'',
           select:{
             idx:'',
@@ -50,7 +49,6 @@ class Metaview extends Component {
               after:''
           },
           delete:{},
-          pass:{}
         };
     }
 

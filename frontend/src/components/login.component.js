@@ -4,7 +4,7 @@ import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
 import {Navigate} from 'react-router-dom';
 import AuthService from "../services/auth.service";
-import { withRouter } from "./withRouter.component"
+import { withRouter } from "../common/withRouter"
 import axios from "axios"
 
 const required = value => {
