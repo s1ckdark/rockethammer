@@ -14,7 +14,7 @@ import Pagination from "react-js-pagination";
 import helpers from "../../common/helpers";
 import { withRouter } from "../../common/withRouter";
 
-class Metadetail extends Component {
+class Metachanged extends Component {
 
     // write = (e, type, topic_name)=> {
     //     e.preventDefault();
@@ -91,4 +91,4 @@ render(){
     }
 }
 
-export default withRouter(Metadetail)
+export default withRouter(Metachanged)

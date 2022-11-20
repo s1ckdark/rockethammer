@@ -26,15 +26,6 @@ class Metadetail extends Component {
         this.props.router.navigate('/meta/view/'+url, type !== 'history' ? {state:{data:this.props.info,type:type}}:{state:{}})
     }
 
-    useConfirm = (e, message, onConfirm, onCancel) => {
-        e.preventDefault()
-        if(window.confirm(message)) {
-            onConfirm();
-        } else {
-            onCancel();
-        }
-    }
-
     onDel = async (typeofapi, topic_name) => {
         console.log(typeofapi, topic_name);
         let url, url2;
@@ -81,7 +72,6 @@ render(){
         let sch = JSON.parse(schema);
         let meta = helpers.isEmptyObj(meta_join) === false && JSON.parse(meta_join).is_used === 'true' ? JSON.parse(meta_join):{}
         const topic_name = sch.subject.replace(/(-value|-key)/g, "")
-        // console.log(helpers.isEmptyObj(sch.schema),helpers.isEmptyObj(meta))
         return (
             <div className="detail">
                 <div className="info-group mb-4">
@@ -107,9 +97,9 @@ render(){
                 <div className="d-flex">
                     <button type="button" className="btn btn-success me-1" onClick={e=>this.view(e, 'json', topic_name)} disabled={helpers.isEmptyObj(meta) === false && meta.is_used === 'true' ? false:true}>조회</button>
                     {helpers.isEmptyObj(sch.schema) === false && meta.is_used === 'true' ? <button type="button" className="btn btn-info me-1" onClick={e=>this.write(e,"update", topic_name)}>수정</button>:<button type="button" className="btn btn-primary me-1" onClick={e=>this.write(e,"reg", topic_name)}  disabled={helpers.isEmptyObj(sch.schema) === true ? true:false}>등록</button>}
-                    {helpers.isEmptyObj(sch.schema) === false ? <button type="button" className="btn btn-secondary me-1" onClick={e=> this.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, "api1", this.state.select.topic_name), this.onCancel)} role="api1" disabled={helpers.isEmptyObj(meta) === false && meta.is_used === 'true' ? false:true}>삭제</button>:<></>}
-                    {helpers.isEmptyObj(sch.schema) === undefined && helpers.isEmptyObj(meta) === false && meta.is_used === 'true' ? <button type="button" className="btn btn-secondary me-1" onClick={e=> this.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, "api2", this.state.select.topic_name), this.onCancel)} role="api2">삭제</button>:<></>}
-                    {helpers.isEmptyObj(sch.schema) === undefined && helpers.isEmptyObj(meta) === true && meta.is_used === 'true' ? <button type="button" className="btn btn-secondary me-1" onClick={e=> this.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, "api3", this.state.select.subject), this.onCancel)} role="api3">삭제</button>:<></>}
+                    {helpers.isEmptyObj(sch.schema) === false ? <button type="button" className="btn btn-secondary me-1" onClick={e=> helpers.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, "api1", this.state.select.topic_name), this.onCancel)} role="api1" disabled={helpers.isEmptyObj(meta) === false && meta.is_used === 'true' ? false:true}>삭제</button>:<></>}
+                    {helpers.isEmptyObj(sch.schema) === undefined && helpers.isEmptyObj(meta) === false && meta.is_used === 'true' ? <button type="button" className="btn btn-secondary me-1" onClick={e=> helpers.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, "api2", this.state.select.topic_name), this.onCancel)} role="api2">삭제</button>:<></>}
+                    {helpers.isEmptyObj(sch.schema) === undefined && helpers.isEmptyObj(meta) === true && meta.is_used === 'true' ? <button type="button" className="btn btn-secondary me-1" onClick={e=> helpers.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, "api3", this.state.select.subject), this.onCancel)} role="api3">삭제</button>:<></>}
                     <button type="button" className="btn btn-danger searchbtn" onClick={(e)=>this.view(e, 'history', topic_name)} disabled={helpers.isEmptyObj(meta) ? true:false}>이력</button>
                 </div>
             </div>

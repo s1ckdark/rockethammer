@@ -177,5 +177,13 @@ export default {
     },
     parseData : (str) => {
         return JSON.parse(str);
+    },
+    useConfirm : (e, message, onConfirm, onCancel) => {
+        e.preventDefault()
+        if(window.confirm(message)) {
+            onConfirm();
+        } else {
+            onCancel();
+        }
     }
 }

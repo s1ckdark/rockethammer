@@ -20,9 +20,10 @@ class Metalist extends Component {
         super(props);
         this.state = {
           data:{
-              totalcnt:0,
+              pageCount:0,
               current:0,
-              pageSize:5,
+              size:5,
+              count:0,
               list:[]
           },
           schemas:{},
@@ -34,7 +35,7 @@ class Metalist extends Component {
             schema: false
           },
           type:'list',
-          detail:{},
+        //   detail:{},
           changed:{
               before:'',
               after:''
@@ -81,87 +82,88 @@ class Metalist extends Component {
     }
 
 
-    // detailView = (e, idx, topic_name, changed) => {
-    //     e.preventDefault();
-    //     if(topic_name) {
-    //         const tn = topic_name.replace(/(-value|-key)/g, "");
-    //         const schema = JSON.parse(this.state.data.list[idx].schema)
-    //         const meta_join = JSON.parse(this.state.data.list[idx].meta_join) || {}
-    //         if(meta_join.is_used === 'true') {
-    //                 this.setState({
-    //                     ...this.state,
-    //                     detail:meta_join,
-    //                     delete:meta_join,
-    //                     select:{
-    //                         idx:idx,
-    //                         topic_name:tn,
-    //                         subject:topic_name,
-    //                         changed:changed
-    //                     }
-    //                 })
-    //         } else {
-    //             this.setState({
-    //                 ...this.state,
-    //                 select:{
-    //                     idx:idx,
-    //                     topic_name:tn,
-    //                     subject:topic_name,
-    //                     changed:changed
-    //                 },
-    //                 detail:{
-    //                     schema_id:'',
-    //                     revision:'',
-    //                     last_mod_id:'',
-    //                     last_mod_dt:''
-    //                 },
-    //                 delete:{},
-    //             })
-    //         }
-    //     }
-    // }
+    detailView = (e, idx, topic_name, changed) => {
+        e.preventDefault();
+        if(topic_name) {
+            const tn = topic_name.replace(/(-value|-key)/g, "");
+            const schema = JSON.parse(this.state.data.list[idx].schema)
+            const meta_join = JSON.parse(this.state.data.list[idx].meta_join) || {}
+            if(meta_join.is_used === 'true') {
+                    this.setState({
+                        ...this.state,
+                        // detail:meta_join,
+                        delete:meta_join,
+                        select:{
+                            idx:idx,
+                            topic_name:tn,
+                            subject:topic_name,
+                            changed:changed
+                        }
+                    })
+            } else {
+                this.setState({
+                    ...this.state,
+                    select:{
+                        idx:idx,
+                        topic_name:tn,
+                        subject:topic_name,
+                        changed:changed
+                    },
+                    // detail:{
+                    //     schema_id:'',
+                    //     revision:'',
+                    //     last_mod_id:'',
+                    //     last_mod_dt:''
+                    // },
+                    delete:{},
+                })
+            }
+        }
+    }
 
     notiforchange = async (e, index, topic_name) => {
         e.preventDefault();
-        const temp = typeof(this.state.select.idx) === 'number' ? this.state.data['list'][this.state.select.idx]: null
-        console.log(temp)
+        console.log(e, index, topic_name)
+        const temp = index ? this.state.data['list'][index]: null
+        console.log("temp",temp)
         // this.props.router.navigate('/meta/changed/'+topic_name, temp)
-        // const meta_join = JSON.parse(this.state.data.list[index].meta_join)
-        // const schema = JSON.parse(this.state.data.list[index].schema)
-        // const tn = topic_name.replace(/(-value|-key)/g, "");
+        const meta_join = JSON.parse(this.state.data.list[index].meta_join)
+        const schema = JSON.parse(this.state.data.list[index].schema)
+        const tn = topic_name.replace(/(-value|-key)/g, "");
 
-        // await axios.post(process.env.REACT_APP_API+"/schema/changed", {"keyword":topic_name}).then(res => {
-        //     if(res.data.length > 1) {
-        //         let temp = [];
-        //         res.data.map((item,index) => {
-        //             temp[index] = item;
-        //             temp[index]['schema']= JSON.parse(item.schema);
-        //         })
-        //         this.setState({
-        //             ...this.state,
-        //             changed:{
-        //                 ...this.state.changed,
-        //                 before: temp[1],
-        //                 after: temp[0]
-        //             },
-        //             detail:JSON.parse(this.state.data.list[index].meta_join),
-        //             select:{
-        //                 idx: index,
-        //                 topic_name: topic_name,
-        //                 subject: tn,
-        //                 changed: this.changed(meta_join, schema)
-        //             }
-        //         })
-        //     }
-        // })
+        await axios.post(process.env.REACT_APP_API+"/schema/changed", {"keyword":topic_name}).then(res => {
+            if(res.data.length > 1) {
+                let temp = [];
+                res.data.map((item,index) => {
+                    temp[index] = item;
+                    temp[index]['schema']= JSON.parse(item.schema);
+                })
+                this.setState({
+                    ...this.state,
+                    changed:{
+                        ...this.state.changed,
+                        before: temp[1],
+                        after: temp[0]
+                    },
+                    detail:JSON.parse(this.state.data.list[index].meta_join),
+                    select:{
+                        idx: index,
+                        topic_name: topic_name,
+                        subject: tn,
+                        changed: this.changed(meta_join, schema)
+                    }
+                })
+            }
+        })
 
-        // axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:tn}).then(res => {
-        //     console.log(res.data);
-        //     if(res.data && res.data.value.length > 0) {
-        //         this.setState({...this.state, schema:res.data})
-        //     } else {
-        //         this.setState({...this.state, schema:{}})
-        //     }
-        // })
+        axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:tn}).then(res => {
+            console.log(res.data);
+            if(res.data && res.data.value.length > 0) {
+                this.setState({...this.state, schema:res.data})
+            } else {
+                this.setState({...this.state, schema:{}})
+            }
+        })
     }
 
     tooltip = (e, action) => {
