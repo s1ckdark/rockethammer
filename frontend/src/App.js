@@ -1,17 +1,14 @@
 import React, { Component } from 'react'
 import { gsap } from "gsap/all";
 import { Navigate } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
-import "./App.css";
+import "./App.scss";
 
 import AuthService from "./services/auth.service";
 import Header from "./layout/Header";
-import Navigation from "./layout/Navigation";
 import Container from "./layout/Container";
 import Footer from "./layout/Footer";
 
 import Seo from "./components/seo.component";
-import helpers from "./common/helpers";
 import EventBus from "./common/EventBus";
 
 class App extends Component {
@@ -78,8 +75,7 @@ class App extends Component {
     return (
       <>
       <Seo />
-        <Header />
-        <Navigation currentUser={currentUser} logOut={this.logOut}/>
+        <Header currentUser={currentUser} logOut={this.logOut} />
         <Container isAllowed={!!currentUser}/>
         <Footer isAllowed={!!currentUser} />
       </>

@@ -8,9 +8,10 @@ import { Redirect, Link, Navigate } from "react-router-dom";
 import axios from "axios"
 import Pagination from "react-js-pagination";
 import Register from './register.component';
-import Weblog from './weblog.component';
+import UserWeblog from './admin/userWeblog.component';
+import UserManager from './admin/userManager.component';
 import helpers from "../common/helpers";
-import { Button } from 'react-bootstrap'
+import Breadcrumb from "./breadcrumb.component";
 
 export default class Admin extends Component {
 
@@ -301,9 +302,10 @@ export default class Admin extends Component {
   render() {
     return (
       <div className="admin">
-         {this.state.redirect ? <Navigate to='/home' />:<></>}
-        <h1 className="heading-1">관리자모드</h1>
-        <div className="tab d-flex justify-content-center mb-5">
+        <div className="page-header admin">
+          <Breadcrumb/>
+        </div>
+        <div className="tab">
           <div className={this.state.toggle === 3 ? "active border tab addusertab mx-2 px-5 py-3": "border addusertab mx-2 px-5 py-3"} onClick={(e)=>this.toggle(3)}>사용자 생성</div>
           <div className={this.state.toggle === 1 ? "active border tab usertab mx-2 px-5 py-3" : "border usertab mx-2 px-5 py-3" } onClick={(e)=>this.toggle(1)}>사용자 수정</div>
           <div className={this.state.toggle === 2 ? "active border tab historytab mx-2 px-5 py-3": "border historytab mx-2 px-5 py-3"} onClick={(e)=>this.toggle(2)}>히스토리</div>
@@ -341,16 +343,18 @@ export default class Admin extends Component {
               )): <tr><td colspan="9"><h3 className="text-center">등록된 사용자가 없습니다</h3></td></tr>}
           </tbody>
         </table>
-        <Pagination
-            activePage={this.state.user.currentPage}
-            itemsCountPerPage={this.state.user.pageSize}
-            totalItemsCount={this.state.user.totalcnt}
-            onChange={this.handleUserPageChange}
-            itemClass="page-item"
-            activeLinkClass="page-active"
-            linkClass="page-link"
-            innerClass="pagination d-flex justify-content-center"
-        />
+        <div className="paging">
+          <Pagination
+              activePage={this.state.user.currentPage}
+              itemsCountPerPage={this.state.user.pageSize}
+              totalItemsCount={this.state.user.totalcnt}
+              onChange={this.handleUserPageChange}
+              itemClass="page-item"
+              activeLinkClass="page-active"
+              linkClass="page-link"
+              innerClass="pagination d-flex justify-content-center"
+          />
+        </div>
         </div>
 :<div className="editlayer">
         <div className="card card-container">
@@ -420,6 +424,7 @@ export default class Admin extends Component {
         }): <tr className="nothing"><td colspan="5"><h2 className="text-center">남겨진 내역이 없습니다</h2></td></tr>}
         </tbody>
     </table>
+    <div className="paging">
        <Pagination
         activePage={this.state.history.currentPage}
         itemsCountPerPage={this.state.history.pageSize}
@@ -428,14 +433,15 @@ export default class Admin extends Component {
         itemClass="page-item"
         activeLinkClass="page-active"
         linkClass="page-link"
-        innerClass="pagination d-flex justify-content-center"
+        innerClass="pagination"
       />
+      </div>
     </div>
     <div className={this.state.toggle ===3 ? "adduser active":"adduser"}>
       <Register fetchData={this.fetchData} fetchHistoryData={this.fetchHistoryData} />
     </div>
     <div className={this.state.toggle ===4 ? "weblog active":"weblog"}>
-      <Weblog />
+      <UserWeblog />
       </div>
     </div>
     );

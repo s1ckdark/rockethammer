@@ -6,12 +6,9 @@ import { Redirect, Link, Navigate } from "react-router-dom";
 import { withRouter } from "../common/withRouter";
 import axios from "axios"
 import Register from './register.component'
-import { Button,Modal } from 'react-bootstrap'
-import JSONInput from 'react-json-editor-ajrm';
-import locale from 'react-json-editor-ajrm/locale/en';
-import Metalist from './metalist.component';
-import Metawrite from './metawrite.component';
-import Metaview from './metaview.component';
+import Metalist from './meta/list.component';
+import Metawrite from './meta/write.component';
+import Metaview from './meta/view.component';
 
 class Meta extends Component {
   constructor(props) {

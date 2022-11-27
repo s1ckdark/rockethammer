@@ -1,7 +1,6 @@
 import React from 'react';
-import {useNavigate} from 'react-router-dom';
 
-export default {
+const helpers = {
     krDateTime : (date) => {
         return new Date(new Date(date) - new Date().getTimezoneOffset() * 60000).toISOString().split('.')[0].replace('T', ' ')
     },
@@ -73,8 +72,7 @@ export default {
             default:
                 break;
             }
-            console.log(data, );
-            let str = typeof(data) === 'string' && data != ''  ? JSON.parse(data):data
+            let str = typeof(data) !== 'string' && data !== ''  ? JSON.parse(data):data
             const pattern = new RegExp(
                 Object.keys(swaps).map(e => `(?:"(${e})":)`).join("|"), "g"
             );
@@ -82,7 +80,7 @@ export default {
             return result;
     },
     isEmpty : ( str ) => {
-        return (str == '' || str == undefined || str == null || str == 'null' );
+        return (str === '' || str === undefined || str === null || str === 'null' );
     },
     isNotEmpty : (str) => {
         return !this.isEmpty(str);
@@ -112,7 +110,16 @@ export default {
             "is_null":"널 여부",
             "default":"기본값",
             "memo":"메모",
-            "topic_desc":"토픽설명"
+            "topic_desc":"토픽설명",
+            "admin":"관리자 모드",
+            "weblog":"사용자 로그",
+            "manager":"사용자 관리",
+            "register":"사용자 등록",
+            "meta":"메타관리",
+            "list":"목록",
+            "write":"등록",
+            "view":"조회",
+            "history":"사용자 이력"
         }
         return  defineName[name] ? defineName[name]:name;
     },
@@ -165,17 +172,17 @@ export default {
         })
     },
     parseNested : (str) => {
-        try {
-            return JSON.parse(str, (_, val) => {
-                if (typeof val === 'string')
-                    return this.parseNested(val)
-                return val
-            })
-        } catch (exc) {
-            return str
-        }
+            try {
+                return JSON.parse(str, (_, val) => {
+                    if (typeof val === 'string')
+                        return this.parseNested(val)
+                    return val
+                })
+            } catch (exc) {
+                return str
+            }
     },
-    parseData : (str) => {
+    parse : (str) => {
         return JSON.parse(str);
     },
     useConfirm : (e, message, onConfirm, onCancel) => {
@@ -187,3 +194,5 @@ export default {
         }
     }
 }
+
+export default helpers;

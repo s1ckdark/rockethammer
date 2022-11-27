@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import AuthService from "../services/auth.service";
+import AuthService from "../../services/auth.service";
 import { Redirect, Link, Navigate } from "react-router-dom";
-import { withRouter } from "../common/withRouter";
+import { withRouter } from "../../common/withRouter";
 import axios from "axios"
 
-import Historylist from './historylist.component';
-import Historyview from './historyview.component';
+import Historylist from '../history/list.component';
+import Historyview from '../history/view.component';
 
 class History extends Component {
   constructor(props) {
