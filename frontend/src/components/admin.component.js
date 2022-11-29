@@ -301,149 +301,33 @@ export default class Admin extends Component {
 
   render() {
     return (
-      <div className="admin">
+      <div className="admin overview">
         <div className="page-header admin">
           <Breadcrumb/>
         </div>
-        <div className="tab">
-          <div className={this.state.toggle === 3 ? "active border tab addusertab mx-2 px-5 py-3": "border addusertab mx-2 px-5 py-3"} onClick={(e)=>this.toggle(3)}>사용자 생성</div>
-          <div className={this.state.toggle === 1 ? "active border tab usertab mx-2 px-5 py-3" : "border usertab mx-2 px-5 py-3" } onClick={(e)=>this.toggle(1)}>사용자 수정</div>
-          <div className={this.state.toggle === 2 ? "active border tab historytab mx-2 px-5 py-3": "border historytab mx-2 px-5 py-3"} onClick={(e)=>this.toggle(2)}>히스토리</div>
-          <div className={this.state.toggle === 4 ? "active border tab weblogtab mx-2 px-5 py-3": "border weblogtab mx-2 px-5 py-3"} onClick={(e)=>this.toggle(4)}>사용자 로그</div>
-      </div>
-      <div className={this.state.toggle ===1 ? "userManage active":"userManage"}>
-    {this.state.user.show && !this.state.edit.show ?
-    <div className="userlist">
-        <table className="table w-100">
-          <thead>
-          <tr className="text-center my-3">
-            <th className="col-1">번호</th>
-            <th className="col-2">유저ID</th>
-            <th className="col-2">사용자명</th>
-            <th className="col-1">부서명</th>
-            <th className="col-1">그룹명</th>
-            <th className="col-3">마지막 접속일시</th>
-            <th className="col-2">기능</th>
-          </tr>
-          </thead>
-          <tbody>
-            {this.state.user.totalcnt > 0 ? this.state.user.currentTableData.map((user,index)=>(
-              <tr className="text-center align-middle py-5" key={index + this.state.user.pageSize * (this.state.user.currentPage - 1) + 1}>
-                <td className="index col-1">{index + this.state.user.pageSize * (this.state.user.currentPage - 1) + 1}</td>
-                <td className="userid col-2">{user.userid}</td>
-                <td className="name col-2">{user.name}</td>
-                <td className="dept col-1">{user.dept}</td>
-                <td className="group col-1">{user.group ==='ADMIN' ? "관리자":"일반"}</td>
-                <td className="last_login_dt col-3">{helpers.krDateTime(user.last_login_dt)}</td>
-                <td className="action d-table-cell col-2">
-                  <button className="btn btn-primary me-1" data-tooltip="사용자 수정" onClick={(e)=> this.action(e,"edit", user.userid, index + this.state.user.pageSize * (this.state.user.currentPage - 1))}>수정</button>
-                  <button className="btn btn-danger" data-tooltip="사용자 삭제" onClick={(e)=> this.action(e,"delete",user.userid, index + this.state.user.pageSize * (this.state.user.currentPage - 1))}>삭제</button>
-                </td>
-              </tr>
-              )): <tr><td colspan="9"><h3 className="text-center">등록된 사용자가 없습니다</h3></td></tr>}
-          </tbody>
-        </table>
-        <div className="paging">
-          <Pagination
-              activePage={this.state.user.currentPage}
-              itemsCountPerPage={this.state.user.pageSize}
-              totalItemsCount={this.state.user.totalcnt}
-              onChange={this.handleUserPageChange}
-              itemClass="page-item"
-              activeLinkClass="page-active"
-              linkClass="page-link"
-              innerClass="pagination d-flex justify-content-center"
-          />
+        <div className="overviewing">
+          <div className="inner">
+            <div className="info">
+              <div className="info-userRegister">
+                <h1>사용자 등록</h1>
+                <p>신규 사용자를 등록하고 권한을 부여합니다</p>
+              </div>
+              <div className="info-userManager">
+                <h1>사용자 관리</h1>
+                <p>사용자에 대한 변경 및 삭제, 관리 합니다</p>
+              </div>
+              <div className="info-userHistory">
+                <h1>사용자 로그</h1>
+                <p>사용자의 사용 현황을 확인 합니다</p>
+              </div>
+              <div className="info-userWeblog">
+                <h1>사용자 로그</h1>
+                <p>사용자의 접속 로그를 확인합니다</p>
+              </div>
+            </div>
+          </div>
         </div>
-        </div>
-:<div className="editlayer">
-        <div className="card card-container">
-  <div className="form-group userid">
-    <p className="field-label">유저ID</p>
-    <input type="text" name="userid" className="form-control" onChange={e=>this.onChangeValue(e)} value={this.state.edit.data.userid} />
-  </div>
-  <div className="form-group password">
-    <p className="field-label">비밀번호</p>
-    <button className="btn btn-danger" onClick={(e)=> this.changePasswd(e)}>비밀번호 변경</button>
-    <input type="hidden" name="password" className="form-control hidden" onClick={this.clear} onChange={e=>this.onChangeValue(e)} value={this.state.edit.data.password} />
-    {this.state.compare.show ?
-    <div className="passwordLayer">
-      <div className="comparePassword my-3">
-        <input type="password" name="newPassword" className="form-control mb-3" onClick={this.clear} onChange={e=>this.onPasswordChangeValue(e)} value={this.state.compare.newPassword} placeholder="변경할 비밀번호를 입력하세요" />
-        <input type="password" name="confirmPassword" className="form-control" onClick={this.clear} onChange={e=>this.onPasswordChangeValue(e)} value={this.state.compare.confirmPassword} placeholder="변경할 비밀번호를 다시 입력해주세요" />
       </div>
-      <div className={this.state.compare.newPassword && this.state.compare.confirmPassword ? "d-block compareResult":"d-none"}>입력된 비밀번호가 {this.state.compare.result ? "일치합니다":"다릅니다"}</div>
-    </div>
-    :<></>}
-  </div>
-  <div className="form-group name">
-  <p className="field-label">사용자이름</p>
-    <input type="text" name="name" className="form-control" onChange={e=>this.onChangeValue(e)} value={this.state.edit.data.name} />
-  </div>
-  <div className="form-group depth">
-  <p className="field-label">부서명</p>
-    <input type="text" name="dept" className="form-control" onChange={e=>this.onChangeValue(e)} value={this.state.edit.data.dept} />
-  </div>
-  {/* <div className="form-group group">
-    <p className="field-label">그룹</p>
-    <select className="form-control" name="group" onChange={e=>this.onChangeValue(e)} value={this.state.edit.data.group}>
-      <option disabled hidden value=''>선택</option>
-      <option value="ADMIN">관리자</option>
-      <option value="USER">일반</option>
-    </select>
-  </div> */}
-  <div className="actionBtn d-flex justify-content-center align-items-center mt-5 mb-3">
-    <button className="btn btn-primary me-1" onClick={(e)=> this.action(e,"update", this.state.edit.data.userid, this.state.user.select)}>수정</button>
-    <button className="btn btn-primary" onClick={this.onCancel}>취소</button>
-  </div>
-  </div>
-</div>}
-</div>
-    <div className={this.state.toggle === 2  ? "history active":"history"}>
-           <table className="table w-100">
-           <thead>
-              <tr className="text-center my-3">
-              <th className="text-center col-md-1">NO</th>
-              <th className="text-center col-md-2">수정자</th>
-              <th className="text-center col-md-2">유저ID</th>
-              <th className="text-center col-md-4">수정내역</th>
-              <th className="text-center col-md-3">수정시간</th>
-              </tr>
-              </thead>
-              <tbody>
-        {this.state.history.totalcnt > 0 ? this.state.history.currentTableData.map((log, index)=>{
-          return (
-          <tr className="text-center align-middle py-5">
-            <td className="text-center col-md-1">{index + this.state.history.pageSize * (this.state.history.currentPage - 1) + 1}</td>
-            <td className="text-center col-md-2">admin</td>
-            <td className="text-center col-md-2">{log.userid}</td>
-            <td className="text-start col-md-4">{log.mod_item}</td>
-            <td className="text-center col-md-3">{helpers.krDateTime(log.mod_dt)}</td>
-          </tr>
-          );
-        }): <tr className="nothing"><td colspan="5"><h2 className="text-center">남겨진 내역이 없습니다</h2></td></tr>}
-        </tbody>
-    </table>
-    <div className="paging">
-       <Pagination
-        activePage={this.state.history.currentPage}
-        itemsCountPerPage={this.state.history.pageSize}
-        totalItemsCount={this.state.history.totalcnt}
-        onChange={this.handleHistoryPageChange}
-        itemClass="page-item"
-        activeLinkClass="page-active"
-        linkClass="page-link"
-        innerClass="pagination"
-      />
-      </div>
-    </div>
-    <div className={this.state.toggle ===3 ? "adduser active":"adduser"}>
-      <Register fetchData={this.fetchData} fetchHistoryData={this.fetchHistoryData} />
-    </div>
-    <div className={this.state.toggle ===4 ? "weblog active":"weblog"}>
-      <UserWeblog />
-      </div>
-    </div>
     );
   }
 }

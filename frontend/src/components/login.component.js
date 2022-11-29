@@ -1,87 +1,144 @@
 import React, { Component } from "react";
-import Form from "react-validation/build/form";
-import Input from "react-validation/build/input";
-import CheckButton from "react-validation/build/button";
-import {Navigate} from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import AuthService from "../services/auth.service";
-import { withRouter } from "../common/withRouter"
 import axios from "axios"
-
-const required = value => {
-  if (!value) {
-    return (
-      <div className="alert alert-danger" role="alert">
-        필수 입력 항목입니다!
-      </div>
-    );
-  }
-};
-
+import { withRouter } from "../common/withRouter"
 
 class Login extends Component {
   constructor(props) {
     super(props);
     this.handleLogin = this.handleLogin.bind(this);
-    this.onChangeuserid = this.onChangeuserid.bind(this);
-    this.onChangePassword = this.onChangePassword.bind(this);
+    this.onChangeValue= this.onChangeValue.bind(this);
 
     this.state = {
-      userid: "",
-      password: "",
-      loading: false,
-      message: "",
-      redirect: false
+      fields: {
+        userid:'',
+        password:''
+      },
+      errors: {
+        userid:'',
+        password:''
+      },
+      message:''
     }
   }
 
   componentDidMount() {
-    const user = AuthService.getCurrentUser();
-    if (user) {
-      this.setState({
-        currentUser: user,
-        redirect: true
-      });
-      return <Navigate to="/profile"/>
-    } else {
-      return <Navigate to="/home"/>
+    // const user = AuthService.getCurrentUser();
+    // if (user) {
+    //   this.setState({
+    //     currentUser: user,
+    //     redirect: true
+    //   });
+    //   return <Navigate to="/profile"/>
+    // } else {
+    //   return <Navigate to="/home"/>
+    // }
+  }
+
+  onChangeValue(e) {
+    // let fields = this.state.fields;
+    // fields[e.target.name] = e.target.value;
+    // this.setState({
+    //   fields
+    // });
+    this.setState({
+      ...this.state,
+      fields:{
+        ...this.state.fields,
+        [e.target.name]: e.target.value
+      }
+    })
+  }
+
+  validate() {
+    const { fields } = this.state;
+    const errors = {userid:'',password:''};
+    let formIsValid = true;
+
+     if (!fields["userid"]) {
+      formIsValid = false;
+      errors["userid"] = "아이디를 입력해주세요";
     }
+
+    if (typeof fields["userid"] !== "undefined") {
+      if (!fields["userid"].match(/^[a-zA-Z ]*$/)) {
+        formIsValid = false;
+        errors["userid"] = "아이디는 영문만 가능합니다";
+      }
+    }
+
+    if (fields["userid"].includes(" ")) {
+      formIsValid = false;
+      errors["userid"] = "이이디에는 공백이 허용되지 않습니다";
+    }
+
+    if(fields["userid"].length < 4) {
+      formIsValid = false;
+      errors["userid"] = "아이디는 4글자 이상입니다";
+    }
+
+    if (!fields["password"]) {
+      formIsValid = false;
+      errors["password"] = "비밀 번호를 입력해주세요";
+    }
+
+    if (fields["password"].includes(" ")) {
+      formIsValid = false;
+      errors["password"] = "비밀 번호에는 공백이 허용되지 않습니다";
+    }
+
+    if (typeof fields["password"] !== "undefined") {
+      // if (!fields["password"].match(/^.*(?=.{8,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%&]).*$/)) {
+        if(fields["password"].length < 4){
+        formIsValid = false;
+        errors["password"] = "비밀 번호는 4자 이상입니다";
+      }
+    }
+
+
+
+    this.setState({
+      errors: errors
+    });
+
+    return formIsValid;
   }
 
-  onChangeuserid(e) {
-    this.setState({
-      userid: e.target.value
-    });
-  }
-
-  onChangePassword(e) {
-    this.setState({
-      password: e.target.value
-    });
-  }
 
   handleLogin(e) {
     e.preventDefault();
+    if (!this.validate()) {
+        this.setState({
+          fields:{
+          userid: "",
+          password: "",
+          name:"",
+          dept:"",
+          group:"USER",
+          },
+          compare:{
+            newPassword:"",
+            confirmPassword:"",
+            result:false
+          },
+          successful: false,
+          message: ""
+        })
+        return false;
+    }
 
-    this.setState({
-      message: "",
-      loading: true
-    });
-
-    this.form.validateAll();
-
-    if (this.checkBtn.context._errors.length === 0) {
-      AuthService.login(this.state.userid, this.state.password).then((user) => {
-          axios.post(process.env.REACT_APP_API+'/user/insertsesshistory',{
+    AuthService.login(this.state.fields.userid, this.state.fields.password).then((user) => {
+      axios.post(process.env.REACT_APP_API+'/user/insertsesshistory',{
             userid:user.userid,
             name:user.name,
             log:this.userAgent(),
             login_dt: new Date().toISOString(),
             ipAddr: this.internalIp
           }).then(res => {
-            console.log(res);
             if(res.status === 200) {
               this.props.router.navigate('/profile');
-              window.location.reload();
+              window.location.reload()
           }})
         },
         error => {
@@ -98,12 +155,8 @@ class Login extends Component {
           });
         }
       );
-    } else {
-      this.setState({
-        loading: false
-      });
-    }
-  }
+   }
+
 
    // for write client log
   userAgent = ()=>{
@@ -157,57 +210,28 @@ class Login extends Component {
   render() {
     const {currentUser} = this.state;
      return (
-      <div className="login col-md-12">
-        <div className="card card-container">
-          <img
-            src={process.env.PUBLIC_URL+'/img/avatar_2x.png'}
-            alt="profile-img"
-            className="profile-img-card"
-          />
-
-          <Form
-            onSubmit={this.handleLogin}
-            ref={c => {
-              this.form = c;
-            }}
-          >
+      <div className="login">
+        <div className="login-box">
+          <div className="logo_rocket"></div>
+          <div className="inner">
+            <h3>LOGIN</h3>
+            <form onSubmit={this.handleSubmit}>
             <div className="form-group">
-              <label htmlFor="userid">유저ID</label>
-              <Input
-                type="text"
-                className="form-control"
-                name="userid"
-                value={this.state.userid}
-                value={this.state.userid}
-                onChange={this.onChangeuserid}
-                validations={[required]}
-              />
+              <div className="input-group userid">
+                <label htmlFor="userid">아이디</label>
+                <input type="text" name="userid" className="input-userid" value={this.state.fields.userid} onChange={this.onChangeValue} placeholder="사용할 아이디를 입력해주세요"/>
+                <div className="error-msg">{this.state.errors.userid}</div>
+              </div>
+              <div className="input-group group password">
+                <label htmlFor="password">비밀번호</label>
+                <input type="password" name="password" className="input-password"  value={this.state.fields.password} onChange={this.onChangeValue} placeholder="사용할 아이디의 비밀번호를 입력해주세요"/>
+                <div className="error-msg">{this.state.errors.password}</div>
+              </div>
             </div>
-
-            <div className="form-group">
-              <label htmlFor="password">비밀번호</label>
-              <Input
-                type="password"
-                className="form-control"
-                name="password"
-                value={this.state.password}
-                onChange={this.onChangePassword}
-                validations={[required]}
-              />
+            <div className="btn-group">
+              <button className="btn btn-login" onClick={this.handleLogin}>로그인</button>
+              <span>아직 회원이 아닌 경우 <Link to="/register">회원 등록</Link>을 해주세요</span>
             </div>
-
-            <div className="form-group my-3">
-              <button
-                className="btn btn-primary btn-block mx-auto w-100"
-                disabled={this.state.loading}
-              >
-                {this.state.loading && (
-                  <span className="spinner-border spinner-border-sm"></span>
-                )}
-                <span>Login</span>
-              </button>
-            </div>
-
             {this.state.message && (
               <div className="form-group">
                 <div className="alert alert-danger text-center" role="alert">
@@ -215,13 +239,8 @@ class Login extends Component {
                 </div>
               </div>
             )}
-            <CheckButton
-              style={{ display: "none" }}
-              ref={c => {
-                this.checkBtn = c;
-              }}
-            />
-          </Form>
+            </form>
+          </div>
         </div>
       </div>
     );

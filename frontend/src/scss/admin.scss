@@ -1,4 +1,6 @@
 .admin {
+	width: 1600px;
+	margin: 0 auto;
 	.breadcrumb {
 		background-color: $dark;
 		h3 {
@@ -20,19 +22,44 @@
 			}
 		}
 	}
+	.listing,
+	.writing,
+	.overviewing {
+		background: #ffffff;
+		box-shadow: 0px 8px 10px rgba(195, 203, 216, 0.8);
+		border-radius: 6px;
+	}
 
+	&.overview {
+		.overviewing {
+			margin: 75px auto;
+			.inner {
+				margin: 50px auto;
+				padding: 50px;
+				.info {
+					display: flex;
+					justify-content: space-around;
+					> div {
+						border-radius: 6px;
+						border: 2px solid $gray;
+						padding: 50px;
+						h1 {
+							border-bottom: 1px solid $gray;
+							padding: 0 0 15px;
+						}
+					}
+				}
+			}
+		}
+	}
 	&.userWeblog {
-		width: 1600px;
-		margin: 0 auto;
 		.listing {
-			background: #ffffff;
-			box-shadow: 0px 8px 10px rgba(195, 203, 216, 0.8);
-			border-radius: 6px;
 			.weblog-list {
 				.table-list {
+					border-bottom: 1px solid #e7eaf1;
 					thead {
-						border-bottom: 2px solid #e7eaf1;
 						th {
+							border-bottom: 2px solid #e7eaf1;
 							text-align: center;
 							color: $meta-listing-label;
 							padding: 15px;
@@ -64,17 +91,13 @@
 	}
 
 	&.userHistory {
-		width: 1600px;
-		margin: 0 auto;
 		.listing {
-			background: #ffffff;
-			box-shadow: 0px 8px 10px rgba(195, 203, 216, 0.8);
-			border-radius: 6px;
 			.history-list {
 				.table-list {
+					border-bottom: 1px solid #e7eaf1;
 					thead {
-						border-bottom: 2px solid #e7eaf1;
 						th {
+							border-bottom: 2px solid #e7eaf1;
 							text-align: center;
 							color: $meta-listing-label;
 							padding: 15px;
@@ -105,44 +128,105 @@
 		}
 	}
 
-	.heading-1 {
-		color: #000;
-		text-align: center;
-		padding: 15px 0 10px;
-	}
-	.list .form-control {
-		font-size: 0.8em;
-	}
-	.list td.index p {
-		margin: 0;
-		height: calc(1.5em + 0.75rem + 2px);
-		padding: 0.375rem 0.75rem;
-	}
-
-	.history {
-		display: none;
-	}
-
-	.userManage,
-	.history,
-	.adduser,
-	.weblog {
-		display: none;
-	}
-
-	.history td {
-		white-space: pre-wrap;
-	}
-
-	.history,
-	.userManage {
-		.table {
-			tbody {
-				tr {
-					border-bottom-width: 1px;
-					height: 60px;
+	&.userManager {
+		.listing {
+			.user-list {
+				.table-list {
+					border-bottom: 1px solid #e7eaf1;
+					thead {
+						th {
+							border-bottom: 2px solid #e7eaf1;
+							text-align: center;
+							color: $meta-listing-label;
+							padding: 15px;
+							&:nth-child(1) {
+								width: 80px;
+							}
+							&:nth-child(2) {
+								width: 230px;
+							}
+							&:nth-child(3) {
+								width: 230px;
+							}
+							&:nth-child(4) {
+								width: 275px;
+							}
+							&:nth-child(5) {
+								width: 230px;
+							}
+							&:nth-child(6) {
+								width: 230px;
+							}
+							&:nth-child(7) {
+								width: 275px;
+							}
+						}
+					}
 					td {
-						border-bottom-width: 0;
+						color: $meta-text;
+						padding: 15px;
+						text-align: center;
+						&.btn-group {
+							.btn {
+								width: 80px;
+								border-radius: 6px;
+								&.btn-modify {
+									background-color: $gray;
+									margin-right: 10px;
+								}
+								&.btn-delete {
+									background-color: $coral;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	&.userRegister {
+		.writing {
+			.form-group {
+				padding: 50px;
+				.input-group {
+					margin: 20px 0;
+					label {
+						color: $register-label-text;
+						margin-bottom: 10px;
+						display: inline-block;
+					}
+					input {
+						width: calc(100% - 30px);
+						background: #f5f8fd;
+						border: 1px solid #e3e9f2;
+						line-height: 40px;
+						padding: 7px 15px;
+						color: $register-input-text;
+					}
+					.passwordLayer {
+						input {
+							margin-bottom: 10px;
+						}
+					}
+				}
+			}
+			.btn-group {
+				@extend .flex-mx-auto;
+				padding: 70px 0;
+				.btn {
+					border-radius: 6px;
+					height: 42px;
+					width: 200px;
+					line-height: 40px;
+					font-weight: 500;
+					box-shadow: 0px 8px 8px 0px rgba(49, 49, 49, 0.5);
+					&.btn-register {
+						background-color: $blue;
+						margin-right: 20px;
+					}
+					&.btn-cancel {
+						background-color: $btn-dark-blue;
 					}
 				}
 			}

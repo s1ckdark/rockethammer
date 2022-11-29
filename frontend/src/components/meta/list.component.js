@@ -47,18 +47,17 @@ class Metalist extends Component {
     }
 
     handlePageChange(pageNumber) {
-        console.log(`active page is ${pageNumber}`);
+        // console.log(`active page is ${pageNumber}`);
         this.props.router.navigate('/meta/list/'+pageNumber)
         this.fetchData(pageNumber-1)
     }
 
     componentDidMount(){
-        console.log("metaview",this.props);
+        // console.log("metaview",this.props);
         this.fetchData();
     }
 
     fetchData = async(page = 0, type = 'list') => {
-        console.log(page, type)
         const url = type === 'list' ? "/schema/getallschema" : "/schema/search"
         await axios.post(process.env.REACT_APP_API+url, {keyword:this.state.keyword,size:10,page:page})
             .then(res => {
@@ -121,12 +120,9 @@ class Metalist extends Component {
         }
     }
 
-    notiforchange = async (e, index, topic_name) => {
+    changing = async (e, index, topic_name) => {
         e.preventDefault();
-        console.log(e, index, topic_name)
         const temp = index ? this.state.data['list'][index]: null
-        console.log("temp",temp)
-
         const meta_join = JSON.parse(this.state.data.list[index].meta_join)
         const schema = JSON.parse(this.state.data.list[index].schema)
         const tn = topic_name.replace(/(-value|-key)/g, "");
@@ -138,33 +134,9 @@ class Metalist extends Component {
                     temp[index] = item;
                     temp[index]['schema']= JSON.parse(item.schema);
                 })
-                this.props.router.navigate('/meta/view/changed/'+tn, {state:temp, type:'changed'})
-            //     this.setState({
-            //         ...this.state,
-            //         changed:{
-            //             ...this.state.changed,
-            //             before: temp[1],
-            //             after: temp[0]
-            //         },
-            //         detail:JSON.parse(this.state.data.list[index].meta_join),
-            //         select:{
-            //             idx: index,
-            //             topic_name: topic_name,
-            //             subject: tn,
-            //             changed: this.changed(meta_join, schema)
-            //         }
-            //     })
+                this.props.router.navigate('/meta/view/changed/'+tn, {state:{data:temp, type:'changed'}})
             }
         })
-        // this.props.router.navigate('/meta/changed/'+tn, data={changed:this})
-        // axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:tn}).then(res => {
-        //     console.log(res.data);
-        //     if(res.data && res.data.value.length > 0) {
-        //         this.setState({...this.state, schema:res.data})
-        //     } else {
-        //         this.setState({...this.state, schema:{}})
-        //     }
-        // })
     }
 
     tooltip = (e, action) => {
@@ -184,7 +156,6 @@ class Metalist extends Component {
         const { data } = this.state;
         const { detail } = this.state;
         const { topic_name, idx } = this.state.select;
-        console.log(topic_name, idx);
         return (
             <>
                 <div className="meta">
@@ -192,11 +163,11 @@ class Metalist extends Component {
                         <Breadcrumb/>
                         <div className="search-bar">
                                 <input className="input-search" name="search" value={this.state.search} onChange = {this.onChangeKeyword} placeholder="검색 할 토픽명을 입력하세요"/>
-                                <button type="button" className="btn btn-search" onClick={e=>this.fetchData(0, 'search')}>토픽 검색</button>
+                                <button type="button" className="btn btn-search" onClick={e=>this.fetchData(0, 'search')}><span className="questionIcon"></span>토픽 검색</button>
                         </div>
                     </div>
                     <div className="listing">
-                        <div className="schema-list">
+                        <div className="inner">
                             <table className="table-list">
                                 <thead className="thead-light">
                                     <tr className="text-center p-3">
@@ -211,7 +182,7 @@ class Metalist extends Component {
                             {data && data.list && data.list.length > 0 ? data.list.map((item,index) => {
                                 var schema = JSON.parse(item.schema), meta_join = item.meta_join !=='undefined' ? JSON.parse(item.meta_join):null;
                                 return(
-                                        <tr data-index={index} scope="row" className={this.state.select.idx === index ? "table-active text-center":"text-center"} key={5*parseInt(data.current)+index+1}>
+                                        <tr data-index={index} scope="row" className={this.state.select.idx === index ? "table-active":"text-center"} key={schema._id.$oid}>
                                             <td scope="row">{5*parseInt(data.current)+index+1}</td>
                                             <td className="value-subject value form-group clickable" onClick={(e)=>this.detailView(e, index, schema.subject, this.changed(meta_join, schema))}>
                                                 {schema.subject.replace(/(-value|-key)/g, "")}
@@ -219,7 +190,7 @@ class Metalist extends Component {
                                             <td className="value-id value form-group">
                                                 {helpers.schemaTime(schema.reg_dt)}
                                             </td>
-                                            <td className="modified value">{this.changed(meta_join, schema) ? <span className="clickable" onClick={(e)=> this.notiforchange(e, index, schema.subject)}>Y</span> : <span>N</span>}</td>
+                                            <td className="modified value">{this.changed(meta_join, schema) ? <span className="clickable" onClick={(e)=> this.changing(e, index, schema.subject,item, schema, meta_join)}>Y</span> : <span>N</span>}</td>
                                             <td className="value-id value form-group">
                                                 {schema.schema ? <span>N</span>:<span>Y</span> }
                                             </td>

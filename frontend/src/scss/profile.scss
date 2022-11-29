@@ -1,0 +1,60 @@
+.profile {
+	background-color: #1e1e1e;
+	background-image: url('../img/bg_home.png');
+	background-size: cover;
+	height: calc(100vh - 60px);
+	.star_black {
+		z-index: 10;
+	}
+	.welcome-msg {
+		position: absolute;
+		top: 50%;
+		right: 0;
+		transform: translate(-50%, -50%);
+		hgroup {
+			h1 {
+				margin: 0;
+				&.bold {
+					font-weight: 900;
+				}
+				&.thin {
+					font-weight: 300;
+				}
+				font-size: 90px;
+				line-height: 70px;
+				color: #fff;
+			}
+		}
+		.user-profile {
+			h3 {
+				font-size: 24px;
+				font-weight: 700;
+				color: #99e7ff;
+			}
+			p {
+				color: #dce5ff;
+				font-size: 16px;
+				label {
+					width: 100px;
+					display: inline-block;
+					color: $white;
+					white-space: pre;
+				}
+			}
+		}
+		.button-group {
+			margin-top: 40px;
+			.btn {
+				color: $white;
+				width: 200px;
+				&-gray {
+					background-color: $btn-gray;
+				}
+				&-dark {
+					margin-right: 15px;
+					background-color: $btn-dark;
+				}
+			}
+		}
+	}
+}

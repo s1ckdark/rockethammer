@@ -7,7 +7,14 @@ body {
 	letter-spacing: -0.5px;
 	font-size: 14px;
 	line-height: 1.3;
-	font-weight: 300;
+	font-weight: 400;
+	box-sizing: border-box;
+	> div {
+		mix-blend-mode: overlay;
+	}
+	* {
+		letter-spacing: -0.5px;
+	}
 }
 
 a {
@@ -26,6 +33,15 @@ button {
 		opacity: 0.5;
 		border: none;
 		color: rgba(0, 0, 0, 0.5);
+	}
+}
+
+input {
+	border: none;
+	&:focus,
+	&:active {
+		border: 0;
+		outline: none;
 	}
 }
 

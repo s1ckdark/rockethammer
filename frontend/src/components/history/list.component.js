@@ -13,6 +13,7 @@ import Pagination from "react-js-pagination";
 import ReactDiffViewer from 'react-diff-viewer';
 import helpers from '../../common/helpers';
 import { withRouter } from "../../common/withRouter";
+import BreadcrumbComponent from "../breadcrumb.component";
 
 class Historylist extends Component {
     constructor(props) {
@@ -32,14 +33,12 @@ class Historylist extends Component {
     }
 
     handlePageChange(pageNumber) {
-        console.log(`active page is ${pageNumber}`);
         this.props.router.navigate('/meta/view/history/list/'+this.state.topic_name+'/'+pageNumber)
         this.fetchData(this.state.topic_name, pageNumber-1);
       }
 
 
     fetchData = (topic_name,page=0) => {
-        console.log(topic_name, page)
         axios.post(process.env.REACT_APP_API+"/history/gethistory",{keyword:this.state.topic_name,size:5,page:page}).then(res => {
             this.setState({
                 ...this.state,
@@ -49,7 +48,6 @@ class Historylist extends Component {
     }
 
     componentDidMount(){
-        console.log("history list",this.props);
         const { currentPage, topic_name } = this.props.router.params;
         this.fetchData(topic_name)
     }
@@ -62,25 +60,12 @@ class Historylist extends Component {
     render(){
         const { currentPage, topic_name } = this.props.router.params;
         const { data } = this.state;
-        console.log(data)
         const { count, current, list, pageCount, size } = data;
-        console.log(list)
         return (
             <>
-                <div className="meta history-list">
+                <div className="meta history">
                     <div className="page-header">
-                        <div className="breadcrumb">
-                            <nav aria-label="breadcrumb">
-                                <img src="/img/meta_color.svg"></img>
-                                <h3>메타관리</h3>
-                                <ol className="current">
-                                    <li className="breadcrumb-item"><a href="#">홈</a></li>
-                                    <li className="breadcrumb-item"><a href="#">메타</a></li>
-                                    <li className="breadcrumb-item"><a href="#">이력</a></li>
-                                    <li className="breadcrumb-item active" aria-current="page">목록</li>
-                                </ol>
-                            </nav>
-                        </div>
+                        <BreadcrumbComponent/>
                         <div className="search-bar">
                             <input className="input-search" name="search" value={this.state.search} onChange = {this.onChangeKeyword} placeholder="검색 할 토픽명을 입력하세요"/>
                             <button type="button" className="btn btn-search" onClick={e=>this.fetchData(0, 'search')}>토픽 검색</button>

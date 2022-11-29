@@ -32,21 +32,21 @@ class Container extends Component {
               <Route path="/home" element={<Home />} />
               <Route path="/login" element={<PrivateRoute isAllowed={!isAllowed} redirectTo="/profile"><Login /></PrivateRoute>} />
               <Route path="/register" element={<Register />} />
-              <Route path="/profile" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/login"><Profile /></PrivateRoute>} />
-              <Route path="/kafkaadmin" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/login"><KafkaAdmin /></PrivateRoute>} />
-              <Route path="/kafkamonitor" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/login"><KafkaMonitor /></PrivateRoute>} />
-              <Route path="/metric" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/login"><Metric /></PrivateRoute>} />
-              <Route path="/meta" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/login"><Meta /></PrivateRoute>} />
-              <Route path="/meta/list/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/login"><Metalist /></PrivateRoute>} />
-              <Route path="/meta/view/:type/:topic_name" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/login"><Metaview /></PrivateRoute>} />
-              <Route path="/meta/write/:topic_name" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/login"><Metawrite /></PrivateRoute>} />
-              <Route path="/meta/view/history/list/:topic_name/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/login"><Historylist/></PrivateRoute>} />
-              <Route path="/meta/view/history/view/:topic_name" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/login"><Historyview/></PrivateRoute>} />
-              <Route path="/admin" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/login"><Admin /></PrivateRoute>} />
-              <Route path="/admin/history" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/login"><UserHistory /></PrivateRoute>} />
-              <Route path="/admin/weblog" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/login"><UserWeblog /></PrivateRoute>} />
-              <Route path="/admin/register" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/login"><UserRegister /></PrivateRoute>} />
-              <Route path="/admin/manager" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/login"><UserManager /></PrivateRoute>} />
+              <Route path="/profile" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Profile /></PrivateRoute>} />
+              <Route path="/manager" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><KafkaAdmin /></PrivateRoute>} />
+              <Route path="/monitor" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><KafkaMonitor /></PrivateRoute>} />
+              <Route path="/collector" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Metric /></PrivateRoute>} />
+              <Route path="/meta" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Meta /></PrivateRoute>} />
+              <Route path="/meta/list/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Metalist /></PrivateRoute>} />
+              <Route path="/meta/view/:type/:topic_name" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Metaview /></PrivateRoute>} />
+              <Route path="/meta/write/:topic_name" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Metawrite /></PrivateRoute>} />
+              <Route path="/meta/view/history/list/:topic_name/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Historylist/></PrivateRoute>} />
+              <Route path="/meta/view/history/view/:topic_name" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Historyview/></PrivateRoute>} />
+              <Route path="/admin" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Admin /></PrivateRoute>} />
+              <Route path="/admin/history/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><UserHistory /></PrivateRoute>} />
+              <Route path="/admin/weblog/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><UserWeblog /></PrivateRoute>} />
+              <Route path="/admin/register" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><UserRegister /></PrivateRoute>} />
+              <Route path="/admin/manager/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><UserManager /></PrivateRoute>} />
               <Route path="/*" element={<Notfound />} />
             </Routes>
       )

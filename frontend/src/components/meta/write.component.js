@@ -10,6 +10,7 @@ class Metawrite extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            userReady: false,
             data:{
                 topic_name:'',
                 subject:'',
@@ -57,16 +58,23 @@ class Metawrite extends Component {
     }
 
     componentDidMount(){
-        const {type, data } = this.props.router.location.state;
-        console.log(type,data);
-        const schema = JSON.parse(data.schema)
-        let meta = typeof(data.meta_join) === 'string' ? helpers.parse(data.meta_join):{}
-        if(helpers.isEmptyObj(data) === false && ( type === 'reg' || type ==='change')){
+        console.log(this.props.router)
+        const {type, data}= this.props.router.location.state;
+        let schema = type ==='changed' ? this.props.router.location.state.schema : JSON.parse(data.schema)
+        let meta = type === 'changed' ? this.props.router.location.state.meta: typeof(data.meta_join) === 'string' ? helpers.parse(data.meta_join):{}
+        let tmp;
+        if(helpers.isEmptyObj(schema) === false && ( type === 'reg' || type ==='changed')){
             const schemas = async() => {
                 const res = await this.fetch(schema.subject.replace(/(-value|-key)/g, ""))
-                if (res) {
-                    console.log(res.data)
-                    Object.keys(res.data).map( kind => {
+                if (res.status === 200) {
+                    let tmp = Object.keys(res.data).sort().reduce(
+                        (newObj,key) => {
+                           newObj[key] = res.data[key];
+                           return newObj;
+                        },
+                        {}
+                     )
+                    Object.keys(tmp).map( kind => {
                         if(res.data[kind].length > 0){
                             let toJson = JSON.parse(res.data[kind][0].schema);
                             let jsons = []
@@ -76,33 +84,40 @@ class Metawrite extends Component {
                                 json.p_type = item.type;
                                 if(kind === 'value') json.l_name = '';
                                 if(kind === 'value') json.l_def = '';
-                                json.is_null = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'y': 'n'
-                                json.default = item.default ? item.default : ''
+                                json.is_null = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'Y': 'N'
+                                json.default = item.default ? item.default : '-'
                                 if(kind === 'value') json.memo = '';
                                 if(kind === 'value') json.pii = '';
                                 if(kind === 'value') json.retension = '';
                                 jsons[idx] = json;
                             })
-                            console.log("jsons",jsons);
 
-                        meta = {
-                            ...this.state.data,
-                            topic_name: schema.subject.replace(/(-value|-key)/g, ""),
-                            subject:schema.subject,
-                            schema_id: schema.id.$numberLong,
-                            schema_version: schema.version.$numberLong,
-                            meta_version: type ==='reg' ? 1: meta.meta_version + 1,
-                            revision:1,
-                            last_mod_dt: new Date().toISOString(),
-                            last_mod_id:AuthService.getCurrentUser().userid,
-                            is_used: true,
-                            [kind]:jsons
+                            meta = {
+                                ...this.state.meta,
+                                [kind]:jsons
+                            }
                         }
-                    }
                     })
+                    // let tmp = helpers.sortObj(meta);
+                    console.log(schema)
+                    meta = {
+                        ...meta,
+                        topic_name: schema.subject.replace(/(-value|-key)/g, ""),
+                        subject:schema.subject,
+                        schema_id: schema.id,
+                        schema_version: schema.version,
+                        // meta_version: type ==='reg' ? 1: meta.meta_version + 1,
+                        meta_version: 1,
+                        revision:1,
+                        last_mod_dt: new Date().toISOString(),
+                        last_mod_id:AuthService.getCurrentUser().userid,
+                        is_used: true,
+                    }
+                    console.log(meta)
 
                     this.setState({
                         ...this.state,
+                        userReady: true,
                         data:meta,
                         prevData:meta,
                         type:type
@@ -118,6 +133,7 @@ class Metawrite extends Component {
             meta['last_mod_id'] = AuthService.getCurrentUser().userid;
             this.setState({
                 ...this.state,
+                userReady: true,
                 data: meta,
                 prevData:helpers.parseNested(JSON.stringify(data.meta_join)),
                 type:type
@@ -138,6 +154,7 @@ class Metawrite extends Component {
 
     onChangeValueTemp = (e, index, field) =>{
         e.preventDefault();
+        console.log(e, index, field)
         let metas = [...this.state.data[field]];
         metas.map((ele, idx) => {
             if(idx === index) {
@@ -155,7 +172,7 @@ class Metawrite extends Component {
             }
         })
     }
-    onPreview = async(e, type) => {
+    preview = async(e, type) => {
         e.preventDefault();
         let temp = this.state.data;
         if(type === 'reg' || type ==='change'){
@@ -178,8 +195,8 @@ class Metawrite extends Component {
                     ...this.state,
                     history:{
                             topic_name:this.state.data.topic_name,
-                            before:type==='reg' ? "":JSON.stringify(this.state.prevData),
-                            after:JSON.stringify(this.state.data),
+                            before:type==='reg' ? "":JSON.stringify(this.state.prevData, null, 4),
+                            after:JSON.stringify(this.state.data, null, 4),
                             last_mod_dt:new Date().toISOString(),
                             last_mod_id:AuthService.getCurrentUser().userid
                         }
@@ -200,8 +217,8 @@ class Metawrite extends Component {
                     ...this.state,
                     history:{
                             topic_name:this.state.prevData.topic_name,
-                            before:JSON.stringify(this.state.prevData),
-                            after:JSON.stringify(this.state.data),
+                            before:this.state.prevData,
+                            after:this.state.data,
                             last_mod_dt:new Date().toISOString(),
                             last_mod_id:AuthService.getCurrentUser().userid
                         }
@@ -272,13 +289,7 @@ class Metawrite extends Component {
         })
         this.props.closeWrite(e)
     }
-    onPreviewClose = (e) => {
-        this.setState({
-            ...this.state,
-            preview: false,
-            data:this.state.prevData
-        })
-    }
+
     onSubmit = async(e, type) => {
         e.preventDefault();
         let temp = this.state.data;
@@ -305,12 +316,20 @@ class Metawrite extends Component {
                     if(res.status===200) {
                         alert("수정 완료");
                         setTimeout(() => {
-                        this.props.closeWrite(e);
+                        this.props.router.navigate(-1)
                     }, 1000);}
                     })
                 })
             }
         }
+    }
+
+    previewCancel = (e) =>{
+        e.preventDefault()
+        this.setState({
+            ...this.state,
+            preview: false
+        })
     }
 
     onChangeValueJSON = (e, index, whatisit) =>{
@@ -335,100 +354,94 @@ class Metawrite extends Component {
     goBack = () => {
         this.props.router.navigate(-1)
     }
+
     inputfield = ( field_name, field_type = 'input') => {
         const data = this.state.data;
         return (
-            <div className={"form-group "+field_name}>
-                <div className={"label-"+field_name}><p className="field-label">{helpers.translate(field_name, "entokr")}</p></div>
-                <div className={"value-"+field_name+" value"}>
+            <div className={"input-group "+field_name}>
+                <label htmlFor='field_name' className="field-label">{helpers.translate(field_name, "entokr")}</label>
                  {field_type === 'textarea' ?
-                    <textarea name={field_name} className={"input-"+field_name+" input-value w-100"} value={data[field_name]} onChange={(e)=> this.onChangeValue(e, field_name)} readOnly={this.readonly(field_name)} placeholder={helpers.translate(field_name, "entokr")+"를 입력하세요"}/>
-                :<input name={field_name} className={"input-"+field_name+" input-value w-100"} value={data[field_name]} onChange={(e)=> this.onChangeValue(e, field_name)} readOnly={this.readonly(field_name)} placeholder={helpers.translate(field_name, "entokr")+"를 입력하세요"}/>}
-                    </div>
+                    <textarea name={field_name} className={"input-"+field_name} value={data[field_name]} onChange={(e)=> this.onChangeValue(e, field_name)} readOnly={this.readonly(field_name)} placeholder={helpers.translate(field_name, "entokr")+"를 입력하세요"}/>
+                :<input name={field_name} className={"input-"+field_name} value={data[field_name]} onChange={(e)=> this.onChangeValue(e, field_name)} readOnly={this.readonly(field_name)} placeholder={helpers.translate(field_name, "entokr")+"를 입력하세요"}/>}
                 <span className={"input-validator input-validator-"+field_name}>{this.state.error[field_name]}</span>
             </div>
         )
     }
     render()
     {
-        const {type, data } = this.props.router.location.state;
-        const schema = JSON.parse(data.schema)
-        let meta = type === 'update' ? helpers.parse(data.meta_join):{}
-        delete meta['_id']
-        console.log(type,meta);
-        return (
-            <div className="meta">
-                <div className="page-header write">
-                    <Breadcrumb/>
-                </div>
-                <div className={ this.state.preview ? "onpreview":"writing"}>
-                    {this.inputfield("topic_name")}
-                    <div className="required">
-                        {this.inputfield("schema_id")}
-                        {this.inputfield("schema_version")}
-                        {this.inputfield("op_name")}
-                        {this.inputfield("service")}
-                        {this.inputfield("related_topics")}
-                        {this.inputfield("topic_desc", 'textarea')}
+        const {userReady, data } = this.state;
+        let schema = Object.keys(data).map(field => {
+            if(typeof(data[field]) === 'object' && data[field].length > 0) return field
+        }).filter(ele => ele)
+        if(userReady){
+            return (
+                <div className="meta">
+                    <div className="page-header write">
+                        <Breadcrumb/>
                     </div>
-                        {Object.keys(meta).map(field => {
-                            console.log(field, meta[field])
-                            if(meta[field] && typeof(meta[field]) === "object" && helpers.isEmpty(meta[field]) === false ){
-
-                                return(
-                                    <div className={field+"-schema"}>
-                                        <h3 className="h3 schema-field mt-5">{field} Schema</h3>
-                                        <table className={"table my-1 "+field}>
-                                            {meta[field].map((meta_field, index) => {
-                                                console.log(meta_field)
+                    <div className={ this.state.preview ? "preview":"writing"}>
+                        <div className="default-group">
+                            <div className="inner">
+                                {this.inputfield("topic_name")}
+                                {this.inputfield("schema_id")}
+                                {this.inputfield("schema_version")}
+                                {this.inputfield("op_name")}
+                                {this.inputfield("service")}
+                                {this.inputfield("related_topics")}
+                                {this.inputfield("topic_desc", 'textarea')}
+                            </div>
+                        </div>
+                        <div className="schema-group">
+                            {schema.map(ele => {
+                                return (
+                                    <div className={ele+"-schema"}>
+                                        <h3 className={ele+"-schema-header"}>{ele} Schema</h3>
+                                        <table className={ele+"-schema-table"}>
+                                            {data[ele].map((field, index) => {
                                                 return (
                                                     <>
                                                     {index === 0 ?
                                                         <thead>
                                                             <tr>
-                                                                <th scope="col" claasName="col-1">번호</th>
-                                                                {Object.keys(meta_field).map((field2, index) => {
-                                                                    return (
-                                                                        <>
-                                                                            <th scope="col" className="text-center">{helpers.translate(field2,"entokr")}</th>
-                                                                        </>
-                                                                    );
-                                                                })
+                                                                <th scope="col" className="col-1">번호</th>
+                                                                    {Object.keys(field).map((field2, index) => {
+                                                                        return (
+                                                                            <th scope="col">{helpers.translate(field2,"entokr")}</th>
+                                                                        );
+                                                                    })
                                                                 }
                                                             </tr>
                                                         </thead>
                                                     :<></>}
-                                                    <tbody>
-                                                        <tr>
+                                                    <tr>
                                                         <td scope="row">{index+1}</td>
-                                                        {Object.keys(meta_field).map((field2) => {
+                                                            {Object.keys(field).map((field2) => {
                                                                 return (
-                                                                    <td><input type="text" name={field2} className={"field-input "+field2} value={data[field][index][field2]} onChange={(e)=>this.onChangeValueTemp(e, index, field)} readOnly={this.readonly(field2, field)} /></td>
+                                                                    <td><input type="text" name={field2} className={"field-input "+field2} value={field[field2]} onChange={(e)=>this.onChangeValueTemp(e, index, ele)} readOnly={this.readonly(field2, field)} placeholder="-"/></td>
                                                                 );
-
-                                                            })
-                                                        }
-                                                        </tr>
-                                                    </tbody>
-
-                                                </>)
+                                                            })}
+                                                    </tr>
+                                                    </>
+                                                )
                                             })}
-
                                         </table>
-                                    </div>)
-                                }
-                            })
-                        }
-                        <div className="btn-group text-center">
-                        { this.state.preview === false ?
-                        <>
-                            <button type="button" className="btn btn-write" onClick={e=>this.onPreview(e, this.state.type)}>저장 전 미리 보기</button><button type="button" className="btn btn-back" onClick={this.goBack}>뒤로가기</button></>
-                            :<><button type="button" className="btn btn-write" onClick={e=>this.onSubmit(e, this.state.type)}>{ this.state.type === 'reg' ? "등록":"저장"}</button><button type="button" className="btn btn-back" onClick={e=>this.onPreviewClose(e)}>뒤로가기</button></>}
+                                    </div>
+                                    )
+                                })
+                            }
 
+                            <div className="btn-group text-center">
+                            { this.state.preview === false ?
+                            <>
+                                <button type="button" className="btn btn-write" onClick={e=>this.preview(e, this.state.type)}>저장 전 미리 보기</button><button type="button" className="btn btn-back" onClick={this.goBack}>뒤로가기</button></>
+                                :<><button type="button" className="btn btn-write" onClick={e=>this.onSubmit(e, this.state.type)}>{ this.state.type === 'reg' ? "등록":"저장"}</button><button type="button" className="btn btn-back" onClick={e=>this.previewCancel(e)}>뒤로가기</button></>}
+
+                            </div>
                         </div>
                     </div>
                 </div>
-        );
+            );
+        }
     }
 }
 

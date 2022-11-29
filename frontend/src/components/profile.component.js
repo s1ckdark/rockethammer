@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { withRouter } from "../common/withRouter";
 import AuthService from "../services/auth.service";
+import { withRouter } from "../common/withRouter";
 
 class Profile extends Component {
   constructor(props) {
@@ -14,7 +14,7 @@ class Profile extends Component {
   componentDidMount() {
     const currentUser = AuthService.getCurrentUser();
     this.setState({ currentUser: currentUser, userReady: true })
-    this.initCanvasDark();
+    if(this.state.userReady) this.initCanvasDark();
   }
 
   initCanvasDark = () => {
@@ -88,30 +88,35 @@ class Profile extends Component {
         step();
       });
     }
-  render() {
-    const { currentUser } = this.state
-    return (
-      <>
-        <canvas className="star_black"></canvas>
-        <div className="profile col-md-12">
-          {(this.state.userReady) ?
-            <>
-              <div className="info-text">
-                <header className="jumbotron">
-                  <img src="./img/rh_logo.png" alt="rockerhammer" className="w-100"/>
-                </header>
-                <div className="text">
-                  <h3>Welcome <strong>{currentUser.name}</strong>님</h3>
-                  <p><label>이 름:</label>{currentUser.name}</p>
-                  <p><label>소 속:</label>{currentUser.dept}</p>
-                  <p><label>Authorities:</label>{currentUser.group && currentUser.group ? currentUser.group : null}</p>
-                </div>
+
+      render() {
+        const { currentUser } = this.state;
+        return (
+          <div className="profile">
+            <div className="star_black"></div>
+            <div className="container">
+            <div className="welcome-msg">
+              <hgroup>
+                <h1 className="thin">WELCOME</h1>
+                <h1 className="bold">ROCKET</h1>
+                <h1 className="bold">HAMMER</h1>
+              </hgroup>
+              {this.state.userReady ?
+              <div className="user-profile">
+                  <h3>{currentUser.name}&ensp;님&ensp;환영합니다!</h3>
+                  <p><label>소&emsp;&ensp;&emsp;&ensp;&nbsp;속&ensp;:</label>{currentUser.dept}</p>
+                  <p><label>사용자&ensp;그룹&ensp;:</label>{currentUser.group}</p>
               </div>
-            </>
-            :null}
+              :<div className="button-group">
+                <button className="btn btn-dark" onClick={()=> this.props.router.navigate('/login')}>로그인</button>
+                <button className="btn btn-gray" onClick={()=> this.props.router.navigate('/register')}>회원등록</button>
+              </div>
+              }
+            </div>
           </div>
-      </>
-    );
-  }
-}
+          </div>
+        );
+      }
+    }
+
 export default withRouter(Profile)

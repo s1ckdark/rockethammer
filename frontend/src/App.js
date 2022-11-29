@@ -16,8 +16,6 @@ class App extends Component {
     super(props);
     this.logOut = this.logOut.bind(this);
     this.state = {
-      // showModeratorBoard: false,
-      // showAdminBoard: false,
       currentUser: undefined
     };
   }
@@ -33,8 +31,6 @@ class App extends Component {
     if (user) {
       this.setState({
         currentUser: user,
-        // showModeratorBoard: user.roles.includes("ROLE_MODERATOR"),
-        // showAdminBoard: user.roles.includes("ROLE_ADMIN"),
       });
     } else {
       return <Navigate to="/home"/>
@@ -45,33 +41,15 @@ class App extends Component {
     EventBus.remove("logout");
   }
 
-  onMouseEnter = (e) => {
-    e.preventDefault();
-    var thisNode = e.currentTarget.querySelector('p');
-    var thisNodeImg = e.currentTarget.querySelector('img');
-    gsap.fromTo(thisNode, {autoAlpha:0,y:'0px'},{autoAlpha:1,y:'-30px',duration:1},0)
-    gsap.fromTo(thisNodeImg, {scale:"1"},{scale:"1.5",duration:1}, 0);
-  };
-
-  onMouseLeave = (e) => {
-    e.preventDefault();
-    var thisNode = e.currentTarget.querySelector('p');
-    var thisNodeImg = e.currentTarget.querySelector('img');
-    gsap.to(thisNode, {autoAlpha:0, y:'-30px'})
-    gsap.to(thisNodeImg, {scale:"1"})
-  }
-
  logOut() {
     AuthService.logout();
     this.setState({
-      // showModeratorBoard: false,
-      // showAdminBoard: false,
       currentUser: undefined,
     });
   }
 
   render() {
-    const { currentUser, showModeratorBoard, showAdminBoard } = this.state;
+    const { currentUser } = this.state;
     return (
       <>
       <Seo />

@@ -13,7 +13,7 @@ class Home extends Component {
 
   componentDidMount() {
     const currentUser = AuthService.getCurrentUser();
-    if(currentUser.token) this.setState({ currentUser: currentUser, userReady: true })
+    if(currentUser && currentUser.token) this.setState({ currentUser: currentUser, userReady: true })
   }
 
   render() {

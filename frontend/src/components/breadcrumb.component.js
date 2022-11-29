@@ -5,9 +5,10 @@ import helpers from "../common/helpers";
 class Breadcrumb extends Component {
   render(){
     const { pathname } = this.props.router.location;
-    let path = pathname.split('/')
+    let path = pathname.split('/');
     path.shift()
-    const current = path[path.length-1]
+    if(helpers.isInt(path[path.length -1]) === 'number') path.pop()
+    const current = path[path.length -1]
     return(
     <div className="breadcrumb">
       <div className="breadcrumb-navi" aria-label="breadcrumb">
@@ -16,9 +17,9 @@ class Breadcrumb extends Component {
           <ol className="current">
             <li className="breadcrumb-item"><a href='/'>홈</a></li>
             {path.map((item, index) => {
-              console.log(index, item);
+              // console.log(index, this.isInt(item), typeof(this.isInt(item)));
               return (
-                <li className="breadcrumb-item"><a href={'/item/'}>{helpers.translate(item)}</a></li>
+                <li key={index} className={index === path.length - 1  ? "breadcrumb-item active":"breadcrumb-item"}><a href={'/item/'}>{helpers.translate(item)}</a></li>
               )
             })}
           </ol>
@@ -26,9 +27,9 @@ class Breadcrumb extends Component {
       {path[0] === 'admin' ?
       <div className="admin-navi">
         <button className={current === 'register' ? "btn active":"btn"} onClick={()=>this.props.router.navigate('/admin/register')}>사용자 생성</button>
-        <button className={current === 'manager' ? "btn active":"btn"} onClick={()=>this.props.router.navigate('/admin/manager')}>사용자 수정</button>
-        <button className={current === 'history' ? "btn active":"btn"} onClick={()=>this.props.router.navigate('/admin/history')}>사용자 이력</button>
-        <button className={current === 'weblog' ? "btn active":"btn"} onClick={()=>this.props.router.navigate('/admin/weblog')}>사용자 로그</button>
+        <button className={current === 'manager' ? "btn active":"btn"} onClick={()=>this.props.router.navigate('/admin/manager/1')}>사용자 수정</button>
+        <button className={current === 'history' ? "btn active":"btn"} onClick={()=>this.props.router.navigate('/admin/history/1')}>사용자 이력</button>
+        <button className={current === 'weblog' ? "btn active":"btn"} onClick={()=>this.props.router.navigate('/admin/weblog/1')}>사용자 로그</button>
       </div>
       :<></>}
     </div>

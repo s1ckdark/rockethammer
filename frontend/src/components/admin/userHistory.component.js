@@ -10,45 +10,8 @@ class UserHistory extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      redirect: null,
       userReady: false,
-      history:{
-        data:[],
-        totalcnt:0,
-        currentPage: 1,
-        pageSize:5,
-        currentTableData:[],
-      },
-      user:{
-        data:[],
-        totalcnt:0,
-        currentPage: 1,
-        pageSize:5,
-        currentTableData:[],
-        show:true,
-        select:''
-      },
-      edit:{
-        data:{
-          userid:'',
-          password:'',
-          name:'',
-          depth:'',
-          group:''
-        },
-        show:false
-      },
-      compare:{
-        newPassword:'',
-        confirmPassword:'',
-        show:false,
-        result:true,
-        work:false
-      },
-      toggle:1,
-      currentUser: { userid: "" },
-      inputfield:'',
-      time: new Date()
+      data:{},
     };
     this.handlePageChange = this.handlePageChange.bind(this);
   }
@@ -58,50 +21,25 @@ class UserHistory extends Component {
   }
 
   handlePageChange(pageNumber) {
-    console.log(`active page is ${pageNumber}`);
-    this.setState({
-      ...this.state,
-      user:{
-        ...this.state.user,
-        currentPage: pageNumber
-      }
-    });
-    this.fetchData(pageNumber);
+    // console.log(`active page is ${pageNumber}`);
+    this.props.router.navigate('/admin/history/'+pageNumber)
+    this.fetchData(pageNumber-1)
   }
 
-  fetchData = () => {
-    axios.post(process.env.REACT_APP_API+"/user/history")
+  fetchData = async(page) => {
+    await axios.post(process.env.REACT_APP_API+"/user/history", {size:10,page:page})
       .then(res => {
-        console.log(res)
-      const firstPageIndex = (this.state.history.currentPage - 1) * this.state.history.pageSize;
-      const lastPageIndex = firstPageIndex + this.state.history.pageSize;
-      console.log(res);
-      // if(res.data[0].history.length > 0){
-      if(res.data && res.data.length > 0){
-      this.setState({
+        this.setState({
           ...this.state,
-          history:{
-            ...this.state.history,
-            data: res.data,
-            totalcnt: res.data.length,
-            currentTableData:res.data.slice(firstPageIndex, lastPageIndex)
-          }
+          data:res.data,
+          userReady: true
         })
-    } else {
-      this.setState({
-          ...this.state,
-          history:{
-            ...this.state.history,
-            data: [],
-            totalcnt: 0,
-            currentTableData:[]
-          }
-        })
-    }
       })
   }
 
   render() {
+    const { data, userReady } = this.state;
+    if(userReady){
     return (
       <div className="admin userHistory">
         <div className="page-header userWeblog">
@@ -120,19 +58,19 @@ class UserHistory extends Component {
                 </tr>
               </thead>
               <tbody>
-                {this.state.history.totalcnt > 0 ? this.state.history.currentTableData.map((log, index)=>{
+                {data.list && data.list.length > 0 ? data.list.map((item, index)=>{
                   return (
-                    <tr>
-                      <td>{index + this.state.history.pageSize * (this.state.history.currentPage - 1) + 1}</td>
+                    <tr data-index={index}>
+                      <td>{data.size*parseInt(data.current)+index+1}</td>
                       <td>admin</td>
-                      <td>{log.userid}</td>
-                      <td>{log.mod_item}</td>
-                      <td>{helpers.krDateTime(log.mod_dt)}</td>
+                      <td>{item.userid}</td>
+                      <td>{item.mod_item}</td>
+                      <td>{helpers.krDateTime(item.mod_dt)}</td>
                     </tr>
                   );
                 }):
                   <tr className="nothing">
-                    <td colspan="5">남겨진 내역이 없습니다</td>
+                    <td colSpan="5">남겨진 내역이 없습니다</td>
                   </tr>
                 }
               </tbody>
@@ -140,20 +78,22 @@ class UserHistory extends Component {
           </div>
           <div className="paging">
             <Pagination
-              activePage={this.state.history.currentPage}
-              itemsCountPerPage={this.state.history.pageSize}
-              totalItemsCount={this.state.history.totalcnt}
+              activePage={data.current+1}
+              itemsCountPerPage={data.size}
+              totalItemsCount={data.count}
+              pageRangeDisplayed={5}
+              onChange={this.handlePageChange}
               itemClass="page-item"
               activeLinkClass="page-active"
               linkClass="page-link"
               innerClass="pagination"
             />
           </div>
+          </div>
        </div>
-      </div>
     );
   }
 }
-
+}
 export default withRouter(UserHistory);
 

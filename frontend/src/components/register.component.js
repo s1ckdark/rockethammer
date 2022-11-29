@@ -1,99 +1,139 @@
 import React, { Component } from "react";
-import { useHistory } from "react-router-dom";
-import Form from "react-validation/build/form";
-import Input from "react-validation/build/input";
-import Select from 'react-validation/build/select';
-import CheckButton from "react-validation/build/button";
 import AuthService from "../services/auth.service";
 import axios from 'axios';
+import Breadcrumb from "./breadcrumb.component";
+import { withRouter } from "../common/withRouter";
 
-const required = value => {
-  if (!value) {
-    return (
-      <div className="alert alert-danger" role="alert">
-        필수정보 입니다
-      </div>
-    );
-  }
-};
-
-const vuserid = value => {
-  if (value.length < 3 || value.length > 20) {
-    return (
-      <div className="alert alert-danger" role="alert">
-        유저ID는 3자에서 20자 사이로 입력해주세요.
-      </div>
-    );
-  }
-};
-
-const vpassword = value => {
-  if (value.length < 6 || value.length > 40) {
-    return (
-      <div className="alert alert-danger" role="alert">
-        비밀반호는 6자에서 40자 사이로 입력해주세요.
-      </div>
-    );
-  }
-};
-
-const vname = value => {
-  if (value.length < 2 || value.length > 40) {
-    return (
-      <div className="alert alert-danger" role="alert">
-       이름은 최소 1자에서 40자 사이로 입력해주세요.
-      </div>
-    );
-  }
-};
-
-const vdept = value => {
-  if (value.length < 0 || value.length > 40) {
-    return (
-      <div className="alert alert-danger" role="alert">
-        부서명은 최소 6자에서 40자 사이로 입력해주세요.
-      </div>
-    );
-  }
-};
-
-export default class Register extends Component {
-
+class Register extends Component {
   constructor(props) {
     super(props);
     this.handleRegister = this.handleRegister.bind(this);
     this.onChangeValue = this.onChangeValue.bind(this);
 
     this.state = {
-      userid: "",
-      password: "",
-      name:"",
-      dept:"",
-      group:"USER",
-      successful: false,
-      message: "",
+      fields:{
+        userid: "",
+        password: "",
+        name:"",
+        dept:"",
+        group:"USER"
+      },
+      errors:{
+        userid: "",
+        password: "",
+        name:"",
+        dept:"",
+        group:""
+      },
       compare:{
         newPassword:"",
         confirmPassword:"",
         result:false
       },
+      successful: false,
+      message: ""
     };
   }
 
+  validate(){
+    const { fields } = this.state;
+    const errors = {
+        userid: "",
+        password: "",
+        name:"",
+        dept:"",
+        group:""
+      }
+    let formIsValid = true;
+
+    if (!fields["userid"]) {
+      formIsValid = false;
+      errors["userid"] = "아이디를 입력해주세요";
+    }
+
+    if (typeof fields["userid"] !== "undefined") {
+      if (!fields["userid"].match(/^[a-zA-Z ]*$/)) {
+        formIsValid = false;
+        errors["userid"] = "아이디는 영문만 가능합니다";
+      }
+    }
+
+    if (fields["userid"].includes(" ")) {
+      formIsValid = false;
+      errors["userid"] = "이이디에는 공백이 허용되지 않습니다";
+    }
+
+    if(fields["userid"].length < 3 || fields["userid"].length > 20) {
+      formIsValid = false;
+      errors["userid"] = "아이디는 3자 이상으로 입력해주세요";
+    }
+
+    if (!fields["password"]) {
+      formIsValid = false;
+      errors["password"] = "비밀 번호를 입력해주세요";
+    }
+
+    if (fields["password"].includes(" ")) {
+      formIsValid = false;
+      errors["password"] = "비밀 번호에는 공백이 허용되지 않습니다";
+    }
+
+    if (typeof fields["password"] !== "undefined") {
+      // if (!fields["password"].match(/^.*(?=.{8,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%&]).*$/)) {
+        if(fields["password"].length < 3 || fields['password'].length > 20){
+        formIsValid = false;
+        errors["password"] = "비밀 번호는 4자 이상으로 입력해주세요";
+      }
+    }
+
+    if (!fields["name"]) {
+      formIsValid = false;
+      errors["name"] = "이름을 입력해주세요";
+    }
+
+    if(fields["name"].length < 3 || fields["name"].length > 20) {
+      formIsValid = false;
+      errors["name"] = "이름을 3자 이상 입력해주세요";
+    }
+
+
+    if (!fields["dept"]) {
+      formIsValid = false;
+      errors["dept"] = "소속 부서명을 입력해주세요";
+    }
+
+    if(fields["dept"].length < 3 || fields["dept"].length > 20) {
+      formIsValid = false;
+      errors["dept"] = "부서명을 3자 이상 입력해주세요";
+    }
+
+    this.setState({
+      errors: errors
+    });
+
+    return formIsValid;
+}
+
   onChangeValue = (e) => {
     this.setState({
-      [e.target.name]: e.target.value
-    });
+      ...this.state,
+      fields:{
+        ...this.state.fields,
+        [e.target.name]: e.target.value
+      }
+    })
   }
 
   handleCancelClick = (e) => {
-    console.log("click cancel");
+    e.preventDefault();
     this.setState({
+      fields:{
       userid: "",
       password: "",
       name:"",
       dept:"",
       group:"USER",
+      },
       compare:{
         newPassword:"",
         confirmPassword:"",
@@ -107,56 +147,63 @@ export default class Register extends Component {
   handleRegister(e) {
     e.preventDefault();
 
-    this.setState({
-      message: "",
-      successful: false
-    });
-
-    this.form.validateAll();
-
-    if (this.checkBtn.context._errors.length === 0) {
-      AuthService.register(
-        this.state.userid,
-        this.state.password,
-        this.state.name,
-        this.state.dept,
-        this.state.group
-      ).then(
-        response => {
-          this.setState({
-            message: response.data.message,
-            successful: true
-          });
-          axios.post(process.env.REACT_APP_API+"/grafana/adduser",
-          {
-            name: this.state.name,
-            email: this.state.userid,
-            login: this.state.name,
-            password: this.state.password,
-          }
-          ).then(res => console.log(res));
-          axios.post(process.env.REACT_APP_API+"/user/upthistory",
-            {
-              userid: this.state.userid,
-              mod_item: "사용자 등록"
-            }
-          ).then( res => {this.props.fetchData();this.props.fetchHistoryData()})
+    if(!this.validate()) {
+      this.setState({
+        fields:{
+        userid: "",
+        password: "",
+        name:"",
+        dept:"",
+        group:"USER",
         },
-        error => {
-          const resMessage =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString();
+        compare:{
+          newPassword:"",
+          confirmPassword:"",
+          result:false
+        },
+        successful: false,
+        message: ""
+      })
+      return false;
+  }
 
-          this.setState({
-            successful: false,
-            message: resMessage
-          });
-        }
-      );
-    }
+    AuthService.register(
+      this.state.fields.userid,
+      this.state.fields.password,
+      this.state.fields.name,
+      this.state.fields.dept,
+      this.state.fields.group
+    ).then(response => {
+        this.setState({
+          message: response.data.message,
+          successful: true
+        });
+        axios.post(process.env.REACT_APP_API+"/user/upthistory",
+          {
+            userid: this.state.fields.userid,
+            mod_item: "사용자 등록"
+          }
+        ).then( res => {
+          if(res.status === 200) {
+            // this.props.router.navigate('/profile');
+            window.location.reload()
+         }
+        })
+      },
+      error => {
+        const resMessage =
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message ||
+          error.toString();
+
+        this.setState({
+          successful: false,
+          message: resMessage
+        });
+      }
+    );
   }
 
   onPasswordChangeValue = (e) => {
@@ -174,118 +221,63 @@ export default class Register extends Component {
 
   render() {
     return (
-      <div className="register">
-      <div className="col-md-12">
-        <div className="card card-container">
-          <img
-            src={'./img/avatar_2x.png'}
-            alt="profile-img"
-            className="profile-img-card"
-          />
-
-          <Form
-            onSubmit={this.handleRegister}
-            ref={c => {
-              this.form = c;
-            }}
-          >
-            {!this.state.successful && (
-              <div>
-                <div className="form-group mb-3">
-                  <label htmlFor="userid">유저ID</label>
-                  <Input
-                    type="text"
-                    className="form-control"
-                    name="userid"
-                    value={this.state.userid}
-                    onChange={this.onChangeValue}
-                    validations={[required, vuserid]}
-                  />
-                </div>
-
-                <div className="form-group mb-3">
-                  <label htmlFor="password">패스워드</label>
-                  <Input
-                    type="hidden"
-                    className="form-control"
-                    name="password"
-                    value={this.state.password}
-                    onChange={this.onChangeValue}
-                    validations={[required, vpassword]}
-                  />
-                </div>
-                <div className="passwordLayer">
-                  <div className="comparePassword my-3">
-                    <input type="password" name="newPassword" className="form-control mb-3" onClick={this.clear} onChange={e=>this.onPasswordChangeValue(e)} value={this.state.compare.newPassword} placeholder="비밀번호를 입력하세요" validations={[required, vpassword]}/>
-                    <input type="password" name="confirmPassword" className="form-control" onClick={this.clear} onChange={e=>this.onPasswordChangeValue(e)} value={this.state.compare.confirmPassword} placeholder="비밀번호를 다시 입력해주세요" validations={[required, vpassword]}/>
-                  </div>
-                  <div className={this.state.compare.newPassword && this.state.compare.confirmPassword ? "d-block compareResult":"d-none"}>입력된 비밀번호가 {this.state.compare.result ? "일치합니다":"다릅니다"}</div>
-                </div>
-
-                <div className="form-group mb-3">
-                  <label htmlFor="name">사용자명</label>
-                  <Input
-                    type="text"
-                    className="form-control"
-                    name="name"
-                    value={this.state.name}
-                    onChange={this.onChangeValue}
-                    validations={[required, vname]}
-                  />
-                </div>
-
-                <div className="form-group mb-3">
-                  <label htmlFor="dept">부서명</label>
-                  <Input
-                    type="text"
-                    className="form-control"
-                    name="dept"
-                    value={this.state.dept}
-                    onChange={this.onChangeValue}
-                    validations={[required, vdept]}
-                  />
-                </div>
-
-                {/* <div className="form-group mb-5">
-                  <label htmlFor="dept">그룹</label>
-                  <Select className="form-control" name="group" value={this.state.group} onChange={this.onChangeValue} validations={[required]}>
-                    <option disabled={true} selected value="">--그룹 선택--</option>
-                    <option value="ADMIN">관리자</option>
-                    <option value="USER">일반</option>
-                  </Select>
-                </div> */}
-  
-                <div className="action-btn d-flex justify-content-center align-items-center mt-5">
-                    <button className="btn btn-primary btn-block me-2">회원 가입</button>
-                    <button type="button" className="btn btn-danger btn-block" onClick={this.handleCancelClick}>취소</button>
-                  </div>
-              </div>
-            )}
-
-            {this.state.message && (
-              <div className="form-group">
-                <div
-                  className={
-                    this.state.successful
-                      ? "alert alert-success"
-                      : "alert alert-danger"
-                  }
-                  role="alert"
-                >
-                  {this.state.message}
-                </div>
-              </div>
-            )}
-            <CheckButton
-              style={{ display: "none" }}
-              ref={c => {
-                this.checkBtn = c;
-              }}
-            />
-          </Form>
+      <div className="admin userRegister">
+        <div className="page-header userRegister">
+          <Breadcrumb/>
         </div>
-      </div>
+        <div className="writing">
+          <div className="form-group">
+            <div className="input-group userid">
+              <label htmlFor="userid">유저ID</label>
+              <input type="text" className="input-userid" name="userid" value={this.state.fields.userid} onChange={this.onChangeValue} placeholder="사용할 아이디를 입력해주세요" />
+              <div className="error-msg">{this.state.errors.userid}</div>
+            </div>
+            <div className="input-group">
+              <label htmlFor="password">비밀번호</label>
+              <input type="hidden" className="input-password" name="password" value={this.state.fields.password} onChange={this.onChangeValue} />
+              <div className="passwordLayer">
+                <div className="comparePassword my-3">
+                  <input type="password" name="newPassword" className="input-newPassword" onClick={this.clear} onChange={e=>this.onPasswordChangeValue(e)} value={this.state.compare.newPassword} placeholder="비밀번호를 입력하세요" />
+                  <input type="password" name="confirmPassword" className="input-confrimPassword" onClick={this.clear} onChange={e=>this.onPasswordChangeValue(e)} value={this.state.compare.confirmPassword} placeholder="비밀번호를 다시 입력해주세요" />
+                </div>
+                <div className={this.state.compare.newPassword && this.state.compare.confirmPassword ? "compareResult":"compareResult"}>입력된 비밀번호가 {this.state.compare.result ? "일치합니다":"다릅니다"}</div>
+                <div className="error-msg">{this.state.errors.password}</div>
+              </div>
+            </div>
+            <div className="input-group">
+              <label htmlFor="name">사용자명</label>
+              <input type="text" className="input-name" name="name" value={this.state.fields.name} onChange={this.onChangeValue} placeholder="사용할 사용자명을 입력해주세요"/>
+              <div className="error-msg">{this.state.errors.name}</div>
+            </div>
+            <div className="input-group">
+              <label htmlFor="dept">부서명</label>
+              <input type="text" className="input-dept" name="dept" value={this.state.fields.dept} onChange={this.onChangeValue} placeholder="소속 부서를 입력해주세요"/>
+              <div className="error-msg">{this.state.errors.dept}</div>
+            </div>
+            {/* <div className="input-group">
+              <label htmlFor="dept">그룹</label>
+              <select className="form-control" name="group" value={this.state.fields.group} onChange={this.onChangeValue}>
+                <option disabled={true} selected value="">--그룹 선택--</option>
+                <option value="ADMIN">관리자</option>
+                <option value="USER">일반</option>
+              </select>
+            </div> */}
+          </div>
+          <div className="btn-group">
+            <button type="submit" className="btn btn-register" onClick={this.handleRegister}>회원 가입</button>
+            <button type="button" className="btn btn-cancel" onClick={this.handleCancelClick}>취소</button>
+          </div>
+          {this.state.message && (
+            <div className="form-group">
+              <div className={ this.state.successful ? "alert alert-success" : "alert alert-danger" } role="alert">
+                {this.state.message}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     );
   }
 }
+
+export default withRouter(Register)

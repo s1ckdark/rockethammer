@@ -5,63 +5,96 @@
 	margin: 0 auto;
 }
 
+.flex-mx-auto {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.flex-center {
+	@extend .flex-mx-auto;
+	height: calc(100vh - 60px - 1rem);
+}
+
 .header {
+	z-index: 99;
 	.navigation {
 		height: 60px;
-		z-index: 999;
 		justify-content: space-between;
 		display: flex;
 		align-items: center;
 		&.blue {
 			background-color: $blue;
-			color: $blue-text;
-			> a {
+			.nav-item {
+				p {
+					color: #fff;
+				}
 			}
-			.navbar-nav {
+		}
+		&.white {
+			background-color: $header-wht;
+			.nav-item {
+				a {
+					color: #6e7e92 !important;
+				}
+			}
+		}
+		color: $blue-text;
+		> a {
+			.logo {
+				width: 203px;
+				margin: 0 20px;
+			}
+		}
+		.navbar-nav {
+			display: flex;
+			ul {
 				display: flex;
-				ul {
+				margin: 0;
+				padding: 0;
+				.nav-item {
+					position: relative;
+					padding: 0 5px;
+					text-align: center;
 					display: flex;
-					margin: 0;
-					padding: 0;
-					.nav-item {
-						position: relative;
-						padding: 0 5px;
-						text-align: center;
-						display: flex;
+					&.active {
+						p {
+							display: inline-block !important;
+							opacity: 1;
+						}
 					}
-					.nav-item .nav-link {
+					.nav-link {
 						margin: 0 5px;
 						color: $blue-text;
 						display: flex;
 						align-items: center;
 					}
-					.nav-item img {
-						width: 20px;
-						opacity: 0.8;
-					}
-					.nav-item p {
+					p {
 						transition: all 0.3s ease-out;
 						font-weight: 700;
-						margin-left: 15px;
-						// position: absolute;
-						top: 100%;
-						// left: 50%;
-						// transform: translate(-50%, 0);
-						// visibility: hidden;
-						// opacity: 0;
-						color: $white;
+						margin-left: 10px;
+						display: none;
+						opacity: 0;
 						width: 100%;
 						text-align: center;
 						z-index: 99;
+						color: #173078;
 					}
 				}
 			}
-			.nav {
-				justify-content: center;
-			}
-			.auth {
-				justify-content: end;
-			}
+		}
+		.nav {
+			justify-content: center;
+		}
+		.auth {
+			justify-content: end;
 		}
 	}
+}
+
+.footer {
+	display: none;
+	// position: absolute;
+	// right: 0px;
+	// bottom: 0px;
 }

@@ -72,11 +72,10 @@ const helpers = {
             default:
                 break;
             }
-            let str = typeof(data) !== 'string' && data !== ''  ? JSON.parse(data):data
             const pattern = new RegExp(
                 Object.keys(swaps).map(e => `(?:"(${e})":)`).join("|"), "g"
             );
-            const result = JSON.stringify(str, null, 4).replace(pattern, m => `"${swaps[m.slice(1,-2)]}":`)
+            const result = JSON.stringify(data, null, 8).replace(pattern, m => `"${swaps[m.slice(1,-2)]}":`)
             return result;
     },
     isEmpty : ( str ) => {
@@ -119,27 +118,14 @@ const helpers = {
             "list":"목록",
             "write":"등록",
             "view":"조회",
-            "history":"사용자 이력"
+            "history":"사용자 이력",
+            "retension":"보존기간",
+            "pii":"pii",
+            "table":"테이블",
+            "json":"JSON",
+            "changed":"변경이력"
         }
         return  defineName[name] ? defineName[name]:name;
-    },
-    required : (value) => {
-        if (!value) {
-          return (
-            <div className="alert alert-danger" role="alert">
-              필수정보 입니다
-            </div>
-          );
-        }
-    },
-    validation : (name, value, min = 0, max = 128) => {
-        if (value.length < min || value.length > max) {
-          return (
-            <div className="alert alert-danger" role="alert">
-              {name}은 최소 {min}자에서 {max}자 사이로 입력해주세요.
-            </div>
-          );
-        }
     },
     iterateObj : (dupeObj) => {
         var retObj = new Object();
@@ -192,6 +178,19 @@ const helpers = {
         } else {
             onCancel();
         }
+    },
+    isInt : (val) => {
+        let tmp = parseInt(val);
+        return typeof tmp === "number" && isFinite(tmp) && Math.floor(tmp) === tmp ? "number":"string"
+    },
+    sortObj : (obj) => {
+        Object.keys(obj).sort().reduce(
+        (newObj,key) => {
+           newObj[key] = obj[key];
+           return newObj;
+        },
+        {}
+     )
     }
 }
 

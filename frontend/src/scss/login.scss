@@ -1,0 +1,80 @@
+.login {
+	@extend .flex-center;
+	background-color: $bg-home;
+	color: #fff;
+
+	.login-box {
+		position: relative;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		height: calc(100vh - 60px - 1rem);
+		.logo_rocket {
+			position: absolute;
+			right: 40px;
+			top: -110px;
+			width: 165px;
+			height: 200px;
+			background-image: url(../img/login_box_rocket.svg);
+		}
+		border: 2px solid $login-box-line;
+		border-radius: 22px;
+		width: 520px;
+		height: 520px;
+		.inner {
+			padding: 50px;
+			h3 {
+				width: 420px;
+				padding-bottom: 5px;
+				margin: 0 auto 40px;
+				font-size: 32px;
+				font-weight: 800;
+				display: inline-block;
+				border-bottom: 4px solid #fff;
+			}
+			.form-group {
+				.input-group {
+					margin-bottom: 40px;
+					label {
+						display: inline-block;
+						margin-bottom: 8px;
+					}
+					input {
+						width: 390px;
+						height: 40px;
+						padding: 7px 15px;
+						background-color: $login-input-box;
+						border: 1px solid $login-input-line;
+						color: #fff;
+						&.input-userid {
+						}
+						&::placeholder {
+							color: #fff;
+							font-size: 14px;
+							letter-spacing: -0.5px;
+						}
+					}
+				}
+			}
+			.btn-group {
+				.btn {
+					border-radius: 6px;
+					height: 42px;
+					line-height: 40px;
+					font-weight: 500;
+					box-shadow: 0px 8px 8px 0px rgba(49, 49, 49, 0.5);
+					&.btn-login {
+						width: 420px;
+						background-color: $btn-dark;
+						margin-bottom: 25px;
+					}
+				}
+				a {
+					text-decoration: underline;
+					font-weight: 500;
+					color: $login-register-text;
+				}
+			}
+		}
+	}
+}

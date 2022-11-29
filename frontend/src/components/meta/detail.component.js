@@ -19,10 +19,6 @@ class Metadetail extends Component {
         super(props);
         this.state = {
           data:{},
-          changed:{
-              before:'',
-              after:''
-          },
           delete:{}
         };
     }
@@ -77,8 +73,28 @@ class Metadetail extends Component {
         }, 1000)
     }
 
+    changing = async (e, topic_name, schema, meta_join) => {
+        e.preventDefault();
+        const tn = topic_name.replace(/(-value|-key)/g, "");
+
+        await axios.post(process.env.REACT_APP_API+"/schema/changed", {"keyword":topic_name}).then(res => {
+            if(res.data.length > 1) {
+                let temp = [];
+                res.data.map((item,index) => {
+                    temp[index] = item;
+                    temp[index]['schema']= JSON.parse(item.schema);
+            })
+            this.props.router.navigate('/meta/view/changed/'+tn, {state:{data:temp,schema:schema,meta:meta_join, type:'changed'}})
+        }})
+    }
+
+    changed = (meta_join, schema) => {
+        return meta_join && parseInt(schema.version.$numberLong) > parseInt(meta_join.schema_version) ? true : false
+    }
+
 render(){
         if(this.props.data === null) return false;
+        const {changed} = this.props;
         const { schema, meta_join } = helpers.parseNested(this.props.data) || {}
         let sch = JSON.parse(schema);
         let meta = helpers.isEmptyObj(meta_join) === false && JSON.parse(meta_join).is_used === 'true' ? JSON.parse(meta_join):{}
@@ -106,6 +122,7 @@ render(){
                         <p>{meta.last_mod_dt ? helpers.krDateTime(meta.last_mod_dt) : "-"}</p>
                     </div>
                 <div className="btn-group">
+                    {this.changed(meta, sch) ? <button type="button" className="btn btn-changed" onClick={(e)=> this.changing(e, sch.subject, sch, meta)}>변경 등록</button>:<></>}
                     {helpers.isEmptyObj(sch.schema) === false && meta.is_used === 'true' ? <button type="button" className="btn" onClick={e=>this.write(e,"update", topic_name)}>수정</button>:<button type="button" className="btn btn-primary me-1" onClick={e=>this.write(e,"reg", topic_name)}  disabled={helpers.isEmptyObj(sch.schema) === true ? true:false}>등록</button>}
                     <button type="button" className="btn" onClick={e=>this.view(e, 'json', topic_name)} disabled={helpers.isEmptyObj(meta) === false && meta.is_used === 'true' ? false:true}>조회</button>
                     {helpers.isEmptyObj(sch.schema) === false ? <button type="button" className="btn" onClick={e=> helpers.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, "api1", this.state.select.topic_name), this.onCancel)} role="api1" disabled={helpers.isEmptyObj(meta) === false && meta.is_used === 'true' ? false:true}>삭제</button>:<></>}
