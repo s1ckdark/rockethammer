@@ -27,8 +27,8 @@ class Breadcrumb extends Component {
       </div>
       {path[0] === 'admin' ?
       <div className="admin-navi">
-        <button className={current === 'register' ? "btn active":"btn"} onClick={()=>this.props.router.navigate('/admin/register')}>사용자 생성</button>
-        <button className={current === 'manager' ? "btn active":"btn"} onClick={()=>this.props.router.navigate('/admin/manager/1')}>사용자 수정</button>
+        <button className={current === 'register' ? "btn active":"btn"} onClick={()=>this.props.router.navigate('/admin/register')}>사용자 등록</button>
+        <button className={current === 'manager' ? "btn active":"btn"} onClick={()=>this.props.router.navigate('/admin/manager/1')}>사용자 관리</button>
         <button className={current === 'history' ? "btn active":"btn"} onClick={()=>this.props.router.navigate('/admin/history/1')}>사용자 이력</button>
         <button className={current === 'weblog' ? "btn active":"btn"} onClick={()=>this.props.router.navigate('/admin/weblog/1')}>사용자 로그</button>
       </div>

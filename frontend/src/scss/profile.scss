@@ -1,12 +1,19 @@
 .profile {
-	background-color: #1e1e1e;
-	background-image: url('../img/bg_home.png');
-	background-size: cover;
+	background-color: $bg-home;
 	height: calc(100vh - 60px);
-	.star_black {
-		z-index: 10;
+	.bg_rocket {
+		position: absolute;
+		background-image: url('../img/bg_rocket.png');
+		background-size: cover;
+		width: 637px;
+		height: 702px;
+		display: block;
+		z-index: 99;
+		bottom: 0;
+		left: -5%;
+		transform: translate(50%, 0%);
 	}
-	.welcome-msg {
+	ㅞㅡ .welcome-msg {
 		position: absolute;
 		top: 50%;
 		right: 0;
