@@ -96,6 +96,43 @@ class Metadetail extends Component {
         }})
     }
 
+    detailBtn = (topic_name, sch, meta) => {
+        console.log(topic_name, sch, meta)
+        console.log("schema ->",sch.schema, "meta ->",meta, "is_used ->", meta.is_used)
+        const sc = helpers.isEmptyObj(sch.schema)
+        const me = helpers.isEmptyObj(meta)
+        const mi = meta.is_used
+
+        const cond = [sc, me, mi]
+        let typeofapi;
+
+        function arrayEquals(a, b){
+            return Array.isArray(a) &&
+                Array.isArray(b) &&
+                a.length === b.length &&
+                a.every((val, index) => val === b[index]);
+        }
+
+        if(arrayEquals(cond, [false, false, 'true']) === true) typeofapi = "api1"
+        if(arrayEquals(cond, [false, true, undefined]) === true) typeofapi = "api2"
+        if(arrayEquals(cond, [true, false, 'true']) === true) typeofapi = "api3"
+        if(arrayEquals(cond, [true, true, undefined]) === true) typeofapi = "api3"
+        if(arrayEquals(cond, [false, true, 'false']) === true) typeofapi = "api3"
+
+        return (
+            <>
+                {this.changed(meta, sch) ? <button type="button" className="btn btn-changed" onClick={(e)=> this.changing(e, sch.subject, sch, meta)}>변경 등록</button>:<></>}
+                <button type="button" className="btn" onClick={e=>this.view(e, "json", topic_name)} disabled={me === false && mi === "true" ? false:true}>조회</button>
+                {sc === false && me === false && mi === 'true' ?
+                    <button type="button" className="btn" onClick={e=>this.write(e,"update", topic_name)} disabled={sc === true ? true:false}>수정</button>:
+                    <button type="button" className="btn " onClick={e=>this.write(e,"reg", topic_name)} disabled={sc !== false && me !== false ? true:false}>등록</button>}
+                <button type="button" className="btn btn-delete" onClick={e=> helpers.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, typeofapi, topic_name), this.onCancel)} role={typeofapi}>삭제{typeofapi}</button>
+                <button type="button" className="btn btn-history" onClick={(e)=>this.view(e, "history", topic_name)} disabled={me ? true:false}>이력</button>
+
+            </>
+        )
+
+    }
     changed = (meta_join, schema) => {
         return meta_join && parseInt(schema.version.$numberLong) > parseInt(meta_join.schema_version) ? true : false
     }
@@ -107,6 +144,9 @@ class Metadetail extends Component {
         let sch = JSON.parse(schema);
         let meta = helpers.isEmptyObj(meta_join) === false && JSON.parse(meta_join).is_used === 'true' ? JSON.parse(meta_join):{}
         const topic_name = sch.subject.replace(/(-value|-key)/g, "")
+        console.log("schema ->",helpers.isEmptyObj(sch.schema), "meta ->",helpers.isEmptyObj(meta), "is_used ->", meta.is_used)
+        const cond = [helpers.isEmptyObj(sch.schema), helpers.isEmptyObj(meta), meta.is_used]
+        console.log(cond)
         return (
             <>
             <Modal open={ this.state.modal } close={ this.closeModal } title="Create a chat room">
@@ -137,13 +177,7 @@ class Metadetail extends Component {
                         <p>{meta.last_mod_dt ? helpers.krDateTime(meta.last_mod_dt) : "-"}</p>
                     </div>
                 <div className="btn-group">
-                    {sch.schema && this.changed(meta, sch) ? <button type="button" className="btn btn-changed" onClick={(e)=> this.changing(e, sch.subject, sch, meta)}>변경 등록</button>:<></>}
-                    {sch.schema && helpers.isEmptyObj(sch.schema) === false && meta.is_used === 'true' ? <button type="button" className="btn" onClick={e=>this.write(e,"update", topic_name)}>수정</button>:<button type="button" className="btn btn-primary me-1" onClick={e=>this.write(e,"reg", topic_name)}  disabled={helpers.isEmptyObj(sch.schema) === true ? true:false}>등록</button>}
-                    {sch.schema ? <button type="button" className="btn" onClick={e=>this.view(e, 'json', topic_name)} disabled={helpers.isEmptyObj(meta) === false && meta.is_used === 'true' ? false:true}>조회</button>:<></>}
-                    {sch.schema && helpers.isEmptyObj(sch.schema) === false ? <button type="button" className="btn" onClick={e=> helpers.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, "api1", this.state.select.topic_name), this.onCancel)} role="api1" disabled={helpers.isEmptyObj(meta) === false && meta.is_used === 'true' ? false:true}>삭제</button>:<></>}
-                    {sch.schema && helpers.isEmptyObj(sch.schema) === undefined && helpers.isEmptyObj(meta) === false && meta.is_used === 'true' ? <button type="button" className="btn" onClick={e=> helpers.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, "api2", this.state.select.topic_name), this.onCancel)} role="api2">삭제</button>:<></>}
-                    {!sch.schema && helpers.isEmptyObj(meta) === false && meta.is_used === 'true' ? <button type="button" className="btn" onClick={e=> helpers.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, "api3", this.state.select.subject), this.onCancel)} role="api3">삭제</button>:<></>}
-                    {sch.schema ? <button type="button" className="btn" onClick={(e)=>this.view(e, 'history', topic_name)} disabled={helpers.isEmptyObj(meta) ? true:false}>이력</button>:<></>}
+                    {this.detailBtn(topic_name,sch,meta)}
                 </div>
             </div>
             </>
