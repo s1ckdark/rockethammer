@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { gsap } from "gsap/all";
 import { Navigate } from "react-router-dom";
 import "./App.scss";
-
+import { withRouter } from './common/withRouter';
 import AuthService from "./services/auth.service";
 import Header from "./layout/Header";
 import Container from "./layout/Container";
@@ -50,15 +50,18 @@ class App extends Component {
 
   render() {
     const { currentUser } = this.state;
+    const pathname = this.props.router.location.pathname.split('/')
+    pathname.shift()
+
     return (
       <>
       <Seo />
-        <Header currentUser={currentUser} logOut={this.logOut} />
-        <Container isAllowed={!!currentUser}/>
-        <Footer isAllowed={!!currentUser} />
+        <Header pathname={pathname} currentUser={currentUser} logOut={this.logOut} />
+        <Container pathname={pathname} isAllowed={!!currentUser}/>
+        <Footer pathname={pathname} isAllowed={!!currentUser} />
       </>
     );
   }
 }
 
-export default App;
+export default withRouter(App);

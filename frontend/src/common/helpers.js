@@ -126,7 +126,8 @@ const helpers = {
             "changed":"변경이력",
             "update":"업데이트",
             "reg":"등록",
-            "change":"변경 등록"
+            "change":"변경 등록",
+            "":"홈"
         }
         return  defineName[name] ? defineName[name]:name;
     },

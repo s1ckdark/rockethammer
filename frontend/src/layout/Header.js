@@ -77,12 +77,12 @@ class Header extends Component {
     )
   }
   render(){
-    let {currentUser, logOut} = this.props;
-    const tmp = this.props.router.location.pathname.split('/')
-    let mode = tmp[1] === 'home' || tmp[1] === 'admin' || tmp[1] === 'register' || tmp[1] === 'login' ? "blue":"white";
+    let {currentUser, logOut, pathname} = this.props;
+    const tmp = pathname;
+    let mode = tmp[0] === 'home' || tmp[0] === 'admin' || tmp[0] === 'register' || tmp[0] === 'login' ? "blue":"white";
     let logoMode = mode === 'blue' ? "logo.png":"logo_dark.svg";
     return(
-      <header className="header">
+      <header className={"header "+tmp[1]}>
         <nav className={mode+' navigation'}>
           <Link to={"/home"} className="logo"><img src={process.env.PUBLIC_URL+'/img/'+logoMode} alt="ROCKETHAMMER" className="logoImg"/></Link>
           <div className="navbar-nav nav">

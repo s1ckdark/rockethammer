@@ -2,19 +2,17 @@ import React, { Component } from "react";
 import { withRouter } from "../common/withRouter";
 
 class Notfound extends Component {
-  // constructor(props) {
-  //   super(props);
-  // }
-
   componentDidMount() {
   }
 
   render() {
     return (
-      <div className="container">
-        <header className="jumbotron">
-          <h3>404 Not found</h3>
-        </header>
+      <div className="page404">
+        <h1>404 페이지를 찾을 수 없습니다</h1>
+        <div className="inner">
+          <div className="rocket floating"></div>
+          <div className="bg_rocket rotate"></div>
+        </div>
       </div>
     );
   }

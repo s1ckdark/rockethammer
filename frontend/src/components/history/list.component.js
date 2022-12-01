@@ -33,7 +33,7 @@ class Historylist extends Component {
     }
 
     handlePageChange(pageNumber) {
-        this.props.router.navigate('/meta/view/history/list/'+this.state.topic_name+'/'+pageNumber)
+        this.props.router.navigate('/meta/list/'+this.state.topic_name+'/history/list/'+pageNumber)
         this.fetchData(this.state.topic_name, pageNumber-1);
       }
 
@@ -54,7 +54,7 @@ class Historylist extends Component {
 
     detailView = (e, idx, topic_name) => {
         e.preventDefault();
-        this.props.router.navigate('/meta/view/history/view/'+topic_name,{state:{data:this.state.data.list[idx]}})
+        this.props.router.navigate('/meta/list/'+topic_name+'/history/view',{state:{data:this.state.data.list[idx]}})
     }
 
     render(){

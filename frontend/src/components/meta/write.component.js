@@ -398,27 +398,29 @@ class Metawrite extends Component {
 
     onSubmit = async(e, type) => {
         e.preventDefault();
+        const { data, prevData, history } = this.state
         let temp = this.state.data;
 
-        // switch(type){
-        //     case 'reg':
 
-        //     break;
+        switch(type){
+            case 'reg':
 
-        //     case 'changed':
+            break;
 
-        //     break;
+            case 'changed':
 
-        //     case 'update':
+            break;
 
-        //     break;
-        //     default:
-        //         console.log("submit")
-        // }
+            case 'update':
+
+            break;
+            default:
+                console.log("submit")
+        }
 
         if(type === 'reg' || type ==='change'){
-            await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
-                axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
+            await axios.post(process.env.REACT_APP_API+"/meta/insert/", data).then( res => {
+                axios.post(process.env.REACT_APP_API+"/history/inserthistory/", history).then(res =>{
                 if(res.status===200) {
                     alert("등록 완료");
                 setTimeout(() => {
@@ -427,14 +429,13 @@ class Metawrite extends Component {
                 })
             })
         } else if(type === 'update'){
-            let prevData = this.state.prevData, nextData= this.state.data;
             if(JSON.stringify(prevData) === JSON.stringify(temp)){
                 alert("변경된 내용이 없습니다.");
                 this.props.router.navigate(-1);
             } else {
-                await axios.post(process.env.REACT_APP_API+"/meta/deleteall/",{keyword:this.state.data.topic_name})
-                await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
-                    axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
+                await axios.post(process.env.REACT_APP_API+"/meta/deleteall/",{keyword:data.topic_name})
+                await axios.post(process.env.REACT_APP_API+"/meta/insert/", data).then( res => {
+                    axios.post(process.env.REACT_APP_API+"/history/inserthistory/", history).then(res =>{
                     if(res.status===200) {
                         alert("수정 완료");
                         setTimeout(() => {

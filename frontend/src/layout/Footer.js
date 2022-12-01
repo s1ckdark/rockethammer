@@ -10,11 +10,11 @@ class Footer extends Component {
       }
 
     render(){
-        let { isAllowed } = this.props;
+        const { isAllowed, pathname } = this.props;
         return(
-             <footer className={isAllowed ? "footer border-top pt-3 mt-3":"d-none"}>
-                <div className="container">
-                    <span className="text-muted">Service by GoodusData</span>
+             <footer className={"footer "+pathname[0]}>
+                <div className="inner">
+                    <p>Serviced by GoodusData</p>
                 </div>
            </footer>
         )

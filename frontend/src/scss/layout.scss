@@ -19,26 +19,126 @@
 .header {
 	z-index: 99;
 	.navigation {
+		.logo {
+			width: 203px;
+			height: 24px;
+			background-image: url(../img/logo_dark.svg);
+			display: block;
+		}
+		@extend .transition;
 		height: 60px;
-		justify-content: center;
-		display: flex;
-		align-items: center;
-		&.blue {
-			@extend .transition;
-			background-color: $blue;
-			.nav-item {
-				p {
-					color: #fff;
+		// justify-content: center;
+		// display: flex;
+		// align-items: center;
+		background-color: $header-wht;
+		.nav-item {
+			display: inline-block;
+			&.service- {
+				&meta {
+					span {
+						width: 26px;
+						height: 28px;
+						background-image: url(../img/meta_gray.svg);
+					}
+					p {
+						padding: 0;
+						margin: 0;
+						display: none;
+					}
+					&:hover,
+					&:active,
+					&.active {
+						span {
+							background-image: url(../img/meta_color.svg);
+						}
+						p {
+							display: block;
+						}
+					}
+				}
+				&manager {
+					span {
+						width: 29px;
+						height: 28px;
+						background-image: url(../img/manager_gray.svg);
+					}
+					&:hover,
+					&:active,
+					&.active {
+						span {
+							background-image: url(../img/manager_color.svg);
+						}
+					}
+				}
+				&monitor {
+					span {
+						width: 27.33px;
+						height: 28px;
+						background-image: url(../img/monitor_gray.svg);
+					}
+					&:hover,
+					&:active,
+					&.active {
+						span {
+							width: 27.33px;
+							height: 28px;
+							background-image: url(../img/monitor_color.svg);
+						}
+					}
+				}
+				&collector {
+					span {
+						width: 25px;
+						height: 24px;
+						background-image: url(../img/collector_gray.svg);
+					}
+					&:hover,
+					&:active,
+					&.active {
+						span {
+							width: 25px;
+							height: 24px;
+							background-image: url(../img/collector_color.svg);
+						}
+					}
+				}
+				&profile {
+				}
+				&logout {
+					span {
+						width: 24px;
+						height: 19.7px;
+						background-image: url(../img/logout_gray.svg);
+					}
+					&:hover,
+					&:active {
+						span {
+							width: 24px;
+							height: 19.7px;
+							background-image: url(../img/logout_gray.svg);
+						}
+					}
 				}
 			}
-		}
-		&.white {
-			@extend .transition;
-			background-color: $header-wht;
-			.nav-item {
-				a {
-					color: #6e7e92 !important;
+			&admin {
+				span {
+					width: 24px;
+					height: 22.64px;
+					background-image: url(../img/admin_gray.svg);
 				}
+				&:hover,
+				&:active,
+				&.active {
+					span {
+						width: 24px;
+						height: 22.64px;
+						background-image: url(../img/admin_gray.svg);
+					}
+				}
+			}
+
+			a {
+				color: #6e7e92 !important;
 			}
 		}
 		color: $blue-text;
@@ -97,11 +197,89 @@
 			}
 		}
 	}
-}
 
-.footer {
-	display: none;
-	// position: absolute;
-	// right: 0px;
-	// bottom: 0px;
+	&.header-home,
+	&.header-admin,
+	&.header-register,
+	&.header-login {
+		.navigation {
+			background-color: $blue !important;
+			.nav-item {
+				&service- {
+					&meta {
+						background-image: url(../img/meta.svg);
+					}
+					&manager {
+					}
+					&monitor {
+					}
+					&collector {
+					}
+				}
+				a {
+					color: #fff;
+				}
+			}
+		}
+	}
+}
+.page404 {
+	@extend .flex-mx-auto;
+	flex-wrap: wrap;
+	padding: 150px 0;
+	.inner {
+		height: 100%;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		.bg_rocket {
+			background-image: url('../img/bg_rocket.png');
+			background-size: cover;
+			width: 637px;
+			height: 702px;
+			display: block;
+			z-index: 10;
+		}
+		.rocket {
+			position: absolute;
+			background-image: url('../img/rocket.png');
+			background-size: cover;
+			width: 637px;
+			height: 702px;
+			display: block;
+			z-index: 99;
+		}
+	}
+	h1 {
+		width: 100%;
+		font-size: 52px;
+		display: flex;
+		justify-content: center;
+	}
+}
+footer {
+	padding: 0 0 15px !important;
+	width: 100%;
+	height: 30px !important;
+	&.home {
+		position: absolute;
+		right: 30px;
+		bottom: 5px;
+		.inner {
+			width: 100%;
+			color: #fff;
+		}
+	}
+	&.meta {
+	}
+	.inner {
+		width: 1600px;
+		margin: 0 auto;
+		display: flex;
+		justify-content: flex-end;
+		align-items: center;
+		color: #6e7e92;
+		font-size: 12px;
+		padding-right: 15px;
+	}
 }

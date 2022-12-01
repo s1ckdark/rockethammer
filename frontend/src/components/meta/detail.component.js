@@ -37,8 +37,8 @@ class Metadetail extends Component {
     }
 
     view = (e, type, topic_name, currentPage = 1) => {
-        let url = type ==='history' ? 'history/list/'+topic_name+'/'+currentPage : type+'/'+topic_name
-        this.props.router.navigate('/meta/view/'+url, type !== 'history' ? {state:this.props.data}:{state:{}})
+        let url = type ==='history' ? topic_name+'/history/list/'+currentPage : type+'/'+topic_name
+        this.props.router.navigate('/meta/list/'+url, type !== 'history' ? {state:this.props.data}:{state:{}})
     }
 
     onDel = async (typeofapi, topic_name) => {
@@ -126,7 +126,7 @@ class Metadetail extends Component {
                 {sc === false && me === false && mi === 'true' ?
                     <button type="button" className="btn" onClick={e=>this.write(e,"update", topic_name)} disabled={sc === true ? true:false}>수정</button>:
                     <button type="button" className="btn " onClick={e=>this.write(e,"reg", topic_name)} disabled={sc !== false && me !== false ? true:false}>등록</button>}
-                <button type="button" className="btn btn-delete" onClick={e=> helpers.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, typeofapi, topic_name), this.onCancel)} role={typeofapi}>삭제{typeofapi}</button>
+                <button type="button" className="btn btn-delete" onClick={e=> helpers.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, typeofapi, topic_name), this.onCancel)} role={typeofapi}>삭제</button>
                 <button type="button" className="btn btn-history" onClick={(e)=>this.view(e, "history", topic_name)} disabled={me ? true:false}>이력</button>
 
             </>
@@ -144,9 +144,8 @@ class Metadetail extends Component {
         let sch = JSON.parse(schema);
         let meta = helpers.isEmptyObj(meta_join) === false && JSON.parse(meta_join).is_used === 'true' ? JSON.parse(meta_join):{}
         const topic_name = sch.subject.replace(/(-value|-key)/g, "")
-        console.log("schema ->",helpers.isEmptyObj(sch.schema), "meta ->",helpers.isEmptyObj(meta), "is_used ->", meta.is_used)
+        // console.log("schema ->",helpers.isEmptyObj(sch.schema), "meta ->",helpers.isEmptyObj(meta), "is_used ->", meta.is_used)
         const cond = [helpers.isEmptyObj(sch.schema), helpers.isEmptyObj(meta), meta.is_used]
-        console.log(cond)
         return (
             <>
             <Modal open={ this.state.modal } close={ this.closeModal } title="Create a chat room">
