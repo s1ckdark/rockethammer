@@ -20,6 +20,7 @@ class Home extends Component {
     const { currentUser } = this.state;
     return (
       <div className="home">
+        <div className="bg_rocket"></div>
         <div className="welcome-msg">
           <hgroup>
             <h1 className="thin">WELCOME</h1>

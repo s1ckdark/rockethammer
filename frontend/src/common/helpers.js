@@ -123,7 +123,10 @@ const helpers = {
             "pii":"pii",
             "table":"테이블",
             "json":"JSON",
-            "changed":"변경이력"
+            "changed":"변경이력",
+            "update":"업데이트",
+            "reg":"등록",
+            "change":"변경 등록"
         }
         return  defineName[name] ? defineName[name]:name;
     },

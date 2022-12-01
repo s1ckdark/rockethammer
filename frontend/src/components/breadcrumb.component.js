@@ -1,4 +1,5 @@
 import React, { Component} from "react";
+import { Link } from "react-router-dom";
 import { withRouter } from "../common/withRouter";
 import helpers from "../common/helpers";
 
@@ -15,11 +16,11 @@ class Breadcrumb extends Component {
           <img src={"/img/"+path[0]+"_color.svg"} alt={helpers.translate(path[0])}></img>
           <h3>{helpers.translate(path[0])}</h3>
           <ol className="current">
-            <li className="breadcrumb-item"><a href='/'>홈</a></li>
+            <li className="breadcrumb-item"><Link to='/home'>홈</Link></li>
             {path.map((item, index) => {
               // console.log(index, this.isInt(item), typeof(this.isInt(item)));
               return (
-                <li key={index} className={index === path.length - 1  ? "breadcrumb-item active":"breadcrumb-item"}><a href={'/item/'}>{helpers.translate(item)}</a></li>
+                <li key={index} className={index === path.length - 1  ? "breadcrumb-item active":"breadcrumb-item"}><Link to={'/'+item+'/'}>{helpers.translate(item)}</Link></li>
               )
             })}
           </ol>

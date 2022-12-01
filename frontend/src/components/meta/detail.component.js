@@ -13,29 +13,37 @@ import "ace-builds/src-noconflict/ext-language_tools";
 import Pagination from "react-js-pagination";
 import helpers from "../../common/helpers";
 import { withRouter } from "../../common/withRouter";
+import Modal from "../modal.component";
 
 class Metadetail extends Component {
     constructor(props) {
         super(props);
         this.state = {
           data:{},
-          delete:{}
+          delete:{},
+          modal:false
         };
     }
 
+    openModal = () => {
+        this.setState({ ...this.state,modal: true })
+    }
+    closeModal = () => {
+        this.setState({ ...this.state,modal: false })
+    }
     write = (e, type, topic_name)=> {
         e.preventDefault();
-        this.props.router.navigate('/meta/write/'+topic_name, {state:{data:this.props.data,type:type}})
+        this.props.router.navigate('/meta/'+type+'/'+topic_name, {state:{data:this.props.data}})
     }
 
     view = (e, type, topic_name, currentPage = 1) => {
         let url = type ==='history' ? 'history/list/'+topic_name+'/'+currentPage : type+'/'+topic_name
-        this.props.router.navigate('/meta/view/'+url, type !== 'history' ? {state:{data:this.props.data,type:type}}:{state:{}})
+        this.props.router.navigate('/meta/view/'+url, type !== 'history' ? {state:this.props.data}:{state:{}})
     }
 
     onDel = async (typeofapi, topic_name) => {
         console.log(typeofapi, topic_name);
-        let url, url2;
+        let url
         switch(typeofapi){
             case 'api1':
                 url = process.env.REACT_APP_API+"/meta/delete";
@@ -50,27 +58,27 @@ class Metadetail extends Component {
                 console.log("typeofapi",typeofapi);
         }
 
-        if(typeofapi === 'api1' || typeofapi ==='api3'){    //확인
-                try {
-                    axios.post(url, {keyword:JSON.parse(this.state.data['list'][this.state.select.idx].schema).subject}).then(res => console.log(res))
-                } catch(err) {
-                    console.log("error", err);
-                }
-        } else {
-            try {
-                Promise.all(url.map(async (endpoint) => await axios.post(endpoint, {keyword:JSON.parse(this.state.data['list'][this.state.select.idx].schema).subject}))).then((response1, response2) => {
-                    console.log(response1, response2)
-                })
-            } catch(err) {
-                console.log("error", err);
-            }
-        }
+        // if(typeofapi === 'api1' || typeofapi ==='api3'){    //확인
+        //         try {
+        //             axios.post(url, {keyword:JSON.parse(this.state.data['list'][this.state.select.idx].schema).subject}).then(res => console.log(res))
+        //         } catch(err) {
+        //             console.log("error", err);
+        //         }
+        // } else {
+        //     try {
+        //         Promise.all(url.map(async (endpoint) => await axios.post(endpoint, {keyword:JSON.parse(this.state.data['list'][this.state.select.idx].schema).subject}))).then((response1, response2) => {
+        //             console.log(response1, response2)
+        //         })
+        //     } catch(err) {
+        //         console.log("error", err);
+        //     }
+        // }
 
-        await axios.post(process.env.REACT_APP_API+"/history/history_del", {topic_name:topic_name, reg_dt:(new Date).toISOString(),user_id:AuthService.getCurrentUser().userid,op:"delete"})
-        alert("삭제가 완료되었습니다");
-        setTimeout(() => {
-            window.location.reload(false);
-        }, 1000)
+        // await axios.post(process.env.REACT_APP_API+"/history/history_del", {topic_name:topic_name, reg_dt:(new Date).toISOString(),user_id:AuthService.getCurrentUser().userid,op:"delete"})
+        // alert("삭제가 완료되었습니다");
+        // setTimeout(() => {
+        //     window.location.reload(false);
+        // }, 1000)
     }
 
     changing = async (e, topic_name, schema, meta_join) => {
@@ -92,7 +100,7 @@ class Metadetail extends Component {
         return meta_join && parseInt(schema.version.$numberLong) > parseInt(meta_join.schema_version) ? true : false
     }
 
-render(){
+    render(){
         if(this.props.data === null) return false;
         const {changed} = this.props;
         const { schema, meta_join } = helpers.parseNested(this.props.data) || {}
@@ -100,6 +108,13 @@ render(){
         let meta = helpers.isEmptyObj(meta_join) === false && JSON.parse(meta_join).is_used === 'true' ? JSON.parse(meta_join):{}
         const topic_name = sch.subject.replace(/(-value|-key)/g, "")
         return (
+            <>
+            <Modal open={ this.state.modal } close={ this.closeModal } title="Create a chat room">
+                    {/* // Modal.js <main> { this.props.children } </main>에 내용이 입력된다. */}
+                    리액트 클래스형 모달 팝업창입니다.
+                    쉽게 만들 수 있어요.
+                    같이 만들어봐요!
+            </Modal>
             <div className="detail-info">
                 <div className="info-group topic_name">
                     <label>토픽명</label>
@@ -131,6 +146,7 @@ render(){
                     <button type="button" className="btn" onClick={(e)=>this.view(e, 'history', topic_name)} disabled={helpers.isEmptyObj(meta) ? true:false}>이력</button>
                 </div>
             </div>
+            </>
         )
     }
 }

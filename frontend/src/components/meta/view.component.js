@@ -18,15 +18,15 @@ class Metaview extends Component {
         this.props.router.navigate('/meta/write/'+topic_name, {state:{schema:this.props.router.location.state.schema,meta:this.props.router.location.state.meta_join,type:type}})
     }
 
-    viewer = (e,type,topic_name,state) => {
+    viewer = (e,type,topic_name, state) => {
         e.preventDefault()
         console.log(state)
-        this.props.router.navigate('/meta/view/'+type+'/'+topic_name, {state:{data:state.data}})
+        this.props.router.navigate('/meta/view/'+type+'/'+topic_name, {state:state})
     }
 
     inputfield = ( field_name, field_type = 'input') => {
-        let {data} = this.props.router.location.state
-        data = JSON.parse(data.meta_join)
+        console.log(this.props.router.location.state)
+        let data = JSON.parse(this.props.router.location.state.meta_join)
         return (
             <div className={"input-group "+field_name}>
                 <label htmlFor='field_name' className="field-label">{helpers.translate(field_name, "entokr")}</label>
@@ -39,8 +39,8 @@ class Metaview extends Component {
 
     view = ( type, props ) => {
         if(type === 'json') {
-            const { data } = props
-            const meta = JSON.parse(data.meta_join)
+            console.log(props)
+            const meta = JSON.parse(props.meta_join)
             return (
                 <>
                     <div className="viewer json">
@@ -66,9 +66,9 @@ class Metaview extends Component {
                     </div>
                 </>
             )
-        } else if(type==='table'){
-            // let { data } = props
-            const data = this.props.router.location.state.meta
+        } else if(type === 'table'){
+            console.log(props)
+            const data = JSON.parse(props.meta_join)
             let schema = Object.keys(data).map(field => {
                 if(typeof(data[field]) === 'object' && data[field].length > 0) return field
             }).filter(ele => ele)
@@ -131,7 +131,6 @@ class Metaview extends Component {
             )
 
         } else if(type ==='changed'){
-
             return (
                 <div className="viewer changed">
                     <div className="diff">
@@ -146,7 +145,7 @@ class Metaview extends Component {
         }
     }
     render(){
-        console.log(this.props.router.location)
+        const data  = this.props.router.location.state
         const {type, topic_name} = this.props.router.params
             return (
                 <>
@@ -158,10 +157,10 @@ class Metaview extends Component {
                         <div className="inner">
                             {type !== 'changed' ?
                                 <div className="btn-group type-view">
-                                    <button className={type === 'json' ? "btn btn-json active":"btn btn-json"} onClick={(e)=>this.viewer(e,'json',topic_name, this.props.router.location.state)}>JSON</button>
-                                    <button className={type === 'table' ? "btn btn-table active":"btn btn-table"} onClick={(e)=>this.viewer(e,'table',topic_name, this.props.router.location.state)}>TABLE</button>
+                                    <button className={type === 'json' ? "btn btn-json active":"btn btn-json"} onClick={(e)=>this.viewer(e,'json',topic_name, data)}>JSON</button>
+                                    <button className={type === 'table' ? "btn btn-table active":"btn btn-table"} onClick={(e)=>this.viewer(e,'table',topic_name, data)}>TABLE</button>
                                 </div>:<></>}
-                            {this.view(type, this.props.router.location.state)}
+                            {this.view(type, data)}
                         </div>
                     </div>
                 </div>

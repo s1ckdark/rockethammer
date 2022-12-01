@@ -7,15 +7,12 @@ import AuthService from "../services/auth.service";
 import helpers from "../common/helpers";
 import EventBus from "../common/EventBus";
 import { withRouter } from "../common/withRouter";
-import metaComponent from '../components/meta.component';
 
 class Header extends Component {
   constructor(props) {
     super(props);
     this.logOut = this.logOut.bind(this);
     this.state = {
-      // showModeratorBoard: false,
-      // showAdminBoard: false,
       currentUser: undefined
     };
   }
@@ -31,8 +28,6 @@ class Header extends Component {
       this.setState({
         currentUser: user,
       });
-    } else {
-      return <Navigate to="/home"/>
     }
   }
 
@@ -84,12 +79,12 @@ class Header extends Component {
   render(){
     let {currentUser, logOut} = this.props;
     const tmp = this.props.router.location.pathname.split('/')
-    let mode = tmp[1] === 'home' || tmp[1] === 'admin' ? "blue":"white";
+    let mode = tmp[1] === 'home' || tmp[1] === 'admin' || tmp[1] === 'register' || tmp[1] === 'login' ? "blue":"white";
     let logoMode = mode === 'blue' ? "logo.png":"logo_dark.svg";
     return(
       <header className="header">
         <nav className={mode+' navigation'}>
-          <Link to={"/home"}><img src={process.env.PUBLIC_URL+'/img/'+logoMode} alt="ROCKETHAMMER" className="logo"/></Link>
+          <Link to={"/home"} className="logo"><img src={process.env.PUBLIC_URL+'/img/'+logoMode} alt="ROCKETHAMMER" className="logoImg"/></Link>
           <div className="navbar-nav nav">
             <ul>
               {this.navItem('meta',mode,"메타 관리")}

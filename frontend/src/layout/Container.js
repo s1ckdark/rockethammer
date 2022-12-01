@@ -31,7 +31,7 @@ class Container extends Component {
               <Route path="/" index element={<Home />} />
               <Route path="/home" element={<Home />} />
               <Route path="/login" element={<PrivateRoute isAllowed={!isAllowed} redirectTo="/profile"><Login /></PrivateRoute>} />
-              <Route path="/register" element={<Register />} />
+              <Route path="/register" element={<PrivateRoute isAllowed={!isAllowed}><Register /></PrivateRoute>} />
               <Route path="/profile" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Profile /></PrivateRoute>} />
               <Route path="/manager" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><KafkaAdmin /></PrivateRoute>} />
               <Route path="/monitor" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><KafkaMonitor /></PrivateRoute>} />
@@ -39,7 +39,7 @@ class Container extends Component {
               <Route path="/meta" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Meta /></PrivateRoute>} />
               <Route path="/meta/list/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Metalist /></PrivateRoute>} />
               <Route path="/meta/view/:type/:topic_name" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Metaview /></PrivateRoute>} />
-              <Route path="/meta/write/:topic_name" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Metawrite /></PrivateRoute>} />
+              <Route path="/meta/:type/:topic_name" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Metawrite /></PrivateRoute>} />
               <Route path="/meta/view/history/list/:topic_name/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Historylist/></PrivateRoute>} />
               <Route path="/meta/view/history/view/:topic_name" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Historyview/></PrivateRoute>} />
               <Route path="/admin" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Admin /></PrivateRoute>} />

@@ -28,7 +28,13 @@ class Metawrite extends Component {
                 key:[],
                 value:[]
             },
-            history:{},
+            history:{
+                topic_name:'',
+                before:'',
+                after:'',
+                last_mod_dt:'',
+                last_mod_id:''
+            },
             prevData:{},
             type:'',
             preview: false,
@@ -49,112 +55,243 @@ class Metawrite extends Component {
         };
     }
 
-    fetch = async(topic_name) => {
-        try {
-            return await axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:topic_name})
-        } catch (err) {
-            console.log(err)
-        }
-    }
-
     componentDidMount(){
-        console.log(this.props.router)
-        const {type, data}= this.props.router.location.state;
-        let schema = type ==='changed' ? this.props.router.location.state.schema : JSON.parse(data.schema)
-        let meta = type === 'changed' ? this.props.router.location.state.meta: typeof(data.meta_join) === 'string' ? helpers.parse(data.meta_join):{}
-        let tmp;
-        if(helpers.isEmptyObj(schema) === false && ( type === 'reg' || type ==='changed')){
-            const schemas = async() => {
-                const res = await this.fetch(schema.subject.replace(/(-value|-key)/g, ""))
-                if (res.status === 200) {
-                    let tmp = Object.keys(res.data).sort().reduce(
-                        (newObj,key) => {
-                           newObj[key] = res.data[key];
-                           return newObj;
-                        },
-                        {}
-                     )
-                    Object.keys(tmp).map( kind => {
-                        if(res.data[kind].length > 0){
-                            let toJson = JSON.parse(res.data[kind][0].schema);
-                            let jsons = []
-                            toJson.fields.map((item, idx) => {
-                                let json = {};
-                                json.p_name = item.name;
-                                json.p_type = item.type;
-                                if(kind === 'value') json.l_name = '';
-                                if(kind === 'value') json.l_def = '';
-                                json.is_null = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'Y': 'N'
-                                json.default = item.default ? item.default : '-'
-                                if(kind === 'value') json.memo = '';
-                                if(kind === 'value') json.pii = '';
-                                if(kind === 'value') json.retension = '';
-                                jsons[idx] = json;
-                            })
+        const {type, topic_name} = this.props.router.params;
+        const {data} = this.props.router.location.state;
+        const schema = JSON.parse(data.schema);
+        let meta ={}
+        switch(type) {
+            case 'reg':
+                axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:topic_name}).then( res => {
+                    const {data, status } = res;
+                    if(status === 200) {
+                        const sch = Object.keys(data)
+                                    .sort()
+                                    .reduce(
+                                        (newObj,key) => {
+                                            newObj[key] = res.data[key];
+                                            return newObj;
+                                        },{}
+                                    )
 
-                            meta = {
-                                ...this.state.meta,
-                                [kind]:jsons
+                        Object.keys(sch).map( kind => {
+                            if(sch[kind].length > 0) {
+                                let tmpJson = JSON.parse(data[kind][0].schema);
+                                let json = []
+                                tmpJson.fields.map( (item) => {
+                                    let temp = {};
+                                    temp['p_name'] = item.name;
+                                    temp['p_type'] = item.type;
+                                    if(kind === 'value') temp['l_name'] = '';
+                                    if(kind === 'value') temp['l_def'] = '';
+                                    temp['is_null'] = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'Y': 'N'
+                                    temp['default'] = item.default ? item.default : '-'
+                                    if(kind === 'value') temp['memo'] = '';
+                                    if(kind === 'value') temp['pii'] = '';
+                                    if(kind === 'value') temp['retension'] = '';
+
+                                    json.push(temp)
+                                })
+                                meta[kind] = json
                             }
-                        }
-                    })
-                    // let tmp = helpers.sortObj(meta);
-                    console.log(schema)
-                    meta = {
-                        ...meta,
-                        topic_name: schema.subject.replace(/(-value|-key)/g, ""),
-                        subject:schema.subject,
-                        schema_id: schema.id,
-                        schema_version: schema.version,
-                        // meta_version: type ==='reg' ? 1: meta.meta_version + 1,
-                        meta_version: 1,
-                        revision:1,
-                        last_mod_dt: new Date().toISOString(),
-                        last_mod_id:AuthService.getCurrentUser().userid,
-                        is_used: true,
-                    }
-                    console.log(meta)
+                        })
 
-                    this.setState({
-                        ...this.state,
-                        userReady: true,
-                        data:meta,
-                        prevData:meta,
-                        type:type
-                    })
-                  }
-                }
-            schemas();
-        } else if(data && type ==='update') {
-            delete meta['_id'];
-            delete meta['_class']
-            meta['revision'] = meta['revision'] + 1;
-            meta['last_mod_dt'] = new Date().toISOString();
-            meta['last_mod_id'] = AuthService.getCurrentUser().userid;
-            this.setState({
-                ...this.state,
-                userReady: true,
-                data: meta,
-                prevData:helpers.parseNested(JSON.stringify(data.meta_join)),
-                type:type
-            });
-    }
+                            meta['topic_name'] = topic_name
+                            meta['subject'] = schema.subject
+                            meta['schema_id'] = schema.id.$numberLong || schema.id
+                            meta['schema_version'] = schema.version.$numberLong || schema.version
+                            meta['meta_version'] = 1
+                            meta['revision'] = 1
+                            meta['last_mod_id']=''
+                            meta['last_mod_dt']=''
+                            meta['is_used'] = true
+                            meta['op_name'] = ''
+                            meta['service'] = ''
+                            meta['related_topics'] = ''
+                            meta['topic_desc'] = ''
+                        }
+                        this.setState({
+                            ...this.state,
+                            data: meta,
+                            userReady:true,
+                            type: type
+                        })
+                    }
+                )
+
+            break;
+
+            case 'changed':
+                axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:topic_name}).then( res => {
+                    const {data, status } = res;
+                    if(status === 200) {
+                        const sch = Object.keys(data)
+                                    .sort()
+                                    .reduce(
+                                        (newObj,key) => {
+                                            newObj[key] = res.data[key];
+                                            return newObj;
+                                        },{}
+                                    )
+
+                        Object.keys(sch).map( kind => {
+                            if(sch[kind].length > 0) {
+                                let tmpJson = JSON.parse(data[kind][0].schema);
+                                let json = []
+                                tmpJson.fields.map( (item) => {
+                                    let temp = {};
+                                    temp['p_name'] = item.name;
+                                    temp['p_type'] = item.type;
+                                    if(kind === 'value') temp['l_name'] = '';
+                                    if(kind === 'value') temp['l_def'] = '';
+                                    temp['is_null'] = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'Y': 'N'
+                                    temp['default'] = item.default ? item.default : '-'
+                                    if(kind === 'value') temp['memo'] = '';
+                                    if(kind === 'value') temp['pii'] = '';
+                                    if(kind === 'value') temp['retension'] = '';
+
+                                    json.push(temp)
+                                })
+
+
+                                meta[kind] = json
+                            }
+                        })
+
+                            meta['topic_name'] = topic_name
+                            meta['subject'] = schema.subject
+                            meta['schema_id'] = schema.id.$numberLong || schema.id
+                            meta['schema_version'] = schema.version.$numberLong || schema.version
+                            meta['meta_version'] = meta.
+                            meta['revision'] = 1
+                            meta['last_mod_id']=''
+                            meta['last_mod_dt']=''
+                            meta['is_used'] = true
+                            meta['op_name'] = ''
+                            meta['service'] = ''
+                            meta['related_topics'] = ''
+                            meta['topic_desc'] = ''
+                        }
+
+                    }
+                )
+
+            break;
+
+            case 'update':
+                meta = JSON.parse(data.meta_join)
+                this.setState({
+                    ...this.state,
+                    data: meta,
+                    prev: meta,
+                    userReady:true,
+                    type: type
+                })
+
+            break;
+
+            default:
+
+        }
+
+
+
+        // let schema = type ==='changed' ? this.props.router.location.state.schema : JSON.parse(data.schema)
+        // let meta = type === 'changed' ? this.props.router.location.state.meta: typeof(data.meta_join) === 'string' ? helpers.parse(data.meta_join):{}
+    //     let tmp;
+    //     if(helpers.isEmptyObj(schema) === false && ( type === 'reg' || type ==='changed')){
+    //         const schemas = async() => {
+    //             const res = await axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:schema.subject.replace(/(-value|-key)/g, "")})
+    //             if (res.status === 200) {
+    //                 let tmp = Object.keys(res.data).sort().reduce(
+    //                     (newObj,key) => {
+    //                        newObj[key] = res.data[key];
+    //                        return newObj;
+    //                     },
+    //                     {}
+    //                  )
+    //                 Object.keys(tmp).map( kind => {
+    //                     if(res.data[kind].length > 0){
+    //                         let toJson = JSON.parse(res.data[kind][0].schema);
+    //                         let jsons = []
+    //                         toJson.fields.map((item, idx) => {
+    //                             let json = {};
+    //                             json.p_name = item.name;
+    //                             json.p_type = item.type;
+    //                             if(kind === 'value') json.l_name = '';
+    //                             if(kind === 'value') json.l_def = '';
+    //                             json.is_null = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'Y': 'N'
+    //                             json.default = item.default ? item.default : '-'
+    //                             if(kind === 'value') json.memo = '';
+    //                             if(kind === 'value') json.pii = '';
+    //                             if(kind === 'value') json.retension = '';
+    //                             jsons[idx] = json;
+    //                         })
+
+    //                         meta = {
+    //                             ...meta,
+    //                             [kind]:jsons
+    //                         }
+    //                     }
+    //                 })
+    //                 meta = {
+    //                     topic_name: schema.subject.replace(/(-value|-key)/g, ""),
+    //                     subject:schema.subject,
+    //                     schema_id: schema.id,
+    //                     schema_version: schema.version,
+    //                     // meta_version: type ==='reg' ? 1: meta.meta_version + 1,
+    //                     meta_version: 1,
+    //                     revision:1,
+    //                     last_mod_dt: new Date().toISOString(),
+    //                     last_mod_id:AuthService.getCurrentUser().userid,
+    //                     is_used: true,
+    //                 }
+
+    //                 console.log(meta)
+
+    //                 this.setState({
+    //                     ...this.state,
+    //                     userReady: true,
+    //                     data:meta,
+    //                     prevData:meta,
+    //                     type:type
+    //                 })
+    //               }
+    //             }
+    //         schemas();
+    //     } else if(data && type ==='update') {
+    //         delete meta['_id'];
+    //         delete meta['_class']
+    //         meta['revision'] = parseInt(meta['revision']) + 1;
+    //         meta['last_mod_dt'] = new Date().toISOString();
+    //         meta['last_mod_id'] = AuthService.getCurrentUser().userid;
+    //         this.setState({
+    //             ...this.state,
+    //             userReady: true,
+    //             data: meta,
+    //             prevData:JSON.parse(data.meta_join),
+    //             type:type
+    //         });
+    // }
 }
 
     onChangeValue = (e, field) =>{
         e.preventDefault();
         this.setState({
             ...this.state,
-         data: {
-             ...this.state.data,
-             [e.target.name]:e.target.value
+            data: {
+                ...this.state.data,
+                [e.target.name]:e.target.value
+            },
+             error:{
+                ...this.state.error,
+                [e.target.name]:''
              }
         })
       }
 
     onChangeValueTemp = (e, index, field) =>{
         e.preventDefault();
-        console.log(e, index, field)
         let metas = [...this.state.data[field]];
         metas.map((ele, idx) => {
             if(idx === index) {
@@ -174,62 +311,72 @@ class Metawrite extends Component {
     }
     preview = async(e, type) => {
         e.preventDefault();
-        let temp = this.state.data;
-        if(type === 'reg' || type ==='change'){
-            if(type === 'reg') {
-                temp.meta_version = 1;
-                console.log(type);
-            } else {
-                let meta_versionInt = this.state.prevData.meta_version + 1;
-                temp.meta_version = meta_versionInt;
-                console.log(type);
-            }
-            temp.last_mod_dt = new Date().toISOString();
-            temp.last_mod_id = AuthService.getCurrentUser().userid;
+        console.log(type+" preview")
+        const { data } = this.state;
+        let temp = {...data}, history={}
 
+        switch(type){
+            case 'reg':
+                history.before = JSON.stringify({})
+                break;
+
+                case 'changed':
+                    temp.schema_id = data.schema_id;
+                    temp.meta_version = data.meta_version+1;
+
+                    break;
+
+                    case 'update':
+                        temp.revision = data.revision + 1;
+                        history.before = JSON.stringify(this.state.prev)
+
+                        break;
+                        default:
+                            console.log("type "+type)
+                        }
+
+        temp.last_mod_dt = new Date().toISOString();
+        temp.last_mod_id = AuthService.getCurrentUser().userid;
+        history.last_mod_dt = new Date().toISOString();
+        history.last_mod_id = AuthService.getCurrentUser().userid;
+        history.topic_name = temp.topic_name;
+        history.after = JSON.stringify(temp)
+
+    //     if(type === 'reg' || type ==='change'){
+    //         if(type === 'reg') {
+    //             temp.meta_version = 1;
+    //         } else {
+    //             let meta_versionInt = this.state.prevData.meta_version + 1;
+    //             temp.meta_version = meta_versionInt;
+    //         }
+
+    //         temp.last_mod_dt = new Date().toISOString();
+    //         temp.last_mod_id = AuthService.getCurrentUser().userid;
+    //         this.setState(prevState => ({
+    //             data: temp
+    //         }),()=>{
+    //         this.setState({
+    //             ...this.state,
+    //             history:{
+    //                     topic_name:this.state.data.topic_name,
+    //                     before:type==='reg' ? "":JSON.stringify(this.state.data),
+    //                     after:JSON.stringify(this.state.data),
+    //                     last_mod_dt:(new Date).toISOString(),
+    //                     last_mod_id:AuthService.getCurrentUser().userid
+    //                 }
+    //             })
+    //         }
+    //     )
+    //     }
+    //     )
+    // }
+
+        if(this.onValidation(temp, ["topic_name","subject","schema_id","schema_version","meta_version","op_name","service","revision","topic_desc","last_mod_dt","last_mod_id","is_used"])) {
+            console.log(temp)
             this.setState({
                 ...this.state,
-                    data: temp
-                },()=>{
-                this.setState({
-                    ...this.state,
-                    history:{
-                            topic_name:this.state.data.topic_name,
-                            before:type==='reg' ? "":JSON.stringify(this.state.prevData, null, 4),
-                            after:JSON.stringify(this.state.data, null, 4),
-                            last_mod_dt:new Date().toISOString(),
-                            last_mod_id:AuthService.getCurrentUser().userid
-                        }
-                    })
-                }
-            )
-        } else if(type === 'update'){
-            console.log(type);
-            temp.revision = parseInt(this.state.prevData.revision)+1;
-            temp.is_used = "true";
-            temp.last_mod_dt = new Date().toISOString();
-            temp.last_mod_id = AuthService.getCurrentUser().userid;
-            this.setState({
-                    ...this.state,
-                data: temp
-                },()=>{
-                this.setState({
-                    ...this.state,
-                    history:{
-                            topic_name:this.state.prevData.topic_name,
-                            before:this.state.prevData,
-                            after:this.state.data,
-                            last_mod_dt:new Date().toISOString(),
-                            last_mod_id:AuthService.getCurrentUser().userid
-                        }
-                    })
-                }
-            )
-        }
-
-        if(this.onValidation(this.state.data, ["topic_name","subject","schema_id","schema_version","meta_version","op_name","service","revision","topic_desc","last_mod_dt","last_mod_id","is_used"])) {
-            this.setState({
-                ...this.state,
+                data: temp,
+                history:history,
                 error:{
                     topic_name:'',
                     subject:'',
@@ -248,51 +395,27 @@ class Metawrite extends Component {
             })
         } else {return false}
     }
-    onValidation = (obj, fields) => {
-        console.log("validation");
-        if ('object' !== typeof obj || null == obj) {
-            console.log('Object is not valid');
-            return false;
-        }
-
-        const hasOnlyTheKeys = Array.isArray(fields) ? JSON.stringify(Object.keys(obj).filter(x => fields.includes(x)).sort()) ===  JSON.stringify(fields.sort()) : false
-        if (false === hasOnlyTheKeys) return false;
-
-        let temp = {};
-        fields.map( prop => {
-            switch(obj[prop]){
-              case null:
-              case undefined:
-                console.log(prop + ' is undefined');
-                break;
-              case '':
-                console.log(prop + ' is empty string');
-                temp[prop] = helpers.replaceKey(prop ,"entokr")+ ' 값은 필수입력 항목 입니다';
-                break;
-              case 0:
-                console.log(prop + ' is 0');
-                break;
-              default:
-            }
-        })
-        this.setState({
-            ...this.state,
-            error:temp
-        })
-        return Object.keys(temp).length > 0 ? false:true
-    }
-    onCancel = (e) => {
-        e.preventDefault();
-        this.setState({
-            ...this.state,
-            data:this.state.prevData
-        })
-        this.props.closeWrite(e)
-    }
 
     onSubmit = async(e, type) => {
         e.preventDefault();
         let temp = this.state.data;
+
+        // switch(type){
+        //     case 'reg':
+
+        //     break;
+
+        //     case 'changed':
+
+        //     break;
+
+        //     case 'update':
+
+        //     break;
+        //     default:
+        //         console.log("submit")
+        // }
+
         if(type === 'reg' || type ==='change'){
             await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
                 axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
@@ -307,21 +430,48 @@ class Metawrite extends Component {
             let prevData = this.state.prevData, nextData= this.state.data;
             if(JSON.stringify(prevData) === JSON.stringify(temp)){
                 alert("변경된 내용이 없습니다.");
-                this.props.closeWrite(e);
+                this.props.router.navigate(-1);
             } else {
-                console.log("changed");
                 await axios.post(process.env.REACT_APP_API+"/meta/deleteall/",{keyword:this.state.data.topic_name})
                 await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
                     axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
                     if(res.status===200) {
                         alert("수정 완료");
                         setTimeout(() => {
-                        this.props.router.navigate(-1)
+                        // this.props.router.navigate(-1)
                     }, 1000);}
                     })
                 })
             }
         }
+    }
+
+    onValidation = (obj, fields) => {
+        if ('object' !== typeof obj || null == obj) return false;
+
+        // const hasOnlyTheKeys = Array.isArray(fields) ? JSON.stringify(Object.keys(obj).filter(x => fields.includes(x)).sort()) ===  JSON.stringify(fields.sort()) : false
+        // if (false === hasOnlyTheKeys) return false;
+
+        let temp = {};
+        fields.map( prop => {
+            switch(obj[prop]){
+              case null:
+              case undefined:
+                temp[prop] = helpers.translate(prop ,"entokr")+ ' 값은 필수입력 항목 입니다';
+                break;
+              case '':
+                temp[prop] = helpers.translate(prop ,"entokr")+ ' 값은 필수입력 항목 입니다';
+                break;
+              case 0:
+                break;
+              default:
+            }
+        })
+        this.setState({
+            ...this.state,
+            error:temp
+        })
+        return Object.keys(temp).length > 0 ? false:true
     }
 
     previewCancel = (e) =>{
@@ -340,9 +490,17 @@ class Metawrite extends Component {
         })
     }
 
+    onCancel = (e) => {
+        e.preventDefault();
+        this.setState({
+            ...this.state,
+            data:this.state.prevData
+        })
+        this.goBack()
+    }
+
     readonly = (name, schema=null) => {
         if(!this.state.preview) {
-        // console.log(name, schema);
             if(schema !== 'key') {
                 var tmp = ["p_name","p_type","topic_name","schema_id","schema_version","_id","is_null","default","revision","schema_id","meta_version","last_mod_id","last_mod_dt","subject"];
                 let result = tmp.filter(ele => ele === name)
@@ -363,10 +521,11 @@ class Metawrite extends Component {
                  {field_type === 'textarea' ?
                     <textarea name={field_name} className={"input-"+field_name} value={data[field_name]} onChange={(e)=> this.onChangeValue(e, field_name)} readOnly={this.readonly(field_name)} placeholder={helpers.translate(field_name, "entokr")+"를 입력하세요"}/>
                 :<input name={field_name} className={"input-"+field_name} value={data[field_name]} onChange={(e)=> this.onChangeValue(e, field_name)} readOnly={this.readonly(field_name)} placeholder={helpers.translate(field_name, "entokr")+"를 입력하세요"}/>}
-                <span className={"input-validator input-validator-"+field_name}>{this.state.error[field_name]}</span>
+                <span className={"input-validator error-msg input-validator-"+field_name}>{this.state.error[field_name]}</span>
             </div>
         )
     }
+
     render()
     {
         const {userReady, data } = this.state;
@@ -379,7 +538,7 @@ class Metawrite extends Component {
                     <div className="page-header write">
                         <Breadcrumb/>
                     </div>
-                    <div className={ this.state.preview ? "preview":"writing"}>
+                    <div className={ this.state.preview ? "writing preview":"writing"}>
                         <div className="default-group">
                             <div className="inner">
                                 {this.inputfield("topic_name")}
