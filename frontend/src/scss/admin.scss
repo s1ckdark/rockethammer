@@ -1,6 +1,6 @@
 .admin {
 	width: 1600px;
-	margin: 0 auto;
+	margin: -80px auto 0;
 	.breadcrumb {
 		background-color: $dark;
 		h3 {
@@ -32,20 +32,51 @@
 
 	&.overview {
 		.overviewing {
-			margin: 75px auto;
 			.inner {
-				margin: 50px auto;
-				padding: 50px;
+				padding: 25px 0 50px;
+				.rocket-group {
+					height: 100%;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					margin: 0 0 50px;
+					.bg_rocket {
+						background-image: url('../img/bg_rocket.png');
+						background-size: cover;
+						width: 637px;
+						height: 702px;
+						display: block;
+						z-index: 10;
+					}
+					.rocket {
+						position: absolute;
+						background-image: url('../img/rocket.png');
+						background-size: cover;
+						width: 637px;
+						height: 702px;
+						display: block;
+						z-index: 99;
+					}
+				}
 				.info {
 					display: flex;
 					justify-content: space-around;
 					> div {
+						cursor: pointer;
 						border-radius: 6px;
 						border: 2px solid $gray;
 						padding: 50px;
+						display: block;
+						box-shadow: 0px 8px 10px rgba(195, 203, 216, 0.8);
+						border-radius: 6px;
 						h1 {
 							border-bottom: 1px solid $gray;
 							padding: 0 0 15px;
+						}
+						&:hover {
+							h1 {
+								border-bottom: 2px solid $meta-text;
+							}
 						}
 					}
 				}
@@ -179,6 +210,51 @@
 								}
 							}
 						}
+					}
+				}
+			}
+		}
+		.writing {
+			.form-group {
+				padding: 50px;
+				.input-group {
+					margin: 20px 0;
+					label {
+						color: $register-label-text;
+						margin-bottom: 10px;
+						display: inline-block;
+					}
+					input {
+						width: calc(100% - 30px);
+						background: #f5f8fd;
+						border: 1px solid #e3e9f2;
+						line-height: 40px;
+						padding: 7px 15px;
+						color: $register-input-text;
+					}
+					.passwordLayer {
+						input {
+							margin-bottom: 10px;
+						}
+					}
+				}
+			}
+			.btn-group {
+				@extend .flex-mx-auto;
+				padding: 70px 0;
+				.btn {
+					border-radius: 6px;
+					height: 42px;
+					width: 200px;
+					line-height: 40px;
+					font-weight: 500;
+					box-shadow: 0px 8px 8px 0px rgba(49, 49, 49, 0.5);
+					&.btn-register {
+						background-color: $blue;
+						margin-right: 20px;
+					}
+					&.btn-cancel {
+						background-color: $btn-dark-blue;
 					}
 				}
 			}

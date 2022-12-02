@@ -93,7 +93,10 @@ class Profile extends Component {
         const { currentUser } = this.state;
         return (
           <div className="profile">
+        <div className="rocket-group">
           <div className="bg_rocket"></div>
+          <div className="rocket"></div>
+        </div>
           <div className="welcome-msg">
             <hgroup>
               <h1 className="thin">WELCOME</h1>

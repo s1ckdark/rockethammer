@@ -26,7 +26,8 @@ class Historylist extends Component {
                 list:[]
             },
             idx: '',
-            topic_name:this.props.router.params.topic_name
+            topic_name:this.props.router.params.topic_name,
+            userReady:false
         };
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchData = this.fetchData.bind(this);
@@ -43,13 +44,15 @@ class Historylist extends Component {
             this.setState({
                 ...this.state,
                 data:res.data,
+                userReady: true
             })
         })
     }
 
     componentDidMount(){
-        const { currentPage, topic_name } = this.props.router.params;
-        this.fetchData(topic_name)
+        const { topic_name } = this.props.router.params;
+        const currentPage = this.props.router.params.currentPage || 1
+        this.fetchData(topic_name, currentPage-1)
     }
 
     detailView = (e, idx, topic_name) => {
@@ -58,9 +61,10 @@ class Historylist extends Component {
     }
 
     render(){
-        const { currentPage, topic_name } = this.props.router.params;
-        const { data } = this.state;
+        const { currentPage, topic_name  } = this.props.router.params;
+        const { data, userReady } = this.state;
         const { count, current, list, pageCount, size } = data;
+        if(userReady) {
         return (
             <>
                 <div className="meta history">
@@ -119,6 +123,7 @@ class Historylist extends Component {
                 </div>
             </>
         );
+        }
     }
 }
 export default withRouter(Historylist)

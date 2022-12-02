@@ -162,8 +162,8 @@ class Metawrite extends Component {
                             meta['subject'] = schema.subject
                             meta['schema_id'] = schema.id.$numberLong || schema.id
                             meta['schema_version'] = schema.version.$numberLong || schema.version
-                            meta['meta_version'] = meta.
-                            meta['revision'] = 1
+                            meta['meta_version'] = meta
+                            .meta['revision'] = 1
                             meta['last_mod_id']=''
                             meta['last_mod_dt']=''
                             meta['is_used'] = true
@@ -399,53 +399,62 @@ class Metawrite extends Component {
     onSubmit = async(e, type) => {
         e.preventDefault();
         const { data, prevData, history } = this.state
+        console.log(data, prevData, history)
         let temp = this.state.data;
-
+        console.log(type)
 
         switch(type){
             case 'reg':
-
+                await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
+                    axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
+                    if(res.status===200) {
+                        alert("등록 완료");
+                    setTimeout(() => {
+                        this.props.router.navigate(-1)
+                    }, 1000);}
+                    })
+                })
             break;
 
             case 'changed':
+                await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
+                    axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
+                    if(res.status===200) {
+                        alert("등록 완료");
+                    setTimeout(() => {
+                        this.props.router.navigate(-1)
+                    }, 1000);}
+                    })
+                })
 
             break;
 
             case 'update':
-
+                if(type === 'update'){
+                    const { prevData, data, history } = this.state
+                    if(JSON.stringify(prevData) === JSON.stringify(temp)){
+                        alert("변경된 내용이 없습니다.");
+                        this.props.router.navigate(-1);
+                    } else {
+                        await axios.post(process.env.REACT_APP_API+"/meta/deleteall/",{keyword:data.topic_name})
+                        await axios.post(process.env.REACT_APP_API+"/meta/insert/", data).then( res => {
+                            axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
+                            if(res.status===200) {
+                                alert("수정 완료");
+                                setTimeout(() => {
+                                // this.props.router.navigate(-1)
+                            }, 1000);}
+                            })
+                        })
+                    }
+                }
             break;
             default:
                 console.log("submit")
         }
-
-        if(type === 'reg' || type ==='change'){
-            await axios.post(process.env.REACT_APP_API+"/meta/insert/", data).then( res => {
-                axios.post(process.env.REACT_APP_API+"/history/inserthistory/", history).then(res =>{
-                if(res.status===200) {
-                    alert("등록 완료");
-                setTimeout(() => {
-                    this.props.router.navigate(-1)
-                }, 1000);}
-                })
-            })
-        } else if(type === 'update'){
-            if(JSON.stringify(prevData) === JSON.stringify(temp)){
-                alert("변경된 내용이 없습니다.");
-                this.props.router.navigate(-1);
-            } else {
-                await axios.post(process.env.REACT_APP_API+"/meta/deleteall/",{keyword:data.topic_name})
-                await axios.post(process.env.REACT_APP_API+"/meta/insert/", data).then( res => {
-                    axios.post(process.env.REACT_APP_API+"/history/inserthistory/", history).then(res =>{
-                    if(res.status===200) {
-                        alert("수정 완료");
-                        setTimeout(() => {
-                        // this.props.router.navigate(-1)
-                    }, 1000);}
-                    })
-                })
-            }
-        }
     }
+
+
 
     onValidation = (obj, fields) => {
         if ('object' !== typeof obj || null == obj) return false;

@@ -25,10 +25,11 @@ class UserWebLog extends Component {
     }
 
     componentDidMount(){
-        this.fetchData(0);
+        const currentPage = this.props.router.params.currentPage || 1
+        this.fetchData(currentPage-1);
     }
 
-    fetchData = async(page) => {
+    fetchData = async(page=0) => {
         await axios.post(process.env.REACT_APP_API+"/user/loadsesshistory",{size:10,page:page})
             .then(res => {
               this.setState({

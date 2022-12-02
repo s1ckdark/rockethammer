@@ -13,7 +13,8 @@ class Header extends Component {
     super(props);
     this.logOut = this.logOut.bind(this);
     this.state = {
-      currentUser: undefined
+      currentUser: undefined,
+      mode:''
     };
   }
   componentDidMount() {
@@ -35,20 +36,29 @@ class Header extends Component {
     EventBus.remove("logout");
   }
 
-  onMouseEnter = (e) => {
+  onMouseEnter = (e, mode) => {
     e.preventDefault();
-    // var thisNode = e.currentTarget.querySelector('p');
-    // var thisNodeImg = e.currentTarget.querySelector('img');
-    // gsap.to(thisNode, {autoAlpha:1,display:"block",x:'10px',duration:1},1)
-    // gsap.to(thisNodeImg, {scale:"1.2",duration:1}, 0);
+    if(e.currentTarget.className.includes('active') === false) {
+      var thisNode = e.currentTarget.querySelector('p');
+      var thisNodeImg = e.currentTarget.querySelector('img');
+      var img = process.env.PUBLIC_URL+'/img/'+e.currentTarget.className.replace(/(white|blue) nav-item/gi, '')+'color.svg'
+      gsap.to(thisNode, {autoAlpha:1,x:"+10px"})
+      gsap.set(thisNodeImg, {attr:{src:img }});
+      gsap.to(thisNodeImg, {duration:1}, 0);
+    } else {
+      gsap.set(thisNode, {display:"block"});
+    }
   };
 
-  onMouseLeave = (e) => {
+  onMouseLeave = (e, mode) => {
     e.preventDefault();
-    // var thisNode = e.currentTarget.querySelector('p');
-    // var thisNodeImg = e.currentTarget.querySelector('img');
-    // gsap.to(thisNode, {autoAlpha:0, display:"none",x:'-10px',duration:1})
-    // gsap.to(thisNodeImg, {scale:"1"})
+    if(e.currentTarget.className.includes('active') === false) {
+      var thisNode = e.currentTarget.querySelector('p');
+      var thisNodeImg = e.currentTarget.querySelector('img');
+      var img = process.env.PUBLIC_URL+'/img/'+e.currentTarget.className.replace(/(white|blue) nav-item/gi, '')+mode+'.svg'
+      gsap.set(thisNodeImg, {attr:{src:img }});
+      gsap.to(thisNode, {autoAlpha:0,x:"-10px"})
+    }
   }
 
  logOut() {
@@ -63,12 +73,13 @@ class Header extends Component {
   navItem = (uri, mode, serviceName) => {
     let ext, classDef;
     const tmp = this.props.router.location.pathname.split('/')
-    classDef = tmp[1] === uri ? uri+"-service active nav-item":uri+"-service nav-item"
-    if(mode === 'blue') {ext = ".svg"}
-    else if(mode === 'white') {ext = "_gray.svg"}
-    if(tmp[1] === uri) {ext = "_color.svg"}
+    classDef = tmp[1] === uri ? uri+"-service-"+mode+" active nav-item": uri+"-service-"+mode+" nav-item"
+    if(mode === 'blue') {ext = "-service-blue.svg"}
+    else if(mode === 'white') {ext = "-service-white.svg"}
+    if(tmp[1] === uri && tmp[1] !== 'admin') {ext = "-service-color.svg"}
+    if(tmp[1] === uri && tmp[1] === 'admin' && mode === 'white') {ext = "-service-blue.svg"}
     return (
-      <li className={classDef} onMouseEnter={this.onMouseEnter} onMouseLeave={this.onMouseLeave}>
+      <li className={classDef} onMouseEnter={(e)=>this.onMouseEnter(e,mode)} onMouseLeave={(e)=>this.onMouseLeave(e,mode)}>
       <Link to={"/"+uri} className="nav-link">
         <img alt={uri} src={process.env.PUBLIC_URL+'/img/'+uri+ext} />
         <p>{serviceName}</p>
@@ -79,10 +90,10 @@ class Header extends Component {
   render(){
     let {currentUser, logOut, pathname} = this.props;
     const tmp = pathname;
-    let mode = tmp[0] === 'home' || tmp[0] === 'admin' || tmp[0] === 'register' || tmp[0] === 'login' ? "blue":"white";
+    let mode = tmp[0] === 'home' || tmp[0] === 'register' || tmp[0] === 'login' || tmp[0] === 'admin' ? "blue":"white";
     let logoMode = mode === 'blue' ? "logo.png":"logo_dark.svg";
     return(
-      <header className={"header "+tmp[1]}>
+      <header className={"header h-"+tmp[0]}>
         <nav className={mode+' navigation'}>
           <Link to={"/home"} className="logo"><img src={process.env.PUBLIC_URL+'/img/'+logoMode} alt="ROCKETHAMMER" className="logoImg"/></Link>
           <div className="navbar-nav nav">
@@ -97,18 +108,18 @@ class Header extends Component {
             <ul>
               {!currentUser ?
               <>
-                <li className="nav-item"><Link to={"/login"} className="nav-link"><p>로그인</p></Link></li>
-                <li className="nav-item"><Link to="/register" className="nav-link" onClick={this.props.logOut}><p>회원 등록</p></Link></li>
+                 <li className={mode+" nav-item"}><Link to={"/login"} className="nav-link"><p>로그인</p></Link></li>
+                 <li className={mode+" nav-item"}>><Link to="/register" className="nav-link" onClick={this.props.logOut}><p>회원 등록</p></Link></li>
                 </>:
               <>
-                <li className="nav-item">
+                <li className={mode+" nav-item profile-service"}>
                   <Link to={"/profile"} className="nav-link">
-                    {currentUser.name} 님
+                    <p>{currentUser.name} 님</p>
                   </Link>
                 </li>
-                <li className="nav-item">
-                  <Link className="nav-link" onClick={this.props.logOut}>
-                    <img alt="service" src={mode === 'blue' ? process.env.PUBLIC_URL+'/img/logout.svg':process.env.PUBLIC_URL+'/img/logout_gray.svg'}/>
+                <li className={"logout-service-"+mode+" nav-item"} onClick={this.props.logOut} onMouseEnter={(e)=>this.onMouseEnter(e,mode)} onMouseLeave={(e)=>this.onMouseLeave(e,mode)}>
+                  <Link className="nav-link">
+                    <img alt="service" src={mode === 'blue' ? process.env.PUBLIC_URL+'/img/logout-service-blue.svg':process.env.PUBLIC_URL+'/img/logout-service-white.svg'}/>
                     <p>로그아웃</p>
                   </Link>
                 </li>

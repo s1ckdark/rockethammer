@@ -18,135 +18,37 @@
 
 .header {
 	z-index: 99;
-
+	height: 60px;
+	&.h-admin {
+		height: 150px;
+		background-color: $blue;
+	}
 	.navigation {
 		height: 60px;
 		justify-content: center;
 		display: flex;
 		align-items: center;
-		// &.service- {
-		//  &meta {
-		//    span {
-		//      width: 26px;
-		//      height: 28px;
-		//      background-image: url(../img/meta_gray.svg);
-		//    }
-		//    p {
-		//      padding: 0;
-		//      margin: 0;
-		//      display: none;
-		//    }
-		//    &:hover,
-		//    &:active,
-		//    &.active {
-		//      span {
-		//        background-image: url(../img/meta_color.svg);
-		//      }
-		//      p {
-		//        display: block;
-		//      }
-		//    }
-		//  }
-		//  &manager {
-		//    span {
-		//      width: 29px;
-		//      height: 28px;
-		//      background-image: url(../img/manager_gray.svg);
-		//    }
-		//    &:hover,
-		//    &:active,
-		//    &.active {
-		//      span {
-		//        background-image: url(../img/manager_color.svg);
-		//      }
-		//    }
-		//  }
-		//  &monitor {
-		//    span {
-		//      width: 27.33px;
-		//      height: 28px;
-		//      background-image: url(../img/monitor_gray.svg);
-		//    }
-		//    &:hover,
-		//    &:active,
-		//    &.active {
-		//      span {
-		//        width: 27.33px;
-		//        height: 28px;
-		//        background-image: url(../img/monitor_color.svg);
-		//      }
-		//    }
-		//  }
-		//  &collector {
-		//    span {
-		//      width: 25px;
-		//      height: 24px;
-		//      background-image: url(../img/collector_gray.svg);
-		//    }
-		//    &:hover,
-		//    &:active,
-		//    &.active {
-		//      span {
-		//        width: 25px;
-		//        height: 24px;
-		//        background-image: url(../img/collector_color.svg);
-		//      }
-		//    }
-		//  }
-		//  &profile {
-		//  }
-		//  &logout {
-		//    span {
-		//      width: 24px;
-		//      height: 19.7px;
-		//      background-image: url(../img/logout_gray.svg);
-		//    }
-		//    &:hover,
-		//    &:active {
-		//      span {
-		//        width: 24px;
-		//        height: 19.7px;
-		//        background-image: url(../img/logout_gray.svg);
-		//      }
-		//    }
-		//  }
-		// }
-		// &admin {
-		//  span {
-		//    width: 24px;
-		//    height: 22.64px;
-		//    background-image: url(../img/admin_gray.svg);
-		//  }
-		//  &:hover,
-		//  &:active,
-		//  &.active {
-		//    span {
-		//      width: 24px;
-		//      height: 22.64px;
-		//      background-image: url(../img/admin_gray.svg);
-		//    }
-		//  }
-		// }
-
+		color: $blue-text;
 		&.blue {
 			@extend .transition;
 			background-color: $blue;
 			.nav-item {
-				p {
-					color: #fff;
+				a {
+					p {
+						color: #fff;
+					}
 				}
 			}
 		}
 		&.white {
 			@extend .transition;
-			background-color: $header-wht;
+			background-color: $header-wht !important;
 			.nav-item {
 				a {
 					color: #6e7e92 !important;
 				}
 			}
 		}
-		color: $blue-text;
 		> a {
 			position: absolute;
 			left: 10px;
@@ -161,15 +63,38 @@
 				display: flex;
 				margin: 0;
 				padding: 0;
+				li[class*='white'] {
+					&.active {
+						p {
+							color: $meta-text;
+						}
+					}
+					p {
+						color: #6e7e92;
+					}
+				}
+				li[class*='blue'] {
+					&.profile-service {
+						a {
+							p {
+								color: #fff;
+							}
+						}
+					}
+				}
 				.nav-item {
+					@extend .transition;
 					position: relative;
 					padding: 0 5px;
 					text-align: center;
 					display: flex;
-					&.active {
+					&.active,
+					&:hover {
 						p {
-							display: inline-block !important;
-							opacity: 1;
+							margin-left: 5px;
+							opacity: 1 !important;
+							visibility: visible !important;
+							display: block !important;
 						}
 					}
 					.nav-link {
@@ -178,13 +103,26 @@
 						display: flex;
 						align-items: center;
 					}
+
 					p {
 						transition: all 0.3s ease-out;
 						font-weight: 700;
-						margin-left: 10px;
+						margin: 0;
 						width: 100%;
 						text-align: center;
 						z-index: 99;
+						opacity: 0;
+						visibility: hidden;
+						display: none;
+					}
+					&.profile-service {
+						a {
+							p {
+								display: block;
+								opacity: 1;
+								visibility: visible;
+							}
+						}
 					}
 				}
 			}
@@ -251,6 +189,10 @@
 		}
 	}
 	&.meta {
+	}
+	&.admin {
+		position: relative;
+		margin: 0 auto;
 	}
 	.inner {
 		width: 1600px;

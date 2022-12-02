@@ -12,16 +12,19 @@ class Breadcrumb extends Component {
     return(
     <div className="breadcrumb">
       <div className="breadcrumb-navi" aria-label="breadcrumb">
-          <img src={"/img/"+path[1]+"_color.svg"} alt={helpers.translate(path[1])}></img>
+          <img src={path[1] !=='admin' ? "/img/"+path[1]+"-service-color.svg":"/img/"+path[1]+"-service-white.svg"} alt={helpers.translate(path[1])}></img>
           <h3>{helpers.translate(path[1])}</h3>
           <ol className="current">
-            {path.map((item, index) => {
+            {path.slice(0,3).map((item, index) => {
+              // console.log(index, this.isInt(item), typeof(this.isInt(item)));
               const tmpPath = path.slice(0, index+1);
               let tmpUrl = index === 0 ? '/home':tmpPath.join('/')
-              return (
-                <li key={index} className={index === path.length - 1  ? "breadcrumb-item active":"breadcrumb-item"}>{helpers.translate(item)}</li>
-              )
-            })}
+              if(index !== path.slice(0,3).length -1) {
+                return (<li key={index} className="breadcrumb-item"><Link to={tmpUrl} className={"depth"+index}>{helpers.translate(item)}</Link></li>)}
+                else {return (
+                  <li key={index} className="breadcrumb-item active">{helpers.translate(item)}</li>)}
+
+                })}
           </ol>
       </div>
       {path[1] === 'admin' ?
@@ -38,3 +41,4 @@ class Breadcrumb extends Component {
 }
 
 export default withRouter(Breadcrumb)
+

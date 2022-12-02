@@ -28,6 +28,7 @@ class Metalist extends Component {
               list:[]
           },
           schemas:{},
+          meta:{},
           keyword:'',
           select:{
             idx:'',
@@ -40,7 +41,8 @@ class Metalist extends Component {
               before:'',
               after:''
           },
-          delete:{}
+          delete:{},
+          userReady:false
         };
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchData = this.fetchData.bind(this);
@@ -48,13 +50,14 @@ class Metalist extends Component {
 
     handlePageChange(pageNumber) {
         // console.log(`active page is ${pageNumber}`);
-        this.props.router.navigate('/meta/list/'+pageNumber)
+        this.props.router.navigate('/meta/'+pageNumber)
         this.fetchData(pageNumber-1)
     }
 
     componentDidMount(){
         // console.log("metaview",this.props);
-        this.fetchData();
+        const currentPage = this.props.router.params.currentPage || 1
+        this.fetchData(currentPage-1);
     }
 
     fetchData = async(page = 0, type = 'list') => {
@@ -65,6 +68,7 @@ class Metalist extends Component {
                 ...this.state,
                 list:'list',
                 data: res.data,
+                userReady:true
               })
             })
     }
@@ -76,17 +80,24 @@ class Metalist extends Component {
         })
     }
 
-    onChangeJSON = (newValue) => {
-        console.log("change", newValue);
+    fetchMetaData = async() => {
+        await axios.post(process.env.REACT_APP_API+"/meta/getmeta", {keyword:this.state.select.topic_name})
+            .then(res => {
+              this.setState({
+                ...this.state,
+                meta: res.data,
+              })
+              return res.data;
+            })
     }
-
-
     detailView = (e, idx, topic_name, changed) => {
         e.preventDefault();
         if(topic_name) {
             const tn = topic_name.replace(/(-value|-key)/g, "");
             const schema = JSON.parse(this.state.data.list[idx].schema)
-            const meta_join = JSON.parse(this.state.data.list[idx].meta_join) || {}
+            const meta_join = this.fetchMetaData(tn);
+            // const meta_join = JSON.parse(this.state.data.list[idx].meta_join) || {}
+            console.log(meta_join)
             if(meta_join.is_used === 'true') {
                     this.setState({
                         ...this.state,
@@ -108,12 +119,6 @@ class Metalist extends Component {
                         subject:topic_name,
                         changed:changed
                     },
-                    // detail:{
-                    //     schema_id:'',
-                    //     revision:'',
-                    //     last_mod_id:'',
-                    //     last_mod_dt:''
-                    // },
                     delete:{},
                 })
             }
@@ -154,8 +159,9 @@ class Metalist extends Component {
 
     render(){
         const { data } = this.state;
-        const { detail } = this.state;
+        const { detail,userReady } = this.state;
         const { topic_name, idx } = this.state.select;
+        if(userReady){
         return (
             <>
                 <div className="meta">
@@ -196,7 +202,7 @@ class Metalist extends Component {
                                             </td>
                                         </tr>
                                     );
-                                }): <tr><td colSpan="5"><h3 className="p-3 m-3 text-center">검색된 meta data가 없습니다</h3></td></tr>
+                                }): <tr><td colSpan="5"><h3 className="emptyData">검색된 meta data가 없습니다</h3></td></tr>
                                 }
                                 </tbody>
                             </table>
@@ -215,12 +221,13 @@ class Metalist extends Component {
                             </div>
                         </div>
                         <div className="detailview">
-                            <Detail data={typeof(this.state.select.idx) === 'number' ? data['list'][this.state.select.idx]: null}></Detail>
+                            <Detail topic={this.state.select.topic_name} data={typeof(this.state.select.idx) === 'number' ? data['list'][this.state.select.idx]: null}></Detail>
                         </div>
                     </div>
                 </div>
             </>
         );
+    }
     }
 }
 export default withRouter(Metalist)

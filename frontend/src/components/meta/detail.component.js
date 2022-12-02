@@ -25,12 +25,6 @@ class Metadetail extends Component {
         };
     }
 
-    openModal = () => {
-        this.setState({ ...this.state,modal: true })
-    }
-    closeModal = () => {
-        this.setState({ ...this.state,modal: false })
-    }
     write = (e, type, topic_name)=> {
         e.preventDefault();
         this.props.router.navigate('/meta/'+type+'/'+topic_name, {state:{data:this.props.data}})
@@ -44,41 +38,36 @@ class Metadetail extends Component {
     onDel = async (typeofapi, topic_name) => {
         console.log(typeofapi, topic_name);
         let url
+
         switch(typeofapi){
             case 'api1':
                 url = process.env.REACT_APP_API+"/meta/delete";
+                console.log("api1")
+                axios.post(url, {keyword:topic_name,last_mod_dt:new Date().toISOString()}).then(res => console.log(res))
                 break;
             case 'api2':
                 url = [process.env.REACT_APP_API+"/meta/delete", process.env.REACT_APP_API+"/schema/delete"];
+                try {
+                Promise.all(url.map(async (endpoint) => await axios.post(endpoint, {keyword:topic_name}))).then((response1, response2) => {
+                    console.log(response1, response2)
+                })
+                } catch(err) {
+                    console.log("error", err);
+                }
                 break;
             case 'api3':
                 url = process.env.REACT_APP_API+"/schema/delete";
+                axios.post(url, {keyword:topic_name}).then(res => console.log(res))
                 break;
             default:
                 console.log("typeofapi",typeofapi);
         }
 
-        // if(typeofapi === 'api1' || typeofapi ==='api3'){    //확인
-        //         try {
-        //             axios.post(url, {keyword:JSON.parse(this.state.data['list'][this.state.select.idx].schema).subject}).then(res => console.log(res))
-        //         } catch(err) {
-        //             console.log("error", err);
-        //         }
-        // } else {
-        //     try {
-        //         Promise.all(url.map(async (endpoint) => await axios.post(endpoint, {keyword:JSON.parse(this.state.data['list'][this.state.select.idx].schema).subject}))).then((response1, response2) => {
-        //             console.log(response1, response2)
-        //         })
-        //     } catch(err) {
-        //         console.log("error", err);
-        //     }
-        // }
-
-        // await axios.post(process.env.REACT_APP_API+"/history/history_del", {topic_name:topic_name, reg_dt:(new Date).toISOString(),user_id:AuthService.getCurrentUser().userid,op:"delete"})
-        // alert("삭제가 완료되었습니다");
-        // setTimeout(() => {
-        //     window.location.reload(false);
-        // }, 1000)
+        await axios.post(process.env.REACT_APP_API+"/history/history_del", {topic_name:topic_name.replace(/(-value|-key)/g, ""), reg_dt:(new Date()).toISOString(),user_id:AuthService.getCurrentUser().userid,op:"delete"})
+        alert("삭제가 완료되었습니다");
+        setTimeout(() => {
+            window.location.reload(false);
+        }, 1000)
     }
 
     changing = async (e, topic_name, schema, meta_join) => {
@@ -119,6 +108,7 @@ class Metadetail extends Component {
         if(arrayEquals(cond, [true, true, undefined]) === true) typeofapi = "api3"
         if(arrayEquals(cond, [false, true, 'false']) === true) typeofapi = "api3"
 
+        console.log(sc, me, mi)
         return (
             <>
                 {this.changed(meta, sch) ? <button type="button" className="btn btn-changed" onClick={(e)=> this.changing(e, sch.subject, sch, meta)}>변경 등록</button>:<></>}
@@ -126,7 +116,7 @@ class Metadetail extends Component {
                 {sc === false && me === false && mi === 'true' ?
                     <button type="button" className="btn" onClick={e=>this.write(e,"update", topic_name)} disabled={sc === true ? true:false}>수정</button>:
                     <button type="button" className="btn " onClick={e=>this.write(e,"reg", topic_name)} disabled={sc !== false && me !== false ? true:false}>등록</button>}
-                <button type="button" className="btn btn-delete" onClick={e=> helpers.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, typeofapi, topic_name), this.onCancel)} role={typeofapi}>삭제</button>
+                <button type="button" className="btn btn-delete" onClick={e=> helpers.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, typeofapi, sch.subject), this.onCancel)} role={typeofapi}>삭제{typeofapi}</button>
                 <button type="button" className="btn btn-history" onClick={(e)=>this.view(e, "history", topic_name)} disabled={me ? true:false}>이력</button>
 
             </>
@@ -144,7 +134,7 @@ class Metadetail extends Component {
         let sch = JSON.parse(schema);
         let meta = helpers.isEmptyObj(meta_join) === false && JSON.parse(meta_join).is_used === 'true' ? JSON.parse(meta_join):{}
         const topic_name = sch.subject.replace(/(-value|-key)/g, "")
-        // console.log("schema ->",helpers.isEmptyObj(sch.schema), "meta ->",helpers.isEmptyObj(meta), "is_used ->", meta.is_used)
+        console.log("schema ->",helpers.isEmptyObj(sch.schema), "meta ->",helpers.isEmptyObj(meta), "is_used ->", meta.is_used)
         const cond = [helpers.isEmptyObj(sch.schema), helpers.isEmptyObj(meta), meta.is_used]
         return (
             <>
