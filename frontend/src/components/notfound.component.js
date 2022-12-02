@@ -9,7 +9,7 @@ class Notfound extends Component {
     return (
       <div className="page404">
         <h1>404 페이지를 찾을 수 없습니다</h1>
-        <div className="inner">
+        <div className="rocket-group">
           <div className="rocket floating"></div>
           <div className="bg_rocket rotate"></div>
         </div>

@@ -11,8 +11,9 @@ class Footer extends Component {
 
     render(){
         const { isAllowed, pathname } = this.props;
+
         return(
-             <footer className={"footer "+pathname[0]}>
+             <footer className={pathname[0] === '' ? "footer home":"footer "+pathname[0]}>
                 <div className="inner">
                     <p>Serviced by GoodusData</p>
                 </div>
