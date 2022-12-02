@@ -37,8 +37,8 @@ class Metadetail extends Component {
     }
 
     view = (e, type, topic_name, currentPage = 1) => {
-        let url = type ==='history' ? topic_name+'/history/list/'+currentPage : type+'/'+topic_name
-        this.props.router.navigate('/meta/list/'+url, type !== 'history' ? {state:this.props.data}:{state:{}})
+        let url = type ==='history' ? 'history/list/'+topic_name+'/'+currentPage : type+'/'+topic_name
+        this.props.router.navigate('/meta/view/'+url, type !== 'history' ? {state:this.props.data}:{state:{}})
     }
 
     onDel = async (typeofapi, topic_name) => {

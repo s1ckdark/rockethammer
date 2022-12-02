@@ -40,8 +40,8 @@ class Container extends Component {
               <Route path="/meta/list/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Metalist /></PrivateRoute>} />
               <Route path="/meta/view/:type/:topic_name" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Metaview /></PrivateRoute>} />
               <Route path="/meta/:type/:topic_name" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Metawrite /></PrivateRoute>} />
-              <Route path="/meta/list/:topic_name/history/list/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Historylist/></PrivateRoute>} />
-              <Route path="/meta/list/:topic_name/history/view" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Historyview/></PrivateRoute>} />
+              <Route path="/meta/view/history/list/:topic_name/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Historylist/></PrivateRoute>} />
+              <Route path="/meta/view/history/view/:topic_name" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Historyview/></PrivateRoute>} />
               <Route path="/admin" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Admin /></PrivateRoute>} />
               <Route path="/admin/history/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><UserHistory /></PrivateRoute>} />
               <Route path="/admin/weblog/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><UserWeblog /></PrivateRoute>} />
