@@ -37,7 +37,7 @@ class Metadetail extends Component {
 
     onDel = async (typeofapi, topic_name) => {
         console.log(typeofapi, topic_name);
-        let url
+        let url, type = typeofapi === 'api1' ? "logical":"physical"
 
         switch(typeofapi){
             case 'api1':
@@ -63,7 +63,8 @@ class Metadetail extends Component {
                 console.log("typeofapi",typeofapi);
         }
 
-        await axios.post(process.env.REACT_APP_API+"/history/history_del", {topic_name:topic_name.replace(/(-value|-key)/g, ""), reg_dt:(new Date()).toISOString(),user_id:AuthService.getCurrentUser().userid,op:"delete"})
+
+        await axios.post(process.env.REACT_APP_API+"/history/history_del", {topic_name:topic_name.replace(/(-value|-key)/g, ""), type:type, reg_dt:(new Date()).toISOString(),user_id:AuthService.getCurrentUser().userid,op:"delete"})
         alert("삭제가 완료되었습니다");
         setTimeout(() => {
             window.location.reload(false);
