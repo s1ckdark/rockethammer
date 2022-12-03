@@ -5,6 +5,7 @@ import Pagination from "react-js-pagination";
 import { withRouter } from "../../common/withRouter";
 import helpers from "../../common/helpers";
 import Breadcrumb from "../breadcrumb.component";
+import Dialog from "../dialog.component";
 
 class UserManager extends Component {
 
@@ -33,9 +34,13 @@ class UserManager extends Component {
         result:false
       },
       successful: false,
-      message: "",
+      message: ""
     };
     this.handlePageChange = this.handlePageChange.bind(this);
+  }
+  onSelection(value) {
+    console.log("My dialog value is :", value); //Value contains "yes" or "no"
+    //set value to state or use it here
   }
 
   handlePageChange(pageNumber) {
@@ -54,6 +59,7 @@ class UserManager extends Component {
           })
       });
   }
+
 
   componentDidMount() {
     const currentPage = this.props.router.params.currentPage || 1
@@ -141,9 +147,7 @@ class UserManager extends Component {
             message: resMessage
           })
     })
-
       }
-
 
       break;
 
@@ -232,7 +236,10 @@ class UserManager extends Component {
     this.setState({
       ...this.state,
       errors: errors,
-      message:"입력란을 확인해주세요",
+      message:{
+        title:"",
+        main:"입력란에 잘못된 입력이 있습니다. 안내를 확인하시고 수정해주세요"
+      },
       successful: false
     });
 
@@ -276,7 +283,7 @@ class UserManager extends Component {
         result:false
       },
       successful: false,
-      message: "",
+      message:"",
       type:'list'
     })
   }
@@ -305,6 +312,13 @@ class UserManager extends Component {
           ...this.state.compare,
           result:true
         }}):this.setState({...this.state,compare:{...this.state.compare,result:false}})
+    })
+  }
+
+  dialogReset = ()=>{
+    this.setState({
+      ...this.state,
+      message: ""
     })
   }
 
@@ -403,11 +417,7 @@ class UserManager extends Component {
                 <button type="button" className="btn btn-cancel" onClick={(e) => this.handleCancelClick(e)}>취소</button>
               </div>
               {this.state.message && (
-                <div className="form-group">
-                  <div className={ this.state.successful ? "alert alert-success" : "alert alert-danger" } role="alert">
-                    {this.state.message}
-                  </div>
-                </div>
+                <Dialog type="alert" callback={this.dialogReset} message={this.state.message}/>
               )}
             </div>
           </div>

@@ -3,7 +3,7 @@ import AuthService from "../../services/auth.service";
 import axios from 'axios';
 import Breadcrumb from "../breadcrumb.component";
 import { withRouter } from "../../common/withRouter";
-
+import Dialog from "../dialog.component";
 class UserRegister extends Component {
 
   constructor(props) {
@@ -32,8 +32,15 @@ class UserRegister extends Component {
         result:false
       },
       successful: false,
-      message: ""
+      message: "",
+      modal: false
     };
+  }
+  dialogReset = ()=>{
+    this.setState({
+      ...this.state,
+      message: ""
+    })
   }
 
   validate(){
@@ -92,9 +99,9 @@ class UserRegister extends Component {
       errors["name"] = "이름을 입력해주세요";
     }
 
-    if(fields["name"].length < 2 || fields["name"].length > 20) {
+    if(fields["name"].length < 3 || fields["name"].length > 20) {
       formIsValid = false;
-      errors["name"] = "이름을 2자 이상 입력해주세요";
+      errors["name"] = "이름을 3자 이상 입력해주세요";
     }
 
 
@@ -103,14 +110,21 @@ class UserRegister extends Component {
       errors["dept"] = "소속 부서명을 입력해주세요";
     }
 
-    if(fields["dept"].length < 2 || fields["dept"].length > 20) {
+    if(fields["dept"].length < 3 || fields["dept"].length > 20) {
       formIsValid = false;
-      errors["dept"] = "부서명을 2자 이상 입력해주세요";
+      errors["dept"] = "부서명을 3자 이상 입력해주세요";
+    }
+
+    if(fields['group'].length > 0){
+      formIsValid = false;
+      errors["group"] = "그룹을 지정해주세요";
     }
 
     this.setState({
       ...this.state,
-      errors: errors
+      errors: errors,
+      successful:false,
+      message:"입력란을 확인해주세요"
     });
 
     return formIsValid;
@@ -128,22 +142,7 @@ class UserRegister extends Component {
 
   handleCancelClick = (e) => {
     e.preventDefault();
-    this.setState({
-      fields:{
-      userid: "",
-      password: "",
-      name:"",
-      dept:"",
-      group:"USER",
-      },
-      compare:{
-        newPassword:"",
-        confirmPassword:"",
-        result:false
-      },
-      successful: false,
-      message: ""
-    })
+    this.props.router.navigate(-1)
   }
 
   handleRegister(e) {
@@ -164,7 +163,7 @@ class UserRegister extends Component {
           result:false
         },
         successful: false,
-        message: ""
+        message: "입력란에 잘못된 입력이 있습니다. 안내를 확인하시고 수정해주세요"
       })
       return false;
   }
@@ -253,7 +252,7 @@ class UserRegister extends Component {
                   <input type="password" name="confirmPassword" className="input-confrimPassword" onClick={this.clear} onChange={e=>this.onPasswordChangeValue(e)} value={this.state.compare.confirmPassword} placeholder="비밀번호를 다시 입력해주세요" />
                 </div>
                 {this.state.compare.newPassword && this.state.compare.confirmPassword && this.state.compare.newPassword.length > 0 && this.state.compare.confirmPassword.length > 0 ? <div className="compareResult">{this.state.compare.result ? "입력된 비밀번호가 일치합니다":"입력된 비밀번호가 일치하지 않습니다"}</div>:<></>}
-                <div className="error-msg">{this.state.errors.password}</div>
+                {this.state.compare.result === false && (<div className="error-msg">{this.state.errors.password}</div>)}
               </div>
             </div>
             <div className="input-group">
@@ -281,11 +280,7 @@ class UserRegister extends Component {
             <button type="button" className="btn btn-cancel" onClick={this.handleCancelClick}>취소</button>
           </div>
           {this.state.message && (
-            <div className="form-group">
-              <div className={ this.state.successful ? "alert alert-success" : "alert alert-danger" } role="alert">
-                {this.state.message}
-              </div>
-            </div>
+            <Dialog type="alert" callback={this.dialogReset} message={this.state.message}/>
           )}
         </div>
       </div>

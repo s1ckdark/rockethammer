@@ -5,6 +5,7 @@ import axios from "axios"
 import helpers from "../../common/helpers";
 import { withRouter } from "../../common/withRouter";
 import Breadcrumb from "../breadcrumb.component";
+import Dialog from "../dialog.component";
 
 class Metawrite extends Component {
     constructor(props) {
@@ -35,7 +36,7 @@ class Metawrite extends Component {
                 last_mod_dt:'',
                 last_mod_id:''
             },
-            prevData:{},
+            prev:{},
             type:'',
             preview: false,
             error:{
@@ -51,7 +52,9 @@ class Metawrite extends Component {
                 op_name:'',
                 service:'',
                 topic_desc:''
-            }
+            },
+            message:'',
+            successful:false
         };
     }
 
@@ -320,27 +323,27 @@ class Metawrite extends Component {
                 history.before = JSON.stringify({})
                 break;
 
-                case 'changed':
-                    temp.schema_id = data.schema_id;
-                    temp.meta_version = data.meta_version+1;
+            case 'changed':
+                temp.schema_id = data.schema_id;
+                temp.meta_version = data.meta_version+1;
 
-                    break;
+            break;
 
-                    case 'update':
-                        temp.revision = data.revision + 1;
-                        history.before = JSON.stringify(this.state.prev)
+            case 'update':
+                temp.revision = data.revision + 1;
+                history.before = JSON.stringify(this.state.prev)
 
-                        break;
-                        default:
-                            console.log("type "+type)
-                        }
+            break;
+            default:
+                console.log("type "+type)
+            }
 
-        temp.last_mod_dt = new Date().toISOString();
-        temp.last_mod_id = AuthService.getCurrentUser().userid;
-        history.last_mod_dt = new Date().toISOString();
-        history.last_mod_id = AuthService.getCurrentUser().userid;
-        history.topic_name = temp.topic_name;
-        history.after = JSON.stringify(temp)
+            temp.last_mod_dt = new Date().toISOString();
+            temp.last_mod_id = AuthService.getCurrentUser().userid;
+            history.last_mod_dt = new Date().toISOString();
+            history.last_mod_id = AuthService.getCurrentUser().userid;
+            history.topic_name = temp.topic_name;
+            history.after = JSON.stringify(temp)
 
     //     if(type === 'reg' || type ==='change'){
     //         if(type === 'reg') {
@@ -378,6 +381,7 @@ class Metawrite extends Component {
                 data: temp,
                 history:history,
                 error:{
+                    ...this.state,
                     topic_name:'',
                     subject:'',
                     schema_id:'',
@@ -391,10 +395,19 @@ class Metawrite extends Component {
                     service:'',
                     topic_desc:''
                 },
-                preview:true
+                successful:false,
+                message:''
             })
-        } else {return false}
+            return false
+        }
     }
+
+    dialogReset = ()=>{
+        this.setState({
+          ...this.state,
+          message: ""
+        })
+      }
 
     onSubmit = async(e, type) => {
         e.preventDefault();
@@ -479,7 +492,9 @@ class Metawrite extends Component {
         })
         this.setState({
             ...this.state,
-            error:temp
+            error:temp,
+            successful:false,
+            message:"잘못된 입력이 있으니 안내에 맞춰 입력해주세요"
         })
         return Object.keys(temp).length > 0 ? false:true
     }
@@ -608,6 +623,9 @@ class Metawrite extends Component {
                             </div>
                         </div>
                     </div>
+                    {this.state.message && (
+                        <Dialog type="alert" callback={this.dialogReset} message={this.state.message}/>
+                    )}
                 </div>
             );
         }
