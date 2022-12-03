@@ -45,7 +45,7 @@ class Metadetail extends Component {
                 console.log("api1")
                 axios.post(url, {keyword:topic_name,last_mod_dt:new Date().toISOString()}).then(res => console.log(res))
                 break;
-            case 'api2':
+            case 'api3':
                 url = [process.env.REACT_APP_API+"/meta/delete", process.env.REACT_APP_API+"/schema/delete"];
                 try {
                 Promise.all(url.map(async (endpoint) => await axios.post(endpoint, {keyword:topic_name}))).then((response1, response2) => {
@@ -55,7 +55,7 @@ class Metadetail extends Component {
                     console.log("error", err);
                 }
                 break;
-            case 'api3':
+            case 'api2':
                 url = process.env.REACT_APP_API+"/schema/delete";
                 axios.post(url, {keyword:topic_name}).then(res => console.log(res))
                 break;
@@ -93,7 +93,7 @@ class Metadetail extends Component {
         const me = helpers.isEmptyObj(meta)
         const mi = meta.is_used
 
-        const cond = [sc, me, mi]
+        const cond = [sc, me]
         let typeofapi;
 
         function arrayEquals(a, b){
@@ -103,11 +103,10 @@ class Metadetail extends Component {
                 a.every((val, index) => val === b[index]);
         }
 
-        if(arrayEquals(cond, [false, false, 'true']) === true) typeofapi = "api1"
-        if(arrayEquals(cond, [false, true, undefined]) === true) typeofapi = "api2"
-        if(arrayEquals(cond, [true, false, 'true']) === true) typeofapi = "api3"
-        if(arrayEquals(cond, [true, true, undefined]) === true) typeofapi = "api3"
-        if(arrayEquals(cond, [false, true, 'false']) === true) typeofapi = "api3"
+        if(arrayEquals(cond, [false, false]) === true) typeofapi = "api1"
+        if(arrayEquals(cond, [false, true]) === true) typeofapi = "api1"
+        if(arrayEquals(cond, [true, true]) === true) typeofapi = "api2"
+        if(arrayEquals(cond, [true, false]) === true) typeofapi = "api3"
 
         console.log(sc, me, mi)
         return (
@@ -117,7 +116,7 @@ class Metadetail extends Component {
                 {sc === false && me === false && mi === 'true' ?
                 <button type="button" className="btn" onClick={e=>this.write(e,"update", topic_name)} disabled={sc === true ? true:false}>수정</button>:
                 <button type="button" className="btn " onClick={e=>this.write(e,"reg", topic_name)} disabled={sc !== false && me !== false ? true:false}>등록</button>}
-                <button type="button" className="btn btn-delete" onClick={e=> helpers.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, typeofapi, sch.subject), this.onCancel)} role={typeofapi} disabled={typeofapi === 'api1' && mi === 'false' ? true : false}>삭제</button>
+                <button type="button" className="btn btn-delete" onClick={e=> helpers.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, typeofapi, sch.subject), this.onCancel)} role={typeofapi} disabled={typeofapi === 'api1' && (mi === 'false' || mi === undefined) ? true : false}>삭제</button>
                 <button type="button" className="btn btn-history" onClick={(e)=>this.view(e, "history", topic_name)} disabled={me ? true:false}>이력</button>
 
             </>
@@ -139,12 +138,6 @@ class Metadetail extends Component {
         const cond = [helpers.isEmptyObj(sch.schema), helpers.isEmptyObj(meta), meta.is_used]
         return (
             <>
-            <Modal open={ this.state.modal } close={ this.closeModal } title="Create a chat room">
-                    {/* // Modal.js <main> { this.props.children } </main>에 내용이 입력된다. */}
-                    리액트 클래스형 모달 팝업창입니다.
-                    쉽게 만들 수 있어요.
-                    같이 만들어봐요!
-            </Modal>
             <div className="detail-info">
                 <div className="info-group topic_name">
                     <label>토픽명</label>
