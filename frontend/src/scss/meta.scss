@@ -224,8 +224,12 @@
 					margin-bottom: 10px;
 					background-color: $btn-blue;
 					color: $white;
+					&:hover {
+						background-color: #606985;
+					}
 					&:disabled {
 						background-color: $btn-dark-blue;
+						cursor: not-allowed;
 					}
 				}
 			}

@@ -21,20 +21,15 @@ class App extends Component {
   }
 
   componentDidMount() {
-    EventBus.on("logout", () => {
-      this.logOut();
-    });
-  }
-
-  componentWillMount() {
     const user = AuthService.getCurrentUser();
     if (user) {
       this.setState({
         currentUser: user,
       });
-    } else {
-      return <Navigate to="/home"/>
     }
+    EventBus.on("logout", () => {
+      this.logOut();
+    });
   }
 
   componentWillUnmount() {
@@ -42,10 +37,11 @@ class App extends Component {
   }
 
  logOut() {
+   this.setState({
+     currentUser: undefined,
+   });
     AuthService.logout();
-    this.setState({
-      currentUser: undefined,
-    });
+    window.location.reload();
   }
 
   render() {

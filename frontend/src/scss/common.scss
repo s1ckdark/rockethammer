@@ -7,6 +7,7 @@
 .btn {
 	height: 42px;
 	border: none;
+	cursor: pointer;
 	> a,
 	> a:hover {
 		color: #fff;
@@ -106,6 +107,7 @@
 						padding: 0 5px 0;
 						& a {
 							color: #8b96a4;
+							cursor: pointer;
 						}
 						&:last-child {
 							&:after {
@@ -118,6 +120,14 @@
 						}
 					}
 					list-style-type: none;
+				}
+			}
+		}
+		.admin-navi {
+			.btn {
+				cursor: pointer;
+				&:hover {
+					background-color: #606985;
 				}
 			}
 		}
@@ -148,5 +158,16 @@
 			color: $white;
 			font-weight: 600;
 		}
+	}
+}
+
+.input-group {
+	position: relative;
+	padding: 0 0 30px;
+	.error-msg {
+		position: absolute;
+		bottom: 0px;
+		left: 0;
+		font-size: 12px;
 	}
 }

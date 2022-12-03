@@ -15,18 +15,18 @@
 		cursor: pointer;
 		border: 0;
 	}
-	.box {
+	.dialog-box {
 		width: 600px;
 		height: 267px;
 		margin: 0 auto;
 		// @extend .box-shadow-blk;
 		position: relative;
-
 		border-radius: 6px;
 		background-color: #fff;
 		animation: modal-show 0.3s;
 		overflow: hidden;
-		.inner {
+		.dialog-inner {
+			padding: 0;
 			position: relative;
 			display: flex;
 			flex-wrap: wrap;
@@ -74,10 +74,11 @@
 			bottom: 0;
 			height: 40px;
 			width: 100%;
-			.btn-group {
+			> .btn-group {
 				display: flex;
 				justify-content: center;
 				padding: 0;
+				margin: 0;
 				.btn {
 					border-radius: 6px;
 					&.btn-yes {

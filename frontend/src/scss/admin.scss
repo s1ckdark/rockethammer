@@ -30,6 +30,39 @@
 		border-radius: 6px;
 	}
 
+	.writing {
+		.input-group {
+			margin: 20px 0;
+			label {
+				color: $register-label-text;
+				margin-bottom: 10px;
+				display: inline-block;
+			}
+			input,
+			select {
+				width: calc(100% - 30px);
+				background: #f5f8fd;
+				border: 1px solid #e3e9f2;
+				line-height: 40px;
+				padding: 7px 15px;
+				color: $register-input-text;
+				display: block;
+			}
+
+			select {
+				width: 100%;
+				height: 56px;
+			}
+			.passwordLayer {
+				input {
+					&:first-child {
+						margin-bottom: 10px;
+					}
+				}
+			}
+		}
+	}
+
 	&.overview {
 		.overviewing {
 			.inner {
@@ -217,27 +250,6 @@
 		.writing {
 			.form-group {
 				padding: 50px;
-				.input-group {
-					margin: 20px 0;
-					label {
-						color: $register-label-text;
-						margin-bottom: 10px;
-						display: inline-block;
-					}
-					input {
-						width: calc(100% - 30px);
-						background: #f5f8fd;
-						border: 1px solid #e3e9f2;
-						line-height: 40px;
-						padding: 7px 15px;
-						color: $register-input-text;
-					}
-					.passwordLayer {
-						input {
-							margin-bottom: 10px;
-						}
-					}
-				}
 			}
 			.btn-group {
 				@extend .flex-mx-auto;
@@ -286,12 +298,6 @@
 					select {
 						width: 100%;
 						height: 56px;
-					}
-
-					.passwordLayer {
-						input {
-							margin-bottom: 10px;
-						}
 					}
 				}
 			}

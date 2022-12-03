@@ -13,7 +13,7 @@ import "ace-builds/src-noconflict/ext-language_tools";
 import Pagination from "react-js-pagination";
 import helpers from "../../common/helpers";
 import { withRouter } from "../../common/withRouter";
-import Modal from "../modal.component";
+import Dialog from "../dialog.component";
 
 class Metadetail extends Component {
     constructor(props) {
@@ -21,7 +21,8 @@ class Metadetail extends Component {
         this.state = {
           data:{},
           delete:{},
-          modal:false
+          message:'',
+          messageType:''
         };
     }
 
@@ -36,7 +37,7 @@ class Metadetail extends Component {
     }
 
     onDel = async (typeofapi, topic_name) => {
-        console.log(typeofapi, topic_name);
+        // console.log(typeofapi, topic_name);
         let url, type = typeofapi === 'api1' ? "logical":"physical"
 
         switch(typeofapi){
@@ -61,14 +62,19 @@ class Metadetail extends Component {
                 break;
             default:
                 console.log("typeofapi",typeofapi);
+
         }
 
 
         await axios.post(process.env.REACT_APP_API+"/history/history_del", {topic_name:topic_name.replace(/(-value|-key)/g, ""), type:type, reg_dt:(new Date()).toISOString(),user_id:AuthService.getCurrentUser().userid,op:"delete"})
-        alert("삭제가 완료되었습니다");
-        setTimeout(() => {
-            window.location.reload(false);
-        }, 1000)
+        this.setState({
+            ...this.state,
+            message:"삭제가 완료되었습니다",
+            messageType:"alert"
+        })
+        // setTimeout(() => {
+        this.props.getTime()
+        // }, 1000)
     }
 
     changing = async (e, topic_name, schema, meta_join) => {
@@ -78,7 +84,7 @@ class Metadetail extends Component {
         await axios.post(process.env.REACT_APP_API+"/schema/changed", {"keyword":topic_name}).then(res => {
             if(res.data.length > 1) {
                 let temp = [];
-                res.data.map((item,index) => {
+                res.data.forEach((item,index) => {
                     temp[index] = item;
                     temp[index]['schema']= JSON.parse(item.schema);
             })
@@ -87,8 +93,8 @@ class Metadetail extends Component {
     }
 
     detailBtn = (topic_name, sch, meta) => {
-        console.log(topic_name, sch, meta)
-        console.log("schema ->",sch.schema, "meta ->",meta, "is_used ->", meta.is_used)
+        // console.log(topic_name, sch, meta)
+        // console.log("schema ->",sch.schema, "meta ->",meta, "is_used ->", meta.is_used)
         const sc = helpers.isEmptyObj(sch.schema)
         const me = helpers.isEmptyObj(meta)
         const mi = meta.is_used
@@ -108,7 +114,7 @@ class Metadetail extends Component {
         if(arrayEquals(cond, [true, true]) === true) typeofapi = "api2"
         if(arrayEquals(cond, [true, false]) === true) typeofapi = "api3"
 
-        console.log(sc, me, mi)
+        // console.log(sc, me, mi)
         return (
             <>
                 {this.changed(meta, sch) ? <button type="button" className="btn btn-changed" onClick={(e)=> this.changing(e, sch.subject, sch, meta)}>변경 등록</button>:<></>}
@@ -116,7 +122,7 @@ class Metadetail extends Component {
                 {sc === false && me === false && mi === 'true' ?
                 <button type="button" className="btn" onClick={e=>this.write(e,"update", topic_name)} disabled={sc === true ? true:false}>수정</button>:
                 <button type="button" className="btn " onClick={e=>this.write(e,"reg", topic_name)} disabled={sc !== false && me !== false ? true:false}>등록</button>}
-                <button type="button" className="btn btn-delete" onClick={e=> helpers.useConfirm(e, "정말 삭제하시겠습니까?", this.onDel.bind(this, typeofapi, sch.subject), this.onCancel)} role={typeofapi} disabled={typeofapi === 'api1' && (mi === 'false' || mi === undefined) ? true : false}>삭제</button>
+                <button type="button" className="btn btn-delete" onClick={e=> this.callAction(e, "confirm", "정말 삭제하시겠습니까?",typeofapi, sch.subject)} role={typeofapi} disabled={typeofapi === 'api1' && (mi === 'false' || mi === undefined) ? true : false}>삭제</button>
                 <button type="button" className="btn btn-history" onClick={(e)=>this.view(e, "history", topic_name)} disabled={me ? true:false}>이력</button>
 
             </>
@@ -127,14 +133,56 @@ class Metadetail extends Component {
         return meta_join && parseInt(schema.version.$numberLong) > parseInt(meta_join.schema_version) ? true : false
     }
 
+    callAction = (e, type, msg, typeofapi, subject) => {
+        e.preventDefault()
+        this.setState({
+            ...this.state,
+            messageType:type,
+            message:msg,
+            delete:{
+                typeofapi:typeofapi,
+                subject:subject
+            }
+        })
+    }
+
+    dialogCallback = (act) => {
+        const {typeofapi, subject } = this.state.delete;
+        // console.log(typeofapi, subject)
+        switch (act){
+          case 'yes':
+            this.onDel(typeofapi, subject)
+            this.setState({...this.state,message:''})
+          break;
+
+          case 'no':
+            this.setState({...this.state,message:''})
+          break;
+
+          case 'close':
+            this.setState({
+              ...this.state,
+              message: ""
+            })
+          break;
+          default:
+            console.log("dialogCallback")
+        }
+      }
+
+
+
     render(){
         if(this.props.data === null) return false;
         const {changed} = this.props;
-        const { schema, meta_join } = helpers.parseNested(this.props.data) || {}
+        // const { schema, meta_join } = helpers.parseNested(this.props.data) || {}
+        const { schema } = helpers.parseNested(this.props.data) || {}
         let sch = JSON.parse(schema);
-        let meta = helpers.isEmptyObj(meta_join) === false && JSON.parse(meta_join).is_used === 'true' ? JSON.parse(meta_join):{}
+        // let meta = helpers.isEmptyObj(meta_join) === false && JSON.parse(meta_join).is_used === 'true' ? JSON.parse(meta_join):{}
+        const { meta }= this.props || {}
+        // console.log("meta ->",meta)
         const topic_name = sch.subject.replace(/(-value|-key)/g, "")
-        console.log("schema ->",helpers.isEmptyObj(sch.schema), "meta ->",helpers.isEmptyObj(meta), "is_used ->", meta.is_used)
+        // console.log("schema ->",helpers.isEmptyObj(sch.schema), "meta ->",helpers.isEmptyObj(meta), "is_used ->", meta.is_used)
         const cond = [helpers.isEmptyObj(sch.schema), helpers.isEmptyObj(meta), meta.is_used]
         return (
             <>
@@ -163,6 +211,9 @@ class Metadetail extends Component {
                     {this.detailBtn(topic_name,sch,meta)}
                 </div>
             </div>
+            {this.state.message && (
+            <Dialog type={this.state.messageType} callback={this.dialogCallback} message={this.state.message}/>
+          )}
             </>
         )
     }

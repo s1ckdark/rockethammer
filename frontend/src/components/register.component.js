@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import AuthService from "../services/auth.service";
 import axios from 'axios';
-import Breadcrumb from "./breadcrumb.component";
 import { withRouter } from "../common/withRouter";
+import Dialog from "./dialog.component";
 
 class Register extends Component {
   constructor(props) {
@@ -121,6 +121,10 @@ class Register extends Component {
       fields:{
         ...this.state.fields,
         [e.target.name]: e.target.value
+      },
+      errors:{
+        ...this.state.errors,
+        [e.target.name]:''
       }
     })
   }
@@ -148,7 +152,7 @@ class Register extends Component {
           result:false
         },
         successful: false,
-        message: ""
+        message: "입력을 확인해주세요"
       })
       return false;
   }
@@ -171,7 +175,7 @@ class Register extends Component {
           }
         ).then( res => {
           if(res.status === 200) {
-            // this.props.router.navigate('/profile');
+            // this.props.router.navigate('/login');
             window.location.reload()
          }
         })
@@ -215,6 +219,27 @@ class Register extends Component {
     })
   }
 
+  dialogFunc = (act) => {
+    switch (act){
+      case 'yes':
+
+      break;
+
+      case 'no':
+
+      break;
+
+      case 'close':
+        this.setState({
+          ...this.state,
+          message: ""
+        })
+      break;
+      default:
+        console.log("dialogFunc")
+    }
+  }
+
   render() {
     return (
       <div className="register">
@@ -226,42 +251,46 @@ class Register extends Component {
               <div className="input-group userid">
                 <label htmlFor="userid">유저ID</label>
                 <input type="text" className="input-userid" name="userid" value={this.state.fields.userid} onChange={this.onChangeValue} placeholder="사용할 아이디를 입력해주세요" />
-                <div className="error-msg">{this.state.errors.userid}</div>
+                {this.state.errors.userid && (<div className="error-msg">{this.state.errors.userid}</div>)}
               </div>
               <div className="input-group">
-                <label htmlFor="password">비밀번호</label>
-                <input type="hidden" className="input-password" name="password" value={this.state.fields.password} onChange={this.onChangeValue} />
-                <div className="passwordLayer">
-                  <div className="comparePassword my-3">
-                    <input type="password" name="newPassword" className="input-newPassword" onClick={this.clear} onChange={e=>this.onPasswordChangeValue(e)} value={this.state.compare.newPassword} placeholder="비밀번호를 입력하세요" />
-                    <input type="password" name="confirmPassword" className="input-confrimPassword" onClick={this.clear} onChange={e=>this.onPasswordChangeValue(e)} value={this.state.compare.confirmPassword} placeholder="비밀번호를 다시 입력해주세요" />
+                  <label htmlFor="password">비밀번호</label>
+                  <input type="hidden" className="input-password" name="password" value={this.state.fields.password} onChange={this.onChangeValue} />
+                  <div className="passwordLayer">
+                    <div className="comparePassword my-3">
+                      <input type="password" name="newPassword" className="input-newPassword" onClick={this.clear} onChange={e=>this.onPasswordChangeValue(e)} value={this.state.compare.newPassword} placeholder="비밀번호를 입력하세요" />
+                      <input type="password" name="confirmPassword" className="input-confrimPassword" onClick={this.clear} onChange={e=>this.onPasswordChangeValue(e)} value={this.state.compare.confirmPassword} placeholder="비밀번호를 다시 입력해주세요" />
+                    </div>
+                    {this.state.errors.password && !this.state.compare.result && (<div className="error-msg">입력된 비밀번호가 일치하지 않습니다. {this.state.errors.password}</div>)}
                   </div>
-                  {this.state.compare.newPassword && this.state.compare.confirmPassword && this.state.compare.newPassword.length > 0 && this.state.compare.confirmPassword.length > 0 ? <div className="compareResult">{this.state.compare.result ? "입력된 비밀번호가 일치합니다":"입력된 비밀번호가 일치하지 않습니다"}</div>:<></>}
-                  <div className="error-msg">{this.state.errors.password}</div>
                 </div>
-              </div>
               <div className="input-group">
                 <label htmlFor="name">사용자명</label>
                 <input type="text" className="input-name" name="name" value={this.state.fields.name} onChange={this.onChangeValue} placeholder="사용할 사용자명을 입력해주세요"/>
-                <div className="error-msg">{this.state.errors.name}</div>
+                {this.state.errors.name && (<div className="error-msg">{this.state.errors.name}</div>)}
               </div>
               <div className="input-group">
                 <label htmlFor="dept">부서명</label>
                 <input type="text" className="input-dept" name="dept" value={this.state.fields.dept} onChange={this.onChangeValue} placeholder="소속 부서를 입력해주세요"/>
-                <div className="error-msg">{this.state.errors.dept}</div>
+                {this.state.errors.dept && (<div className="error-msg">{this.state.errors.dept}</div>)}
               </div>
+              <div className="input-group">
+                  <label htmlFor="dept">그룹</label>
+                  <select className="input-select" name="group" value={this.state.fields.group} onChange={this.onChangeValue}>
+                    <option disabled={true} selected value="">--그룹 선택--</option>
+                    <option value="ADMIN">관리자</option>
+                    <option value="USER">일반</option>
+                  </select>
+                  {this.state.errors.group && (<div className="error-msg">{this.state.errors.group}</div>)}
+            </div>
             </div>
             <div className="btn-group">
               <button type="submit" className="btn btn-register" onClick={this.handleRegister}>회원 가입</button>
               <button type="button" className="btn btn-cancel" onClick={this.handleCancelClick}>취소</button>
             </div>
-            {this.state.message && (
-              <div className="form-group">
-                <div className={ this.state.successful ? "alert alert-success" : "alert alert-danger" } role="alert">
-                  {this.state.message}
-                </div>
-              </div>
-            )}
+          {this.state.message && (
+            <Dialog type="alert" callback={this.dialogFunc} message={this.state.message}/>
+          )}
           </div>
         </div>
       </div>

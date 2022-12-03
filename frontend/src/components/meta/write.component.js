@@ -39,7 +39,7 @@ class Metawrite extends Component {
             prev:{},
             type:'',
             preview: false,
-            error:{
+            errors:{
                 topic_name:'',
                 subject:'',
                 schema_id:'',
@@ -54,6 +54,7 @@ class Metawrite extends Component {
                 topic_desc:''
             },
             message:'',
+            messageType:'',
             successful:false
         };
     }
@@ -256,7 +257,7 @@ class Metawrite extends Component {
     //                     ...this.state,
     //                     userReady: true,
     //                     data:meta,
-    //                     prevData:meta,
+    //                     prev:meta,
     //                     type:type
     //                 })
     //               }
@@ -272,7 +273,7 @@ class Metawrite extends Component {
     //             ...this.state,
     //             userReady: true,
     //             data: meta,
-    //             prevData:JSON.parse(data.meta_join),
+    //             prev:JSON.parse(data.meta_join),
     //             type:type
     //         });
     // }
@@ -315,7 +316,7 @@ class Metawrite extends Component {
     preview = async(e, type) => {
         e.preventDefault();
         console.log(type+" preview")
-        const { data } = this.state;
+        const { data, prev } = this.state;
         let temp = {...data}, history={}
 
         switch(type){
@@ -330,6 +331,14 @@ class Metawrite extends Component {
             break;
 
             case 'update':
+                if(JSON.stringify(prev) === JSON.stringify(temp)){
+                    this.setState({
+                        ...this.state,
+                        message:"변경된 내역이 없습니다",
+                        messageType:'alert'
+                    })
+                return false
+            }
                 temp.revision = data.revision + 1;
                 history.before = JSON.stringify(this.state.prev)
 
@@ -349,7 +358,7 @@ class Metawrite extends Component {
     //         if(type === 'reg') {
     //             temp.meta_version = 1;
     //         } else {
-    //             let meta_versionInt = this.state.prevData.meta_version + 1;
+    //             let meta_versionInt = this.state.prev.meta_version + 1;
     //             temp.meta_version = meta_versionInt;
     //         }
 
@@ -374,13 +383,14 @@ class Metawrite extends Component {
     //     )
     // }
 
+
         if(this.onValidation(temp, ["topic_name","subject","schema_id","schema_version","meta_version","op_name","service","revision","topic_desc","last_mod_dt","last_mod_id","is_used"])) {
-            console.log(temp)
             this.setState({
                 ...this.state,
                 data: temp,
                 history:history,
-                error:{
+                preview:true,
+                errors:{
                     ...this.state,
                     topic_name:'',
                     subject:'',
@@ -390,7 +400,7 @@ class Metawrite extends Component {
                     revision:'',
                     last_mod_id:'',
                     last_mod_dt:'',
-                    is_used: true,
+                    is_used: '',
                     op_name:'',
                     service:'',
                     topic_desc:''
@@ -400,6 +410,7 @@ class Metawrite extends Component {
             })
             return false
         }
+
     }
 
     dialogReset = ()=>{
@@ -407,24 +418,29 @@ class Metawrite extends Component {
           ...this.state,
           message: ""
         })
+        this.props.router.navigate(-1)
       }
 
     onSubmit = async(e, type) => {
         e.preventDefault();
-        const { data, prevData, history } = this.state
-        console.log(data, prevData, history)
-        let temp = this.state.data;
+        const { data, prev, history } = this.state
+        console.log(data, prev, history)
         console.log(type)
 
         switch(type){
             case 'reg':
                 await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
                     axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
-                    if(res.status===200) {
-                        alert("등록 완료");
-                    setTimeout(() => {
-                        this.props.router.navigate(-1)
-                    }, 1000);}
+                        if(res.status===200) {
+                            this.setState({
+                            ...this.state,
+                            message:"등록이 완료되었습니다",
+                            messageType:'alert'
+                        })
+                    // setTimeout(() => {
+                    //     this.props.router.navigate(-1)
+                    // }, 1000);
+                }
                     })
                 })
             break;
@@ -433,34 +449,36 @@ class Metawrite extends Component {
                 await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
                     axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
                     if(res.status===200) {
-                        alert("등록 완료");
-                    setTimeout(() => {
-                        this.props.router.navigate(-1)
-                    }, 1000);}
+                        this.setState({
+                        ...this.state,
+                        message:"변경 등록이 완료되었습니다",
+                        messageType:'alert'
+                    })
+                    // setTimeout(() => {
+                        // this.props.router.navigate(-1)
+                    // }, 1000);
+                }
                     })
                 })
 
             break;
 
             case 'update':
-                if(type === 'update'){
-                    const { prevData, data, history } = this.state
-                    if(JSON.stringify(prevData) === JSON.stringify(temp)){
-                        alert("변경된 내용이 없습니다.");
-                        this.props.router.navigate(-1);
-                    } else {
-                        await axios.post(process.env.REACT_APP_API+"/meta/deleteall/",{keyword:data.topic_name})
-                        await axios.post(process.env.REACT_APP_API+"/meta/insert/", data).then( res => {
-                            axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
-                            if(res.status===200) {
-                                alert("수정 완료");
-                                setTimeout(() => {
-                                this.props.router.navigate(-1)
-                            }, 1000);}
+                    await axios.post(process.env.REACT_APP_API+"/meta/deleteall/",{keyword:data.topic_name})
+                    await axios.post(process.env.REACT_APP_API+"/meta/insert/", data).then( res => {
+                        axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
+                        if(res.status===200) {
+                            this.setState({
+                                ...this.state,
+                                message:"수정이 완료되었습니다",
+                                messageType:'alert'
                             })
-                        })
+                        //     setTimeout(() => {
+                        //     this.props.router.navigate(-1)
+                        // }, 1000);
                     }
-                }
+                        })
+                    })
             break;
             default:
                 console.log("submit")
@@ -470,20 +488,37 @@ class Metawrite extends Component {
 
 
     onValidation = (obj, fields) => {
-        if ('object' !== typeof obj || null == obj) return false;
+        const errors = {
+            topic_name:'',
+            subject:'',
+            schema_id:'',
+            schema_version:'',
+            meta_version:'',
+            revision:'',
+            last_mod_id:'',
+            last_mod_dt:'',
+            is_used: true,
+            op_name:'',
+            service:'',
+            topic_desc:''
+        }
+        let formIsValid = true;
 
-        // const hasOnlyTheKeys = Array.isArray(fields) ? JSON.stringify(Object.keys(obj).filter(x => fields.includes(x)).sort()) ===  JSON.stringify(fields.sort()) : false
-        // if (false === hasOnlyTheKeys) return false;
+        if ('object' !== typeof obj || null == obj) formIsValid = false;
 
-        let temp = {};
+        const hasOnlyTheKeys = Array.isArray(fields) ? JSON.stringify(Object.keys(obj).filter(x => fields.includes(x)).sort()) ===  JSON.stringify(fields.sort()) : false
+        if (false === hasOnlyTheKeys) formIsValid = false;
+
         fields.map( prop => {
             switch(obj[prop]){
               case null:
               case undefined:
-                temp[prop] = helpers.translate(prop ,"entokr")+ ' 값은 필수입력 항목 입니다';
+                errors[prop] = helpers.translate(prop ,"entokr")+ ' 값은 필수입력 항목 입니다';
+                formIsValid = false;
                 break;
               case '':
-                temp[prop] = helpers.translate(prop ,"entokr")+ ' 값은 필수입력 항목 입니다';
+                errors[prop] = helpers.translate(prop ,"entokr")+ ' 값은 필수입력 항목 입니다';
+                formIsValid = false;
                 break;
               case 0:
                 break;
@@ -492,11 +527,11 @@ class Metawrite extends Component {
         })
         this.setState({
             ...this.state,
-            error:temp,
+            errors:errors,
             successful:false,
             message:"잘못된 입력이 있으니 안내에 맞춰 입력해주세요"
         })
-        return Object.keys(temp).length > 0 ? false:true
+        return formIsValid;
     }
 
     previewCancel = (e) =>{
@@ -519,7 +554,7 @@ class Metawrite extends Component {
         e.preventDefault();
         this.setState({
             ...this.state,
-            data:this.state.prevData
+            data:this.state.prev
         })
         this.goBack()
     }
@@ -546,7 +581,7 @@ class Metawrite extends Component {
                  {field_type === 'textarea' ?
                     <textarea name={field_name} className={"input-"+field_name} value={data[field_name]} onChange={(e)=> this.onChangeValue(e, field_name)} readOnly={this.readonly(field_name)} placeholder={helpers.translate(field_name, "entokr")+"를 입력하세요"}/>
                 :<input name={field_name} className={"input-"+field_name} value={data[field_name]} onChange={(e)=> this.onChangeValue(e, field_name)} readOnly={this.readonly(field_name)} placeholder={helpers.translate(field_name, "entokr")+"를 입력하세요"}/>}
-                <span className={"input-validator error-msg input-validator-"+field_name}>{this.state.error[field_name]}</span>
+                <span className={"input-validator error-msg input-validator-"+field_name}>{this.state.errors[field_name]}</span>
             </div>
         )
     }

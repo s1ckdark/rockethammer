@@ -10,8 +10,8 @@ class Dialog extends Component {
     const { message, type, callback } = this.props
     return(
       <div className={"dialog dialog-"+type}>
-        <div className="box" role={type}>
-          <div className="inner">
+        <div className="dialog-box" role={type}>
+          <div className="dialog-inner">
           <div className="dialog-main">
             {message}
            </div>
@@ -19,7 +19,7 @@ class Dialog extends Component {
         <div className="dialog-btn-group">
           <div className={"btn-group btn-"+type}>
           {type === 'confirm' ?
-          <>
+             <>
             <button className="btn btn-no" onClick={() => callback('no')}>No</button>
             <button className="btn btn-yes" onClick={() =>callback('yes')}>Yes</button>
             </>

@@ -34,13 +34,14 @@ class UserManager extends Component {
         result:false
       },
       successful: false,
-      message: ""
+      message: "",
+      messageType:'',
+      act:{
+        idx:'',
+        type:''
+      }
     };
     this.handlePageChange = this.handlePageChange.bind(this);
-  }
-  onSelection(value) {
-    console.log("My dialog value is :", value); //Value contains "yes" or "no"
-    //set value to state or use it here
   }
 
   handlePageChange(pageNumber) {
@@ -66,8 +67,7 @@ class UserManager extends Component {
     this.fetchData(currentPage-1);
     }
 
-  writeHistory(e, type, userid){
-    e.preventDefault();
+  writeHistory(type, userid){
     axios.post(process.env.REACT_APP_API+"/user/upthistory",
       {
         userid: userid,
@@ -78,10 +78,66 @@ class UserManager extends Component {
     })
   }
 
-  async action(e, type, index=null) {
-    e.preventDefault();
-    console.log(e,type,index)
-    const {fields, data} = this.state
+  callAction(e, type, index=null){
+    e.preventDefault()
+    console.log(type,index)
+    const data = this.state.data.list[index]
+
+    switch (type){
+      case 'delete':
+        this.setState({
+          ...this.state,
+          message:data.userid+"를 정말 삭제합니까?",
+          messageType:'confirm',
+          act:{
+            idx:index,
+            type:"delete"
+          }
+        })
+      break;
+
+      case 'edit':
+        this.setState({
+          ...this.state,
+          act:{
+            idx:index,
+            type:"edit"
+          }
+        },()=> this.action(type))
+
+      break;
+
+      default:
+        console.log("callAction")
+      }
+  }
+
+  dialogCallback = (act) => {
+    switch (act){
+      case 'yes':
+        this.action("delete")
+        this.setState({...this.state,message:''})
+      break;
+
+      case 'no':
+        this.setState({...this.state,message:''})
+      break;
+
+      case 'close':
+        this.setState({
+          ...this.state,
+          message: ""
+        })
+      break;
+      default:
+        console.log("dialogCallback")
+    }
+  }
+
+
+  async action(type) {
+    const {fields, act} = this.state
+    const data = this.state.data.list[act.idx]
     let conType, historytype;
     if(type === 'update') conType = "업데이트";
     if(type === 'delete') conType = "삭제";
@@ -89,10 +145,9 @@ class UserManager extends Component {
 
     switch(type) {
       case 'update':
-          if(!this.validate()) return false;
-      if(window.confirm(fields.userid+" 업데이트 하겠습니까?")) {
 
-       await axios.post(process.env.REACT_APP_API+"/user/update", this.state.fields).then(res => {
+        if(!this.validate()) return false;
+        await axios.post(process.env.REACT_APP_API+"/user/update", this.state.fields).then(res => {
           if(res.status === 200) {
             axios.post(process.env.REACT_APP_API+"/user/upthistory", {userid: fields.userid,mod_item: "사용자 수정"}).then( res => {
               if(res.status === 200) {
@@ -101,36 +156,19 @@ class UserManager extends Component {
                 if(data.name !== fields.name) ele.push("이름을 {"+data.name+"} -> {"+fields.name+"} "+conType)
                 if(data.dept !== fields.dept) ele.push("소속을 {"+data.dept+"} -> {"+fields.dept+"} "+conType)
                 if(data.group !== fields.group) ele.push("그룹을 {"+data.group+"} -> {"+fields.group+"} "+conType)
-            this.setState({
-              ...this.state,
-              successful: true,
-              message: fields.userid+" 수정이 완료되었습니다"
-            });
-            ele.forEach(item => this.writeHistory(e, item , fields.userid))
-            alert("등록 완료");
+            ele.forEach(item => this.writeHistory(item , fields.userid))
             setTimeout(() => {
               this.setState({
                 ...this.state,
-                type:"list"
+                type:"list",
+                successful: true,
+                message: fields.userid+" 수정이 완료되었습니다",
+                messageType:'alert'
               })
               this.fetchData(this.router.props.params.currentPage-1)
             }, 1000)
           }})
 
-      } else {
-        alert("취소됩니다");
-        this.setState({
-          ...this.state,
-          fields:{
-            dept:'',
-            group:'',
-            password:'',
-            userid:'',
-            name:''
-          },
-          type:'list'
-      })
-      window.location.reload()
       }
     }
     , error => {
@@ -147,31 +185,37 @@ class UserManager extends Component {
             message: resMessage
           })
     })
-      }
+      // }
 
       break;
 
       case 'edit':
         this.setState({
           ...this.state,
-          fields:this.state.data.list[index],
+          fields:data,
           type:'edit'
         })
         break;
 
       case 'delete':
-        if(fields.userid !== 'admin') {
-          historytype = fields.userid+"를 "+conType;
-          if (window.confirm(fields.userid+"를 정말 삭제합니까?")) {
-            axios.post(process.env.REACT_APP_API+'/user/delete',{keyword:fields.userid}).then(res => {
-              if(res.status === 200) this.writeHistory(e, historytype, fields.userid, index)
-              }
-            )
-          } else {
-            alert("취소합니다.");
-          }
+        if(data.userid !== 'admin') {
+          historytype = data.userid+"를 "+conType;
+          await axios.post(process.env.REACT_APP_API+'/user/delete',{keyword:data.userid}).then(res => {
+                if(res.status === 200) {
+                  this.writeHistory(historytype, data.userid, this.state.act.idx)
+                  this.setState({
+                    ...this.state,
+                    messageType:'alert',
+                    message:"삭제가 완료되었습니다"
+                  })
+                }
+          })
         } else {
-           alert("admin은 삭제가 불가능합니다.");
+            this.setState({
+              ...this.state,
+              messageType:'alert',
+              message:"admin은 삭제가 불가능합니다."
+            })
         }
         break;
 
@@ -232,16 +276,15 @@ class UserManager extends Component {
       errors["dept"] = "부서명을 3자 이상 입력해주세요";
     }
 
-
-    this.setState({
-      ...this.state,
-      errors: errors,
-      message:{
-        title:"",
-        main:"입력란에 잘못된 입력이 있습니다. 안내를 확인하시고 수정해주세요"
-      },
-      successful: false
-    });
+    if(formIsValid === false) {
+      this.setState({
+        ...this.state,
+        errors: errors,
+        message:"입력란에 잘못된 입력이 있습니다. 안내를 확인하시고 수정해주세요",
+        messageType:'alert',
+        successful: false
+      });
+  }
 
     return formIsValid;
 }
@@ -315,12 +358,7 @@ class UserManager extends Component {
     })
   }
 
-  dialogReset = ()=>{
-    this.setState({
-      ...this.state,
-      message: ""
-    })
-  }
+
 
   render() {
     const { data, userReady, type } = this.state;
@@ -354,8 +392,8 @@ class UserManager extends Component {
                   <td className="group">{item.group ==='ADMIN' ? "관리자":"일반"}</td>
                   <td className="last_login_dt">{helpers.krDateTime(item.last_login_dt)}</td>
                   <td className="btn-group">
-                    <button className="btn btn-modify" data-tooltip="사용자 수정" onClick={(e)=> this.action(e,"edit", index)}>수정</button>
-                    <button className="btn btn-delete" data-tooltip="사용자 삭제" onClick={(e)=> this.action(e,"delete", index)}>삭제</button>
+                    <button className="btn btn-modify" data-tooltip="사용자 수정" onClick={(e)=> this.callAction(e,"edit", index)}>수정</button>
+                    <button className="btn btn-delete" data-tooltip="사용자 삭제" onClick={(e)=> this.callAction(e,"delete", index)}>삭제</button>
                   </td>
                 </tr>
                 )): <tr><td colSpan="9">등록된 사용자가 없습니다</td></tr>}
@@ -374,6 +412,9 @@ class UserManager extends Component {
             />
           </div>
         </div>
+        {this.state.message && (
+            <Dialog type={this.state.messageType} callback={this.dialogCallback} message={this.state.message}/>
+        )}
         </div>
         </div>
         )} else {
@@ -387,7 +428,7 @@ class UserManager extends Component {
                 <div className="input-group userid">
                   <label htmlFor="userid">유저ID</label>
                   <input type="text" className="input-userid" name="userid" value={this.state.fields.userid} onChange={this.onChangeValue} readOnly={true} />
-                  <div className="error-msg">{this.state.errors.userid}</div>
+                  {this.state.errors.userid && (<div className="error-msg">{this.state.errors.userid}</div>)}
                 </div>
                 <div className="input-group">
                   <label htmlFor="password">비밀번호</label>
@@ -397,27 +438,35 @@ class UserManager extends Component {
                       <input type="password" name="newPassword" className="input-newPassword" onClick={this.clear} onChange={e=>this.onPasswordChangeValue(e)} value={this.state.compare.newPassword} placeholder="비밀번호를 입력하세요" />
                       <input type="password" name="confirmPassword" className="input-confrimPassword" onClick={this.clear} onChange={e=>this.onPasswordChangeValue(e)} value={this.state.compare.confirmPassword} placeholder="비밀번호를 다시 입력해주세요" />
                     </div>
-                    {this.state.compare.newPassword && this.state.compare.confirmPassword && this.state.compare.newPassword.length > 0 && this.state.compare.confirmPassword.length > 0 ? <div className="compareResult">{this.state.compare.result ? "입력된 비밀번호가 일치합니다":"입력된 비밀번호가 일치하지 않습니다"}</div>:<></>}
-                    <div className="error-msg">{this.state.errors.password}</div>
+                    {this.state.errors.password && !this.state.compare.result && (<div className="error-msg">입력된 비밀번호가 일치하지 않습니다. {this.state.errors.password}</div>)}
                   </div>
                 </div>
                 <div className="input-group">
                   <label htmlFor="name">사용자명</label>
                   <input type="text" className="input-name" name="name" value={this.state.fields.name} onChange={this.onChangeValue} placeholder="사용할 사용자명을 입력해주세요"/>
-                  <div className="error-msg">{this.state.errors.name}</div>
+                  {this.state.errors.name && (<div className="error-msg">{this.state.errors.name}</div>)}
                 </div>
                 <div className="input-group">
                   <label htmlFor="dept">부서명</label>
                   <input type="text" className="input-dept" name="dept" value={this.state.fields.dept} onChange={this.onChangeValue} placeholder="소속 부서를 입력해주세요"/>
-                  <div className="error-msg">{this.state.errors.dept}</div>
+                  {this.state.errors.dept && (<div className="error-msg">{this.state.errors.dept}</div>)}
+                </div>
+                <div className="input-group">
+                  <label htmlFor="dept">그룹</label>
+                  <select className="input-select" name="group" value={this.state.fields.group} onChange={this.onChangeValue}>
+                    <option disabled={true} selected value="">--그룹 선택--</option>
+                    <option value="ADMIN">관리자</option>
+                    <option value="USER">일반</option>
+                  </select>
+                  {this.state.errors.group && (<div className="error-msg">{this.state.errors.group}</div>)}
                 </div>
               </div>
               <div className="btn-group">
-                <button type="submit" className="btn btn-register" onClick={(e)=> this.action(e,"update")}>수정</button>
+                <button type="submit" className="btn btn-register" onClick={(e)=> this.action("update")}>수정</button>
                 <button type="button" className="btn btn-cancel" onClick={(e) => this.handleCancelClick(e)}>취소</button>
               </div>
               {this.state.message && (
-                <Dialog type="alert" callback={this.dialogReset} message={this.state.message}/>
+                <Dialog type={this.state.messageType} callback={this.dialogCallback} message={this.state.message}/>
               )}
             </div>
           </div>
