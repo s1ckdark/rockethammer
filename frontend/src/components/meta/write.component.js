@@ -442,7 +442,7 @@ class Metawrite extends Component {
                             if(res.status===200) {
                                 alert("수정 완료");
                                 setTimeout(() => {
-                                // this.props.router.navigate(-1)
+                                this.props.router.navigate(-1)
                             }, 1000);}
                             })
                         })

@@ -230,7 +230,7 @@ class Login extends Component {
             </div>
             <div className="btn-group">
               <button className="btn btn-login" onClick={this.handleLogin}>로그인</button>
-              <span>아직 회원이 아닌 경우 <Link to="/register">회원 등록</Link>을 해주세요</span>
+              {/* <span>아직 회원이 아닌 경우 <Link to="/register">회원 등록</Link>을 해주세요</span> */}
             </div>
             {this.state.message && (
               <div className="form-group">
