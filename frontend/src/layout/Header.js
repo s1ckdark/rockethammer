@@ -109,7 +109,7 @@ class Header extends Component {
               {!currentUser ?
               <>
                  <li className={mode+" nav-item"}><Link to={"/login"} className="nav-link"><p>로그인</p></Link></li>
-                 <li className={mode+" nav-item"}>><Link to="/register" className="nav-link" onClick={this.props.logOut}><p>회원 등록</p></Link></li>
+                 {/* <li className={mode+" nav-item"}>><Link to="/register" className="nav-link" onClick={this.props.logOut}><p>회원 등록</p></Link></li> */}
                 </>:
               <>
                 <li className={mode+" nav-item profile-service"}>

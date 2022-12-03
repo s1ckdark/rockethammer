@@ -127,22 +127,7 @@ class Register extends Component {
 
   handleCancelClick = (e) => {
     e.preventDefault();
-    this.setState({
-      fields:{
-      userid: "",
-      password: "",
-      name:"",
-      dept:"",
-      group:"USER",
-      },
-      compare:{
-        newPassword:"",
-        confirmPassword:"",
-        result:false
-      },
-      successful: false,
-      message: ""
-    })
+    this.props.router.navigate(-1)
   }
 
   handleRegister(e) {

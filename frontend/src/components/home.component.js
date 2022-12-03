@@ -38,7 +38,7 @@ class Home extends Component {
           </div>
           :<div className="button-group">
             <button className="btn btn-dark" onClick={()=> this.props.router.navigate('/login')}>로그인</button>
-            <button className="btn btn-gray" onClick={()=> this.props.router.navigate('/register')}>회원등록</button>
+            {/* <button className="btn btn-gray" onClick={()=> this.props.router.navigate('/register')}>회원등록</button> */}
           </div>
           }
         </div>
