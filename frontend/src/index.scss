@@ -37,13 +37,19 @@ button {
 }
 
 input,
-textarea {
+textarea,
+select {
 	border: none;
 	&:focus,
 	&:active {
 		border: 0;
 		outline: none;
 	}
+}
+
+select {
+	height: 42px;
+	border: none;
 }
 
 table {

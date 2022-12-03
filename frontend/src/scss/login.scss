@@ -13,9 +13,10 @@
 			position: absolute;
 			right: 40px;
 			top: -110px;
-			width: 165px;
+			width: 200px;
 			height: 200px;
-			background-image: url(../img/login_box_rocket.svg);
+			background-size: cover;
+			background-image: url(../img/login_box_rocket.png);
 		}
 		border: 2px solid $login-box-line;
 		border-radius: 22px;

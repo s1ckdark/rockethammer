@@ -42,7 +42,7 @@ class Header extends Component {
       var thisNode = e.currentTarget.querySelector('p');
       var thisNodeImg = e.currentTarget.querySelector('img');
       var img = process.env.PUBLIC_URL+'/img/'+e.currentTarget.className.replace(/(white|blue) nav-item/gi, '')+'color.svg'
-      gsap.to(thisNode, {autoAlpha:1,x:"+10px"})
+      gsap.to(thisNode, {autoAlpha:1,x:2})
       gsap.set(thisNodeImg, {attr:{src:img }});
       gsap.to(thisNodeImg, {duration:1}, 0);
     } else {
@@ -57,7 +57,7 @@ class Header extends Component {
       var thisNodeImg = e.currentTarget.querySelector('img');
       var img = process.env.PUBLIC_URL+'/img/'+e.currentTarget.className.replace(/(white|blue) nav-item/gi, '')+mode+'.svg'
       gsap.set(thisNodeImg, {attr:{src:img }});
-      gsap.to(thisNode, {autoAlpha:0,x:"-10px"})
+      gsap.to(thisNode, {autoAlpha:0,x:0})
     }
   }
 
@@ -120,7 +120,7 @@ class Header extends Component {
                 <li className={"logout-service-"+mode+" nav-item"} onClick={this.props.logOut} onMouseEnter={(e)=>this.onMouseEnter(e,mode)} onMouseLeave={(e)=>this.onMouseLeave(e,mode)}>
                   <Link className="nav-link">
                     <img alt="service" src={mode === 'blue' ? process.env.PUBLIC_URL+'/img/logout-service-blue.svg':process.env.PUBLIC_URL+'/img/logout-service-white.svg'}/>
-                    <p>로그아웃</p>
+                    {/* <p>로그아웃</p> */}
                   </Link>
                 </li>
               </>}

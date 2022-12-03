@@ -266,6 +266,15 @@ class UserRegister extends Component {
               <input type="text" className="input-dept" name="dept" value={this.state.fields.dept} onChange={this.onChangeValue} placeholder="소속 부서를 입력해주세요"/>
               <div className="error-msg">{this.state.errors.dept}</div>
             </div>
+            <div className="input-group">
+                  <label htmlFor="dept">그룹</label>
+                  <select className="input-select" name="group" value={this.state.fields.group} onChange={this.onChangeValue}>
+                    <option disabled={true} selected value="">--그룹 선택--</option>
+                    <option value="ADMIN">관리자</option>
+                    <option value="USER">일반</option>
+                  </select>
+                  <div className="error-msg">{this.state.errors.group}</div>
+            </div>
           </div>
           <div className="btn-group">
             <button type="submit" className="btn btn-register" onClick={this.handleRegister}>회원 가입</button>
