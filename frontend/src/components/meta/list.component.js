@@ -111,7 +111,8 @@ class Metalist extends Component {
                             topic_name:tn,
                             subject:topic_name,
                             changed:changed
-                        }
+                        },
+                        userReady: true
                     })
             } else {
                 this.setState({
@@ -124,6 +125,7 @@ class Metalist extends Component {
                     },
                     meta:{},
                     delete:{},
+                    userReady: true
                 })
             }
         }
@@ -169,7 +171,8 @@ class Metalist extends Component {
                 subject:'',
                 changed:''
             },
-            meta:{}
+            meta:{},
+            userReady:false
         })
     }
 
