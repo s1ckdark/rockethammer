@@ -54,6 +54,16 @@ class Metalist extends Component {
         // console.log(`active page is ${pageNumber}`);
         this.props.router.navigate('/meta/'+pageNumber)
         this.fetchData(pageNumber-1)
+        this.setState({
+            ...this.state,
+            meta:{},
+            select:{
+                idx:'',
+                topic_name:"",
+                subject:"",
+                schema: false
+            }
+        })
     }
 
     componentDidMount(){
