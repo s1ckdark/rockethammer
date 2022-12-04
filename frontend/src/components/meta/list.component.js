@@ -95,9 +95,9 @@ class Metalist extends Component {
     fetchMetaData = async(tn) => {
         try {
         const temp =  await axios.post(process.env.REACT_APP_API+"/meta/getmeta", {keyword:tn})
-        this.setState({
-            meta:temp.data[0]
-        })
+        // this.setState({
+        //     meta:temp.data[0]
+        // })
         return temp.data[0]
         } catch(err) {
             console.log("Err =>", err)
