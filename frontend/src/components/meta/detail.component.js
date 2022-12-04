@@ -72,7 +72,7 @@ class Metadetail extends Component {
             messageType:"alert"
         })
         // setTimeout(() => {
-        this.props.getTime()
+        this.props.getData()
         // }, 1000)
     }
 
@@ -151,6 +151,7 @@ class Metadetail extends Component {
         switch (act){
           case 'yes':
             this.onDel(typeofapi, subject)
+                    // this.props.getData()
             this.setState({...this.state,message:''})
           break;
 
@@ -174,11 +175,11 @@ class Metadetail extends Component {
     render(){
         if(this.props.data === null) return false;
         const {changed} = this.props;
-        // const { schema, meta_join } = helpers.parseNested(this.props.data) || {}
-        const { schema } = helpers.parseNested(this.props.data) || {}
+        const { schema, meta_join } = helpers.parseNested(this.props.data) || {}
+        // const { schema } = helpers.parseNested(this.props.data) || {}
         let sch = JSON.parse(schema);
-        // let meta = helpers.isEmptyObj(meta_join) === false && JSON.parse(meta_join).is_used === 'true' ? JSON.parse(meta_join):{}
-        const { meta }= this.props || {}
+        let meta = helpers.isEmptyObj(meta_join) === false && JSON.parse(meta_join).is_used === 'true' ? JSON.parse(meta_join):{}
+        // const { meta }= this.props || {}
         // console.log("meta ->",meta)
         const topic_name = sch.subject.replace(/(-value|-key)/g, "")
         // console.log("schema ->",helpers.isEmptyObj(sch.schema), "meta ->",helpers.isEmptyObj(meta), "is_used ->", meta.is_used)

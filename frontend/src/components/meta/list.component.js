@@ -28,7 +28,6 @@ class Metalist extends Component {
               list:[]
           },
           schemas:{},
-          meta:{},
           keyword:'',
           select:{
             idx:'',
@@ -47,7 +46,7 @@ class Metalist extends Component {
         };
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchData = this.fetchData.bind(this);
-        this.fetchMetaData = this.fetchMetaData.bind(this);
+        // this.fetchMetaData = this.fetchMetaData.bind(this);
     }
 
     handlePageChange(pageNumber) {
@@ -56,7 +55,6 @@ class Metalist extends Component {
         this.fetchData(pageNumber-1)
         this.setState({
             ...this.state,
-            meta:{},
             select:{
                 idx:'',
                 topic_name:"",
@@ -92,29 +90,30 @@ class Metalist extends Component {
         })
     }
 
-    fetchMetaData = async(tn) => {
-        try {
-        const temp =  await axios.post(process.env.REACT_APP_API+"/meta/getmeta", {keyword:tn})
-        // this.setState({
-        //     meta:temp.data[0]
-        // })
-        return temp.data[0]
-        } catch(err) {
-            console.log("Err =>", err)
-        }
-    }
+    //when using vw_topic_list_new, uncommet this section
+    // fetchMetaData = async(tn) => {
+    //     try {
+    //     const temp =  await axios.post(process.env.REACT_APP_API+"/meta/getmeta", {keyword:tn})
+    //     // this.setState({
+    //     //     meta:temp.data[0]
+    //     // })
+    //     return temp.data[0]
+    //     } catch(err) {
+    //         console.log("Err =>", err)
+    //     }
+    // }
     detailView = async (idx, topic_name, changed) => {
         // e.preventDefault();
         if(topic_name) {
             const tn = topic_name.replace(/(-value|-key)/g, "");
             const schema = JSON.parse(this.state.data.list[idx].schema)
-            const meta_join = await this.fetchMetaData(tn) || {}
-            // const meta_join = JSON.parse(this.state.data.list[idx].meta_join) || {}
+            // const meta_join = await this.fetchMetaData(tn) || {}
+            const meta_join = JSON.parse(this.state.data.list[idx].meta_join) || {}
             // console.log(meta_join)
             if(meta_join && meta_join.is_used === 'true') {
                     this.setState({
                         ...this.state,
-                        meta:meta_join,
+                        // meta:meta_join,
                         delete:meta_join,
                         select:{
                             idx:idx,
@@ -133,7 +132,7 @@ class Metalist extends Component {
                         subject:topic_name,
                         changed:changed
                     },
-                    meta:{},
+                    // meta:{},
                     delete:{},
                     userReady: true
                 })
@@ -168,23 +167,13 @@ class Metalist extends Component {
             tooltip.classList.toggle("visible")
         }
     }
-    getTime = () => {
-        const {idx, topic_name,changed} = this.state.select;
-        console.log("gettime")
-        this.detailView(idx,topic_name, changed)
-        this.setState({
-            ...this.state,
-            time:new Date().getTime,
-            select:{
-                idx:'',
-                topic_name:'',
-                subject:'',
-                changed:''
-            },
-            meta:{},
-            userReady:false
-        })
-    }
+
+    getData = () => {
+        const { idx, topic_name, changed } = this.state.select;
+        const currentPage = this.props.router.params.currentPage;
+        console.log(currentPage);
+        this.fetchData(currentPage-1);
+    };
 
     changed = (meta_join, schema) => {
         return meta_join && parseInt(schema.version.$numberLong) > parseInt(meta_join.schema_version) ? true : false
@@ -253,7 +242,8 @@ class Metalist extends Component {
                             </div>
                         </div>
                         <div className="detailview">
-                            <Detail getTime={this.getTime} key={this.state.time} topic={this.state.select.topic_name} data={typeof(this.state.select.idx) === 'number' ? data['list'][this.state.select.idx]: null} meta={meta}></Detail>
+                            <Detail getData={this.getData} key={this.state.time} topic={this.state.select.topic_name} data={typeof(this.state.select.idx) === 'number' ? data['list'][this.state.select.idx]: null}></Detail>
+                            {/* <Detail topic={this.state.select.topic_name} data={typeof(this.state.select.idx) === 'number' ? data['list'][this.state.select.idx]: null}></Detail> */}
                         </div>
                     </div>
                 </div>

@@ -62,6 +62,7 @@ class Metawrite extends Component {
     componentDidMount(){
         const {type, topic_name} = this.props.router.params;
         const {data} = this.props.router.location.state;
+        console.log(this.props);
         const schema = JSON.parse(data.schema);
         let meta ={}
         switch(type) {
@@ -315,7 +316,7 @@ class Metawrite extends Component {
     }
     preview = async(e, type) => {
         e.preventDefault();
-        console.log(type+" preview")
+        // console.log(type+" preview")
         const { data, prev } = this.state;
         let temp = {...data}, history={}
 
@@ -425,13 +426,14 @@ class Metawrite extends Component {
     onSubmit = async(e, type) => {
         e.preventDefault();
         const { data, prev, history } = this.state
-        console.log(data, prev, history)
-        console.log(type)
+        // console.log(data, prev, history)
+        // console.log(type)
+        // console.log(data.is_used)
 
         switch(type){
             case 'reg':
-                await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
-                    axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
+                await axios.post(process.env.REACT_APP_API+"/meta/insert/", data).then( res => {
+                    axios.post(process.env.REACT_APP_API+"/history/inserthistory/", history).then(res =>{
                         if(res.status===200) {
                             this.setState({
                             ...this.state,
@@ -445,8 +447,8 @@ class Metawrite extends Component {
             break;
 
             case 'changed':
-                await axios.post(process.env.REACT_APP_API+"/meta/insert/", this.state.data).then( res => {
-                    axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
+                await axios.post(process.env.REACT_APP_API+"/meta/insert/", data).then( res => {
+                    axios.post(process.env.REACT_APP_API+"/history/inserthistory/", history).then(res =>{
                     if(res.status===200) {
                         this.setState({
                         ...this.state,
@@ -461,19 +463,23 @@ class Metawrite extends Component {
             break;
 
             case 'update':
-                    await axios.post(process.env.REACT_APP_API+"/meta/deleteall/",{keyword:data.topic_name})
-                    await axios.post(process.env.REACT_APP_API+"/meta/insert/", data).then( res => {
-                        axios.post(process.env.REACT_APP_API+"/history/inserthistory/", this.state.history).then(res =>{
-                        if(res.status===200) {
-                            this.setState({
-                                ...this.state,
-                                message:"수정이 완료되었습니다",
-                                messageType:'alert',
-                                successful:true
+                    await axios.post(process.env.REACT_APP_API+"/meta/deleteall/",{keyword:data.topic_name}).then( res => {
+                        if(res.status ===200) {
+                            axios.post(process.env.REACT_APP_API+"/meta/insert/", data).then( res => {
+                                axios.post(process.env.REACT_APP_API+"/history/inserthistory/", history).then(res =>{
+                                    if(res.status===200) {
+                                        this.setState({
+                                            ...this.state,
+                                            message:"수정이 완료되었습니다",
+                                            messageType:'alert',
+                                            successful:true
+                                        })
+                                    }
+                                })
                             })
-                    }
-                        })
+                        }
                     })
+
             break;
             default:
                 console.log("submit")
