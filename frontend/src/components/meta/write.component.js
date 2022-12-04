@@ -335,7 +335,8 @@ class Metawrite extends Component {
                     this.setState({
                         ...this.state,
                         message:"변경된 내역이 없습니다",
-                        messageType:'alert'
+                        messageType:'alert',
+                        successful:false
                     })
                 return false
             }
@@ -418,7 +419,7 @@ class Metawrite extends Component {
           ...this.state,
           message: ""
         })
-        this.props.router.navigate(-1)
+        if(this.state.successful === true) this.props.router.navigate(-1)
       }
 
     onSubmit = async(e, type) => {
@@ -435,7 +436,8 @@ class Metawrite extends Component {
                             this.setState({
                             ...this.state,
                             message:"등록이 완료되었습니다",
-                            messageType:'alert'
+                            messageType:'alert',
+                            successful:true
                         })
                     // setTimeout(() => {
                     //     this.props.router.navigate(-1)
@@ -452,7 +454,8 @@ class Metawrite extends Component {
                         this.setState({
                         ...this.state,
                         message:"변경 등록이 완료되었습니다",
-                        messageType:'alert'
+                        messageType:'alert',
+                        successful:true
                     })
                     // setTimeout(() => {
                         // this.props.router.navigate(-1)
@@ -471,7 +474,8 @@ class Metawrite extends Component {
                             this.setState({
                                 ...this.state,
                                 message:"수정이 완료되었습니다",
-                                messageType:'alert'
+                                messageType:'alert',
+                                successful:true
                             })
                         //     setTimeout(() => {
                         //     this.props.router.navigate(-1)

@@ -93,8 +93,8 @@ class Metalist extends Component {
             console.log("Err =>", err)
         }
     }
-    detailView = async (e, idx, topic_name, changed) => {
-        e.preventDefault();
+    detailView = async (idx, topic_name, changed) => {
+        // e.preventDefault();
         if(topic_name) {
             const tn = topic_name.replace(/(-value|-key)/g, "");
             const schema = JSON.parse(this.state.data.list[idx].schema)
@@ -156,7 +156,9 @@ class Metalist extends Component {
         }
     }
     getTime = () => {
-        this.forceUpdate()
+        const {idx, topic_name,changed} = this.state.select;
+        console.log("gettime")
+        this.detailView(idx,topic_name, changed)
         this.setState({
             ...this.state,
             time:new Date().getTime,
@@ -205,7 +207,7 @@ class Metalist extends Component {
                                 return(
                                         <tr data-index={index} scope="row" className={this.state.select.idx === index ? "table-active":"text-center"} key={schema._id.$oid}>
                                             <td scope="row">{5*parseInt(data.current)+index+1}</td>
-                                            <td className="value-subject value form-group clickable" onClick={(e)=>this.detailView(e, index, schema.subject, this.changed(meta_join, schema))}>
+                                            <td className="value-subject value form-group clickable" onClick={(e)=>this.detailView(index, schema.subject, this.changed(meta_join, schema))}>
                                                 {schema.subject.replace(/(-value|-key)/g, "")}
                                             </td>
                                             <td className="value-id value form-group">
