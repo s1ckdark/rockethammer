@@ -439,9 +439,6 @@ class Metawrite extends Component {
                             messageType:'alert',
                             successful:true
                         })
-                    // setTimeout(() => {
-                    //     this.props.router.navigate(-1)
-                    // }, 1000);
                 }
                     })
                 })
@@ -457,9 +454,6 @@ class Metawrite extends Component {
                         messageType:'alert',
                         successful:true
                     })
-                    // setTimeout(() => {
-                        // this.props.router.navigate(-1)
-                    // }, 1000);
                 }
                     })
                 })
@@ -477,9 +471,6 @@ class Metawrite extends Component {
                                 messageType:'alert',
                                 successful:true
                             })
-                        //     setTimeout(() => {
-                        //     this.props.router.navigate(-1)
-                        // }, 1000);
                     }
                         })
                     })
@@ -488,8 +479,6 @@ class Metawrite extends Component {
                 console.log("submit")
         }
     }
-
-
 
     onValidation = (obj, fields) => {
         const errors = {

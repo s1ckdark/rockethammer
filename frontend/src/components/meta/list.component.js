@@ -122,6 +122,7 @@ class Metalist extends Component {
                         subject:topic_name,
                         changed:changed
                     },
+                    meta:{},
                     delete:{},
                 })
             }
