@@ -10,7 +10,6 @@ import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/ext-language_tools";
-import Pagination from "react-js-pagination";
 import helpers from "../../common/helpers";
 import { withRouter } from "../../common/withRouter";
 import Dialog from "../dialog.component";

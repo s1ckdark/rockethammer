@@ -159,6 +159,7 @@ class Metalist extends Component {
         this.forceUpdate()
         this.setState({
             ...this.state,
+            time:new Date().getTime,
             select:{
                 idx:'',
                 topic_name:'',
@@ -235,7 +236,7 @@ class Metalist extends Component {
                             </div>
                         </div>
                         <div className="detailview">
-                            <Detail getTime={this.getTime} topic={this.state.select.topic_name} data={typeof(this.state.select.idx) === 'number' ? data['list'][this.state.select.idx]: null} meta={meta}></Detail>
+                            <Detail getTime={this.getTime} key={this.state.time} topic={this.state.select.topic_name} data={typeof(this.state.select.idx) === 'number' ? data['list'][this.state.select.idx]: null} meta={meta}></Detail>
                         </div>
                     </div>
                 </div>
