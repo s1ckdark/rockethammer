@@ -198,86 +198,6 @@ class Metawrite extends Component {
             default:
 
         }
-
-
-
-        // let schema = type ==='changed' ? this.props.router.location.state.schema : JSON.parse(data.schema)
-        // let meta = type === 'changed' ? this.props.router.location.state.meta: typeof(data.meta_join) === 'string' ? helpers.parse(data.meta_join):{}
-    //     let tmp;
-    //     if(helpers.isEmptyObj(schema) === false && ( type === 'reg' || type ==='changed')){
-    //         const schemas = async() => {
-    //             const res = await axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:schema.subject.replace(/(-value|-key)/g, "")})
-    //             if (res.status === 200) {
-    //                 let tmp = Object.keys(res.data).sort().reduce(
-    //                     (newObj,key) => {
-    //                        newObj[key] = res.data[key];
-    //                        return newObj;
-    //                     },
-    //                     {}
-    //                  )
-    //                 Object.keys(tmp).map( kind => {
-    //                     if(res.data[kind].length > 0){
-    //                         let toJson = JSON.parse(res.data[kind][0].schema);
-    //                         let jsons = []
-    //                         toJson.fields.map((item, idx) => {
-    //                             let json = {};
-    //                             json.p_name = item.name;
-    //                             json.p_type = item.type;
-    //                             if(kind === 'value') json.l_name = '';
-    //                             if(kind === 'value') json.l_def = '';
-    //                             json.is_null = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'Y': 'N'
-    //                             json.default = item.default ? item.default : '-'
-    //                             if(kind === 'value') json.memo = '';
-    //                             if(kind === 'value') json.pii = '';
-    //                             if(kind === 'value') json.retension = '';
-    //                             jsons[idx] = json;
-    //                         })
-
-    //                         meta = {
-    //                             ...meta,
-    //                             [kind]:jsons
-    //                         }
-    //                     }
-    //                 })
-    //                 meta = {
-    //                     topic_name: schema.subject.replace(/(-value|-key)/g, ""),
-    //                     subject:schema.subject,
-    //                     schema_id: schema.id,
-    //                     schema_version: schema.version,
-    //                     // meta_version: type ==='reg' ? 1: meta.meta_version + 1,
-    //                     meta_version: 1,
-    //                     revision:1,
-    //                     last_mod_dt: new Date().toISOString(),
-    //                     last_mod_id:AuthService.getCurrentUser().userid,
-    //                     is_used: true,
-    //                 }
-
-    //                 console.log(meta)
-
-    //                 this.setState({
-    //                     ...this.state,
-    //                     userReady: true,
-    //                     data:meta,
-    //                     prev:meta,
-    //                     type:type
-    //                 })
-    //               }
-    //             }
-    //         schemas();
-    //     } else if(data && type ==='update') {
-    //         delete meta['_id'];
-    //         delete meta['_class']
-    //         meta['revision'] = parseInt(meta['revision']) + 1;
-    //         meta['last_mod_dt'] = new Date().toISOString();
-    //         meta['last_mod_id'] = AuthService.getCurrentUser().userid;
-    //         this.setState({
-    //             ...this.state,
-    //             userReady: true,
-    //             data: meta,
-    //             prev:JSON.parse(data.meta_join),
-    //             type:type
-    //         });
-    // }
 }
 
     onChangeValue = (e, field) =>{
@@ -355,35 +275,6 @@ class Metawrite extends Component {
             history.last_mod_id = AuthService.getCurrentUser().userid;
             history.topic_name = temp.topic_name;
             history.after = JSON.stringify(temp)
-
-    //     if(type === 'reg' || type ==='change'){
-    //         if(type === 'reg') {
-    //             temp.meta_version = 1;
-    //         } else {
-    //             let meta_versionInt = this.state.prev.meta_version + 1;
-    //             temp.meta_version = meta_versionInt;
-    //         }
-
-    //         temp.last_mod_dt = new Date().toISOString();
-    //         temp.last_mod_id = AuthService.getCurrentUser().userid;
-    //         this.setState(prevState => ({
-    //             data: temp
-    //         }),()=>{
-    //         this.setState({
-    //             ...this.state,
-    //             history:{
-    //                     topic_name:this.state.data.topic_name,
-    //                     before:type==='reg' ? "":JSON.stringify(this.state.data),
-    //                     after:JSON.stringify(this.state.data),
-    //                     last_mod_dt:(new Date).toISOString(),
-    //                     last_mod_id:AuthService.getCurrentUser().userid
-    //                 }
-    //             })
-    //         }
-    //     )
-    //     }
-    //     )
-    // }
 
 
         if(this.onValidation(temp, ["topic_name","subject","schema_id","schema_version","meta_version","op_name","service","revision","topic_desc","last_mod_dt","last_mod_id","is_used"])) {

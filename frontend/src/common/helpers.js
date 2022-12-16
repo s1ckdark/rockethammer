@@ -119,7 +119,7 @@ const helpers = {
             "write":"등록",
             "view":"조회",
             "history":"사용자 이력",
-            "retension":"보존기간",
+            "retension":"보존기간(일)",
             "pii":"pii",
             "table":"테이블",
             "json":"JSON",
