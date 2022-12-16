@@ -91,7 +91,6 @@ class Metawrite extends Component {
                                     if(kind === 'value') temp['l_def'] = '';
                                     temp['is_null'] = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'Y': 'N'
                                     temp['default'] = item.default ? item.default : '-'
-                                    if(kind === 'value') temp['memo'] = '';
                                     if(kind === 'value') temp['pii'] = '';
                                     if(kind === 'value') temp['retension'] = '';
 
@@ -151,7 +150,6 @@ class Metawrite extends Component {
                                     if(kind === 'value') temp['l_def'] = '';
                                     temp['is_null'] = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'Y': 'N'
                                     temp['default'] = item.default ? item.default : '-'
-                                    if(kind === 'value') temp['memo'] = '';
                                     if(kind === 'value') temp['pii'] = '';
                                     if(kind === 'value') temp['retension'] = '';
 

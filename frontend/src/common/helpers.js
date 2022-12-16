@@ -41,7 +41,6 @@ const helpers = {
                     "l_def":"설명",
                     "is_null":"널 여부",
                     "default":"기본값",
-                    "memo":"메모",
                     "topic_desc":"토픽설명"
                 };
                 break;
@@ -65,7 +64,6 @@ const helpers = {
                     "설명":"l_def",
                     "널 여부":"is_null",
                     "기본값":"default",
-                    "메모":"memo",
                     "토픽설명":"topic_desc"
                 };
                 break;
@@ -108,7 +106,6 @@ const helpers = {
             "l_def":"설명",
             "is_null":"널 여부",
             "default":"기본값",
-            "memo":"메모",
             "topic_desc":"토픽설명",
             "admin":"관리자 모드",
             "weblog":"사용자 로그",
