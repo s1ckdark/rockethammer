@@ -37,6 +37,7 @@ class Metaview extends Component {
         )
     }
 
+    // table, json 의 view type에서 해당되는 view를 렌더링한다
     view = ( type, props ) => {
         if(type === 'json') {
             console.log(props)

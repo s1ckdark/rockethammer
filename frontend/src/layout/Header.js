@@ -90,7 +90,7 @@ class Header extends Component {
   render(){
     let {currentUser, logOut, pathname} = this.props;
     const tmp = pathname;
-    let mode = tmp[0] === 'home' || tmp[0] === 'register' || tmp[0] === 'login' || tmp[0] === 'admin' ? "blue":"white";
+    let mode = tmp[0] === 'home' || tmp[0] === 'register' || tmp[0] === 'login' || tmp[0] === 'admin' || tmp[0] === ''? "blue":"white";
     let logoMode = mode === 'blue' ? "logo.png":"logo_dark.svg";
     return(
       <header className={"header h-"+tmp[0]}>
@@ -118,10 +118,10 @@ class Header extends Component {
                   </Link>
                 </li>
                 <li className={"logout-service-"+mode+" nav-item"} onClick={this.props.logOut} onMouseEnter={(e)=>this.onMouseEnter(e,mode)} onMouseLeave={(e)=>this.onMouseLeave(e,mode)}>
-                  <Link className="nav-link">
+                  {/* <Link className="nav-link"> */}
                     <img alt="service" src={mode === 'blue' ? process.env.PUBLIC_URL+'/img/logout-service-blue.svg':process.env.PUBLIC_URL+'/img/logout-service-white.svg'}/>
                     {/* <p>로그아웃</p> */}
-                  </Link>
+                  {/* </Link> */}
                 </li>
               </>}
               {currentUser && currentUser.group === 'ADMIN' ?

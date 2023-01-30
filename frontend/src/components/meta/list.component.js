@@ -49,6 +49,7 @@ class Metalist extends Component {
         // this.fetchMetaData = this.fetchMetaData.bind(this);
     }
 
+    // pagination
     handlePageChange(pageNumber) {
         // console.log(`active page is ${pageNumber}`);
         this.props.router.navigate('/meta/'+pageNumber)
@@ -70,6 +71,7 @@ class Metalist extends Component {
         this.fetchData(currentPage-1);
     }
 
+    // meta data를 가져온다
     fetchData = async(page = 0, type = 'list') => {
         const url = type === 'list' ? "/schema/getallschema" : "/schema/search"
         await axios.post(process.env.REACT_APP_API+url, {keyword:this.state.keyword,size:10,page:page})
@@ -90,18 +92,7 @@ class Metalist extends Component {
         })
     }
 
-    //when using vw_topic_list_new, uncommet this section
-    // fetchMetaData = async(tn) => {
-    //     try {
-    //     const temp =  await axios.post(process.env.REACT_APP_API+"/meta/getmeta", {keyword:tn})
-    //     // this.setState({
-    //     //     meta:temp.data[0]
-    //     // })
-    //     return temp.data[0]
-    //     } catch(err) {
-    //         console.log("Err =>", err)
-    //     }
-    // }
+    // 리스트상에 row를 눌렀을때 detailview에 나오는 스키마의 데이터를 정의한다
     detailView = async (idx, topic_name, changed) => {
         // e.preventDefault();
         if(topic_name) {
@@ -159,6 +150,7 @@ class Metalist extends Component {
         })
     }
 
+    // 리스트 상단의 목록 이름에 대한 설명을 처리한다
     tooltip = (e, action) => {
         e.preventDefault();
         const tooltip = e.target.querySelector('span');

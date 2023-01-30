@@ -1,9 +1,13 @@
 import React from 'react';
 
 const helpers = {
+    // 시간 관련 function
+    // mongodb에서 datetime을 ISOdate로 저장하기 떄문에 사용할떄는 한국 시간으로 변경해줘야한다
+    // meta 저장한 때는 한국시간을 저장하기 떄문에 ISOdate만 보기 좋게 변경해줘야 한다
     krDateTime : (date) => {
         return new Date(new Date(date) - new Date().getTimezoneOffset() * 60000).toISOString().split('.')[0].replace('T', ' ')
     },
+    // connector에 의해 들어온 topic들의 시간은 mongodb의 ISODate로 들어오기 떄문에 KR time으로 변경해줘야한다
     schemaTime : (date) => {
         var tmp = new Date(date);
         tmp = tmp.setHours(tmp.getHours() + 9);
@@ -17,6 +21,8 @@ const helpers = {
         }
         return true;
     },
+    // json으로 볼떄 json의 key를 한글로 변경
+    // translate와 비슷하네?
     replaceKey : (data, mode)=>{
         let swaps;
         switch(mode) {
@@ -76,15 +82,19 @@ const helpers = {
             const result = JSON.stringify(data, null, 8).replace(pattern, m => `"${swaps[m.slice(1,-2)]}":`)
             return result;
     },
+        // obj가 빈값인지 아닌지 구분한다
     isEmpty : ( str ) => {
         return (str === '' || str === undefined || str === null || str === 'null' );
     },
+    // obj가 빈값인지 아닌지 구분한다
     isNotEmpty : (str) => {
         return !this.isEmpty(str);
     },
+    // obj가 empty인지 아닌지 확인
     isEmptyObj : (value) => {
         return value && Object.keys(value).length === 0 && value.constructor === Object;
     },
+    // topic의 key를 한글로 번역
     translate : (name) => {
         var defineName = {
             "_id":"_id",
@@ -121,13 +131,14 @@ const helpers = {
             "table":"테이블",
             "json":"JSON",
             "changed":"변경이력",
-            "update":"업데이트",
+            "update":"수정",
             "reg":"등록",
             "change":"변경 등록",
             "":"홈"
         }
         return  defineName[name] ? defineName[name]:name;
     },
+    // obj depth별 key별 type 파악
     iterateObj : (dupeObj) => {
         var retObj = new Object();
         if (typeof (dupeObj) === 'object') {
@@ -149,15 +160,14 @@ const helpers = {
         }
         return retObj;
     },
-    movetolink : (link) => {
-        return link === window.location.pathname ? true:false
-    },
+    // state 업데이트
     updateState : (key, value) => {
         this.setState({
             ...this.state,
             [key]:[value]
         })
     },
+    // nested json을 depth별로 모두 파싱한다
     parseNested : (str) => {
             try {
                 return JSON.parse(str, (_, val) => {
@@ -169,9 +179,11 @@ const helpers = {
                 return str
             }
     },
+    // string을 json으로 바꾼다
     parse : (str) => {
         return JSON.parse(str);
     },
+    // javascript의 confirm을 구현
     useConfirm : (e, message, onConfirm, onCancel) => {
         e.preventDefault()
         if(window.confirm(message)) {
@@ -180,6 +192,7 @@ const helpers = {
             onCancel();
         }
     },
+    // meta에서 버전을 저장하거나 읽어올때 버전 계산을 위해 값의 type을 확인할 때 사용
     isInt : (val) => {
         let tmp = parseInt(val);
         return typeof tmp === "number" && isFinite(tmp) && Math.floor(tmp) === tmp ? "number":"string"
