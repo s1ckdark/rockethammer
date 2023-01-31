@@ -116,7 +116,7 @@ class UserRegister extends Component {
       errors["dept"] = "부서명을 3자 이상 입력해주세요";
     }
 
-    if(fields['group'].length > 0){
+    if(fields['group'].length < 0){
       formIsValid = false;
       errors["group"] = "그룹을 지정해주세요";
     }
@@ -192,7 +192,7 @@ class UserRegister extends Component {
         ).then( res => {
           if(res.status === 200) {
             this.props.router.navigate('/admin/manager');
-            window.location.reload()
+            // window.location.reload()
          }
         })
       },
@@ -301,7 +301,7 @@ class UserRegister extends Component {
                 </div>
             </div>
             <div className="btn-group">
-              <button type="submit" className="btn btn-register" onClick={this.handleRegister}>회원 가입</button>
+              <button type="submit" className="btn btn-register" onClick={this.handleRegister}>회원 등록</button>
               <button type="button" className="btn btn-cancel" onClick={this.handleCancelClick}>취소</button>
             </div>
           {this.state.message && (
