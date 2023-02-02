@@ -10,6 +10,7 @@ import Footer from "./layout/Footer";
 
 import Seo from "./components/seo.component";
 import EventBus from "./common/EventBus";
+import { useDispatch } from 'react-redux';
 
 class App extends Component {
   constructor(props) {
@@ -30,10 +31,16 @@ class App extends Component {
     EventBus.on("logout", () => {
       this.logOut();
     });
+
+    // window.onbeforeunload = () => {
+    //   return false;
+    // }
   }
+
 
   componentWillUnmount() {
     EventBus.remove("logout");
+    // window.onbeforeunload = null;
   }
 
  logOut() {
@@ -48,7 +55,6 @@ class App extends Component {
     const { currentUser } = this.state;
     const pathname = this.props.router.location.pathname.split('/')
     pathname.shift()
-
     return (
       <>
       <Seo />

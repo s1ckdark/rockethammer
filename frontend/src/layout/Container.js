@@ -24,13 +24,21 @@ import Notfound from "../components/notfound.component";
 import PrivateRoute from '../common/privateroute';
 
 class Container extends Component {
+  constructor(props) {
+    super(props);
+  }
+
+  componentDidMount(){
+    console.log(this.props);
+  }
     render(){
       const { isAllowed } = this.props;
         return (
             <Routes>
               <Route path="/" index element={<Home />} />
               <Route path="/home" element={<Home />} />
-              <Route path="/login" element={<PrivateRoute isAllowed={!isAllowed} redirectTo="/profile"><Login /></PrivateRoute>} />
+              {/* <Route path="/login" element={<PrivateRoute isAllowed={!isAllowed} redirectTo="/profile"><Login /></PrivateRoute>} /> */}
+              <Route path="/login" element={<Login />} />
               <Route path="/register" element={<PrivateRoute isAllowed={!isAllowed}><Register /></PrivateRoute>} />
               <Route path="/profile" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Profile /></PrivateRoute>} />
               <Route path="/manager" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><KafkaAdmin /></PrivateRoute>} />
