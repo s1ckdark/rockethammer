@@ -378,7 +378,8 @@
 							text-align: left;
 							padding: 15px 0;
 							margin: 10px auto;
-							&:first-child {
+							&:first-child,
+							&:nth-child(4) {
 								text-align: center;
 							}
 						}

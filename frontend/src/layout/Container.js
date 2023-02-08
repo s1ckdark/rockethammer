@@ -14,7 +14,6 @@ import UserRegister from "../components/admin/userRegister.component";
 import UserHistory from "../components/admin/userHistory.component";
 import UserWeblog from "../components/admin/userWeblog.component";
 import UserManager from "../components/admin/userManager.component";
-import Meta from "../components/meta.component";
 import Metawrite from "../components/meta/write.component";
 import Metalist from "../components/meta/list.component";
 import Metaview from "../components/meta/view.component";
@@ -24,13 +23,6 @@ import Notfound from "../components/notfound.component";
 import PrivateRoute from '../common/privateroute';
 
 class Container extends Component {
-  constructor(props) {
-    super(props);
-  }
-
-  componentDidMount(){
-    console.log(this.props);
-  }
     render(){
       const { isAllowed } = this.props;
         return (

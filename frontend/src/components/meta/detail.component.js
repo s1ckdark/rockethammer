@@ -1,15 +1,7 @@
 import React, { Component} from "react";
-import { Link } from 'react-router-dom';
 import axios from 'axios';
 import AuthService from "../../services/auth.service";
 
-import JSONInput from 'react-json-editor-ajrm';
-import locale from 'react-json-editor-ajrm/locale/en';
-import AceEditor from "react-ace";
-import "ace-builds/src-noconflict/mode-json";
-import "ace-builds/src-noconflict/theme-github";
-import "ace-builds/src-noconflict/theme-tomorrow";
-import "ace-builds/src-noconflict/ext-language_tools";
 import helpers from "../../common/helpers";
 import { withRouter } from "../../common/withRouter";
 import Dialog from "../dialog.component";
@@ -99,7 +91,7 @@ class Metadetail extends Component {
     // detail 화면에 나오는 버튼을 정의한다
     detailBtn = (topic_name, sch, meta) => {
         // console.log(topic_name, sch, meta)
-        // console.log("schema ->",sch.schema, "meta ->",meta, "is_used ->", meta.is_used)
+        console.log("schema ->",sch.schema, "meta ->",meta, "is_used ->", meta.is_used)
         const sc = helpers.isEmptyObj(sch.schema)
         const me = helpers.isEmptyObj(meta)
         const mi = meta.is_used
@@ -138,7 +130,7 @@ class Metadetail extends Component {
 
     // 스키마의 버전이 다른 새로운 스키마가 들어와서 새로 등록한 메타가 있음을 알려준다
     changed = (meta_join, schema) => {
-        return meta_join && parseInt(schema.version.$numberLong) > parseInt(meta_join.schema_version) ? true : false
+        return meta_join && schema.version > meta_join.schema_version ? true : false
     }
 
 
@@ -180,11 +172,8 @@ class Metadetail extends Component {
         }
       }
 
-
-
     render(){
         if(this.props.data === null) return false;
-        const {changed} = this.props;
         const { schema, meta_join } = helpers.parseNested(this.props.data) || {}
         // const { schema } = helpers.parseNested(this.props.data) || {}
         let sch = JSON.parse(schema);
@@ -193,7 +182,6 @@ class Metadetail extends Component {
         // console.log("meta ->",meta)
         const topic_name = sch.subject.replace(/(-value|-key)/g, "")
         // console.log("schema ->",helpers.isEmptyObj(sch.schema), "meta ->",helpers.isEmptyObj(meta), "is_used ->", meta.is_used)
-        const cond = [helpers.isEmptyObj(sch.schema), helpers.isEmptyObj(meta), meta.is_used]
         return (
             <>
             <div className="detail-info">

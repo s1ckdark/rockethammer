@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import {useNavigate, Redirect, Link, useLocation } from 'react-router-dom';
 import AuthService from "../../services/auth.service";
 import axios from "axios"
 import helpers from "../../common/helpers";
@@ -79,11 +78,11 @@ class Metawrite extends Component {
                                         },{}
                                     )
 
-                        Object.keys(sch).map( kind => {
+                        Object.keys(sch).forEach( kind => {
                             if(sch[kind].length > 0) {
                                 let tmpJson = JSON.parse(data[kind][0].schema);
                                 let json = []
-                                tmpJson.fields.map( (item) => {
+                                tmpJson.fields.forEach( (item) => {
                                     let temp = {};
                                     temp['p_name'] = item.name;
                                     temp['p_type'] = item.type;
@@ -102,8 +101,8 @@ class Metawrite extends Component {
 
                             meta['topic_name'] = topic_name
                             meta['subject'] = schema.subject
-                            meta['schema_id'] = schema.id.$numberLong || schema.id
-                            meta['schema_version'] = schema.version.$numberLong || schema.version
+                            meta['schema_id'] = schema.id || schema.id
+                            meta['schema_version'] = schema.version || schema.version
                             meta['meta_version'] = 1
                             meta['revision'] = 1
                             meta['last_mod_id']=''
@@ -138,11 +137,11 @@ class Metawrite extends Component {
                                         },{}
                                     )
 
-                        Object.keys(sch).map( kind => {
+                        Object.keys(sch).forEach( kind => {
                             if(sch[kind].length > 0) {
                                 let tmpJson = JSON.parse(data[kind][0].schema);
                                 let json = []
-                                tmpJson.fields.map( (item) => {
+                                tmpJson.fields.forEach( (item) => {
                                     let temp = {};
                                     temp['p_name'] = item.name;
                                     temp['p_type'] = item.type;
@@ -163,8 +162,8 @@ class Metawrite extends Component {
 
                             meta['topic_name'] = topic_name
                             meta['subject'] = schema.subject
-                            meta['schema_id'] = schema.id.$numberLong || schema.id
-                            meta['schema_version'] = schema.version.$numberLong || schema.version
+                            meta['schema_id'] = schema.id || schema.id
+                            meta['schema_version'] = schema.version || schema.version
                             meta['meta_version'] = meta
                             .meta['revision'] = 1
                             meta['last_mod_id']=''
@@ -216,7 +215,7 @@ class Metawrite extends Component {
     onChangeValueTemp = (e, index, field) =>{
         e.preventDefault();
         let metas = [...this.state.data[field]];
-        metas.map((ele, idx) => {
+        metas.forEach((ele, idx) => {
             if(idx === index) {
                 let meta = {...metas[index]};
                 meta[e.target.name] = e.target.value;
@@ -314,7 +313,7 @@ class Metawrite extends Component {
 
     onSubmit = async(e, type) => {
         e.preventDefault();
-        const { data, prev, history } = this.state
+        const { data, history } = this.state
         // console.log(data, prev, history)
         // console.log(type)
         // console.log(data.is_used)
@@ -397,7 +396,7 @@ class Metawrite extends Component {
         const hasOnlyTheKeys = Array.isArray(fields) ? JSON.stringify(Object.keys(obj).filter(x => fields.includes(x)).sort()) ===  JSON.stringify(fields.sort()) : false
         if (false === hasOnlyTheKeys) formIsValid = false;
 
-        fields.map( prop => {
+        fields.forEach( prop => {
             switch(obj[prop]){
               case null:
               case undefined:
@@ -477,7 +476,7 @@ class Metawrite extends Component {
     render()
     {
         const {userReady, data } = this.state;
-        let schema = Object.keys(data).map(field => {
+        let schema = Object.keys(data).forEach(field => {
             if(typeof(data[field]) === 'object' && data[field].length > 0) return field
         }).filter(ele => ele)
         if(userReady){
@@ -521,7 +520,7 @@ class Metawrite extends Component {
                                                         </thead>
                                                     :<></>}
                                                     <tr>
-                                                        <td scope="row">{index+1}</td>
+                                                        <th scope="row">{index+1}</th>
                                                             {Object.keys(field).map((field2) => {
                                                                 return (
                                                                     <td><input type="text" name={field2} className={"field-input "+field2} value={field[field2]} onChange={(e)=>this.onChangeValueTemp(e, index, ele)} readOnly={this.readonly(field2, field)} placeholder="-"/></td>

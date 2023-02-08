@@ -1,10 +1,9 @@
 import React, { Component } from 'react'
 import { gsap } from "gsap/all";
-import { Link, Navigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "../App.scss";
 
 import AuthService from "../services/auth.service";
-import helpers from "../common/helpers";
 import EventBus from "../common/EventBus";
 import { withRouter } from "../common/withRouter";
 
@@ -88,9 +87,9 @@ class Header extends Component {
     )
   }
   render(){
-    let {currentUser, logOut, pathname} = this.props;
+    let {currentUser, pathname} = this.props;
     const tmp = pathname;
-    let mode = tmp[0] === 'home' || tmp[0] === 'register' || tmp[0] === 'login' || tmp[0] === 'admin' || tmp[0] === ''? "blue":"white";
+    let mode = tmp[0] === 'home' || tmp[0] === 'register' || tmp[0] === 'login' || tmp[0] === 'admin' || tmp[0] === '' || tmp[0] === 'profile'? "blue":"white";
     let logoMode = mode === 'blue' ? "logo.png":"logo_dark.svg";
     return(
       <header className={"header h-"+tmp[0]}>
@@ -109,7 +108,6 @@ class Header extends Component {
               {!currentUser ?
               <>
                  <li className={mode+" nav-item"}><Link to={"/login"} className="nav-link"><p>로그인</p></Link></li>
-                 {/* <li className={mode+" nav-item"}>><Link to="/register" className="nav-link" onClick={this.props.logOut}><p>회원 등록</p></Link></li> */}
                 </>:
               <>
                 <li className={mode+" nav-item profile-service"}>
@@ -118,10 +116,7 @@ class Header extends Component {
                   </Link>
                 </li>
                 <li className={"logout-service-"+mode+" nav-item"} onClick={this.props.logOut} onMouseEnter={(e)=>this.onMouseEnter(e,mode)} onMouseLeave={(e)=>this.onMouseLeave(e,mode)}>
-                  {/* <Link className="nav-link"> */}
                     <img alt="service" src={mode === 'blue' ? process.env.PUBLIC_URL+'/img/logout-service-blue.svg':process.env.PUBLIC_URL+'/img/logout-service-white.svg'}/>
-                    {/* <p>로그아웃</p> */}
-                  {/* </Link> */}
                 </li>
               </>}
               {currentUser && currentUser.group === 'ADMIN' ?

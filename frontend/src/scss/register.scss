@@ -19,7 +19,7 @@
 		border: 2px solid $login-box-line;
 		border-radius: 22px;
 		width: 520px;
-		height: 820px;
+		height: auto;
 		.inner {
 			padding: 50px;
 			h3 {
@@ -55,6 +55,12 @@
 					input {
 						margin-bottom: 10px;
 					}
+				}
+				.input-select {
+					display: block;
+					width: 100%;
+					height: auto;
+					padding: 15px 10px;
 				}
 			}
 		}

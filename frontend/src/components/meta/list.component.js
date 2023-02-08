@@ -1,15 +1,5 @@
 import React, { Component} from "react";
-import { Link } from 'react-router-dom';
 import axios from 'axios';
-import AuthService from "../../services/auth.service";
-
-import JSONInput from 'react-json-editor-ajrm';
-import locale from 'react-json-editor-ajrm/locale/en';
-import AceEditor from "react-ace";
-import "ace-builds/src-noconflict/mode-json";
-import "ace-builds/src-noconflict/theme-github";
-import "ace-builds/src-noconflict/theme-tomorrow";
-import "ace-builds/src-noconflict/ext-language_tools";
 import Pagination from "react-js-pagination";
 import helpers from "../../common/helpers";
 import { withRouter } from "../../common/withRouter";
@@ -97,7 +87,6 @@ class Metalist extends Component {
         // e.preventDefault();
         if(topic_name) {
             const tn = topic_name.replace(/(-value|-key)/g, "");
-            const schema = JSON.parse(this.state.data.list[idx].schema)
             // const meta_join = await this.fetchMetaData(tn) || {}
             const meta_join = JSON.parse(this.state.data.list[idx].meta_join) || {}
             // console.log(meta_join)
@@ -133,15 +122,15 @@ class Metalist extends Component {
 
     changing = async (e, index, topic_name) => {
         e.preventDefault();
-        const temp = index ? this.state.data['list'][index]: null
-        const meta_join = JSON.parse(this.state.data.list[index].meta_join)
-        const schema = JSON.parse(this.state.data.list[index].schema)
+        // const temp = index ? this.state.data['list'][index]: null
+        // const meta_join = JSON.parse(this.state.data.list[index].meta_join)
+        // const schema = JSON.parse(this.state.data.list[index].schema)
         const tn = topic_name.replace(/(-value|-key)/g, "");
 
         await axios.post(process.env.REACT_APP_API+"/schema/changed", {"keyword":topic_name}).then(res => {
             if(res.data.length > 1) {
                 let temp = [];
-                res.data.map((item,index) => {
+                res.data.forEach((item,index) => {
                     temp[index] = item;
                     temp[index]['schema']= JSON.parse(item.schema);
                 })
@@ -161,18 +150,17 @@ class Metalist extends Component {
     }
 
     getData = () => {
-        const { idx, topic_name, changed } = this.state.select;
+        // const { idx, topic_name, changed } = this.state.select;
         const currentPage = this.props.router.params.currentPage;
-        console.log(currentPage);
         this.fetchData(currentPage-1);
     };
 
     changed = (meta_join, schema) => {
-        return meta_join && parseInt(schema.version.$numberLong) > parseInt(meta_join.schema_version) ? true : false
+        return meta_join && schema.version > meta_join.schema_version ? true : false
     }
 
     render(){
-        const { data, meta, userReady } = this.state;
+        const { data, userReady } = this.state;
         const { topic_name, idx } = this.state.select;
         if(userReady){
         return (
@@ -201,8 +189,8 @@ class Metalist extends Component {
                             {data && data.list && data.list.length > 0 ? data.list.map((item,index) => {
                                 var schema = JSON.parse(item.schema), meta_join = item.meta_join !=='undefined' ? JSON.parse(item.meta_join):null;
                                 return(
-                                        <tr data-index={index} scope="row" className={this.state.select.idx === index ? "table-active":"text-center"} key={schema._id.$oid}>
-                                            <td scope="row">{5*parseInt(data.current)+index+1}</td>
+                                        <tr data-index={index} className={idx === index ? "table-active":"text-center"} key={schema._id.$oid}>
+                                            <th scope="row">{5*parseInt(data.current)+index+1}</th>
                                             <td className="value-subject value form-group clickable" onClick={(e)=>this.detailView(index, schema.subject, this.changed(meta_join, schema))}>
                                                 {schema.subject.replace(/(-value|-key)/g, "")}
                                             </td>
@@ -234,8 +222,7 @@ class Metalist extends Component {
                             </div>
                         </div>
                         <div className="detailview">
-                            <Detail getData={this.getData} key={this.state.time} topic={this.state.select.topic_name} data={typeof(this.state.select.idx) === 'number' ? data['list'][this.state.select.idx]: null}></Detail>
-                            {/* <Detail topic={this.state.select.topic_name} data={typeof(this.state.select.idx) === 'number' ? data['list'][this.state.select.idx]: null}></Detail> */}
+                            <Detail getData={this.getData} key={this.state.time} topic={topic_name} data={typeof(idx) === 'number' ? data['list'][idx]: null}></Detail>
                         </div>
                     </div>
                 </div>
