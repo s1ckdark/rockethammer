@@ -134,6 +134,7 @@ class Metalist extends Component {
                     temp[index] = item;
                     temp[index]['schema']= JSON.parse(item.schema);
                 })
+                console.log(temp)
                 this.props.router.navigate('/meta/view/changed/'+tn, {state:{data:temp, type:'changed'}})
             }
         })

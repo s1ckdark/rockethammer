@@ -20,8 +20,11 @@ class Metadetail extends Component {
     // 메타 등록
     write = (e, type, topic_name)=> {
         e.preventDefault();
-        this.props.router.navigate('/meta/'+type+'/'+topic_name, {state:{data:this.props.data}})
+        let tmp = this.props.data
+        tmp.type = type
+        this.props.router.navigate('/meta/'+type+'/'+topic_name, {state:{data:tmp}})
     }
+
 
     // meta의 detail이나 history를 조회
     view = (e, type, topic_name, currentPage = 1) => {
@@ -29,7 +32,6 @@ class Metadetail extends Component {
         this.props.router.navigate('/meta/view/'+url, type !== 'history' ? {state:this.props.data}:{state:{}})
     }
 
-    // 삭제
     // 케이스별로 삭제룰 진행한다
     onDel = async (typeofapi, topic_name) => {
         // console.log(typeofapi, topic_name);
@@ -91,15 +93,16 @@ class Metadetail extends Component {
     // detail 화면에 나오는 버튼을 정의한다
     detailBtn = (topic_name, sch, meta) => {
         // console.log(topic_name, sch, meta)
-        console.log("schema ->",sch.schema, "meta ->",meta, "is_used ->", meta.is_used)
+        console.log("schema ->",sch.schema, "meta ->",meta, "is_used ->", Boolean(meta.is_used))
+
         const sc = helpers.isEmptyObj(sch.schema)
         const me = helpers.isEmptyObj(meta)
-        const mi = meta.is_used
+        const mi = Boolean(meta.is_used) === true ? true : false
         const ch = this.changed(meta, sch);
-
+        console.log(helpers.isEmptyObj(sch.schema), sc)
+        console.log(ch, sc)
         const cond = [sc, me]
         let typeofapi;
-
         function arrayEquals(a, b){
             return Array.isArray(a) &&
                 Array.isArray(b) &&
@@ -110,17 +113,19 @@ class Metadetail extends Component {
         if(arrayEquals(cond, [false, false]) === true) typeofapi = "api1"
         if(arrayEquals(cond, [false, true]) === true) typeofapi = "api1"
         if(arrayEquals(cond, [true, true]) === true) typeofapi = "api2"
+        if(arrayEquals(cond, [undefined, true]) === true) typeofapi = "api2"
         if(arrayEquals(cond, [true, false]) === true) typeofapi = "api3"
 
-        // console.log(sc, me, mi)
+
+        console.log(sc, me, mi, ch)
         return (
             <>
-                {ch ? <button type="button" className="btn btn-changed" onClick={(e)=> this.changing(e, sch.subject, sch, meta)}>변경 등록</button>:<></>}
-                <button type="button" className="btn" onClick={e=>this.view(e, "json", topic_name)} disabled={me === false && mi === "true" ? false:true}>조회</button>
-                {sc === false && me === false && mi === 'true' ?
+                {ch === true && sc === false ? <button type="button" className="btn btn-changed" onClick={(e)=> this.changing(e, sch.subject, sch, meta)}>변경 등록</button>:<></>}
+                <button type="button" className="btn" onClick={e=>this.view(e, "json", topic_name)} disabled={me === false && mi === true ? false:true}>조회</button>
+                {sc === false && me === false && mi === true ?
                 <button type="button" className="btn" onClick={e=>this.write(e,"update", topic_name)} disabled={sc === true ? true:false}>수정</button>:
                 <button type="button" className="btn " onClick={e=>this.write(e,"reg", topic_name)} disabled={sc !== false && me !== false ? true:false}>등록</button>}
-                <button type="button" className="btn btn-delete" onClick={e=> this.callAction(e, "confirm", "정말 삭제하시겠습니까?",typeofapi, sch.subject)} role={typeofapi} disabled={typeofapi === 'api1' && (mi === 'false' || mi === undefined) ? true : false}>삭제</button>
+                <button type="button" className="btn btn-delete" onClick={e=> this.callAction(e, "confirm", "정말 삭제하시겠습니까?",typeofapi, sch.subject)} role={typeofapi} disabled={typeofapi === 'api1' && mi === false ? true : false}>삭제</button>
                 <button type="button" className="btn btn-history" onClick={(e)=>this.view(e, "history", topic_name)} disabled={me ? true:false}>이력</button>
 
             </>
@@ -130,6 +135,7 @@ class Metadetail extends Component {
 
     // 스키마의 버전이 다른 새로운 스키마가 들어와서 새로 등록한 메타가 있음을 알려준다
     changed = (meta_join, schema) => {
+        console.log(schema.version, meta_join.schema_version)
         return meta_join && schema.version > meta_join.schema_version ? true : false
     }
 

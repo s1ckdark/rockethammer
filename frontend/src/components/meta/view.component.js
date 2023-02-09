@@ -13,9 +13,11 @@ import Breadcrumb from "../breadcrumb.component";
 
 class Metaview extends Component {
 
-    write = (e, type, topic_name)=> {
+    write = (e, type, topic_name, data)=> {
         e.preventDefault();
-        this.props.router.navigate('/meta/write/'+topic_name, {state:{schema:this.props.router.location.state.schema,meta:this.props.router.location.state.meta_join,type:type}})
+        console.log(e, type, topic_name,data);
+        // console.log(this.props.router.location.state.schema)
+        this.props.router.navigate('/meta/write/'+topic_name, {state:{data:{schema:data,meta:this.props.router.location.state.meta_join,type:type,topic_name:topic_name}}})
     }
 
     viewer = (e,type,topic_name, state) => {
@@ -138,7 +140,7 @@ class Metaview extends Component {
                         <ReactDiffViewer leftTitle="변경 전" rightTitle="변경 후" oldValue={JSON.stringify(props.data[1], null, 4)} newValue={JSON.stringify(props.data[0], null, 4)} splitView={true} />
                     </div>
                     <div className="btn-group">
-                        <button type="button" className="btn btn-write" onClick={(e)=>this.write(e,"changed", this.props.router.params.topic_name)}>등록</button>
+                        <button type="button" className="btn btn-write btn-changed" onClick={(e)=>this.write(e,"changed", this.props.router.params.topic_name,props.data[0])}>등록</button>
                         <button type="button" className="btn btn-back" onClick={()=>this.props.router.navigate(-1)}>뒤로가기</button>
                     </div>
                 </div>

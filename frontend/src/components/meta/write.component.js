@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import {useNavigate, Redirect, Link, useLocation } from 'react-router-dom';
 import AuthService from "../../services/auth.service";
 import axios from "axios"
 import helpers from "../../common/helpers";
@@ -59,11 +60,13 @@ class Metawrite extends Component {
     }
 
     componentDidMount(){
-        const {type, topic_name} = this.props.router.params;
+        console.log(this.props)
+        // const {topic_name} = this.props.router.params;
         const {data} = this.props.router.location.state;
-        console.log(this.props);
-        const schema = JSON.parse(data.schema);
+        const {type, topic_name} = data;
+        const schema = helpers.isEmptyObj(this.props.router.location.state.data.schema) ? {} :this.props.router.location.state.data.schema;
         let meta ={}
+        console.log(type)
         switch(type) {
             case 'reg':
                 axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:topic_name}).then( res => {
@@ -78,11 +81,11 @@ class Metawrite extends Component {
                                         },{}
                                     )
 
-                        Object.keys(sch).forEach( kind => {
+                        Object.keys(sch).map( kind => {
                             if(sch[kind].length > 0) {
                                 let tmpJson = JSON.parse(data[kind][0].schema);
                                 let json = []
-                                tmpJson.fields.forEach( (item) => {
+                                tmpJson.fields.map( (item) => {
                                     let temp = {};
                                     temp['p_name'] = item.name;
                                     temp['p_type'] = item.type;
@@ -101,8 +104,8 @@ class Metawrite extends Component {
 
                             meta['topic_name'] = topic_name
                             meta['subject'] = schema.subject
-                            meta['schema_id'] = schema.id || schema.id
-                            meta['schema_version'] = schema.version || schema.version
+                            meta['schema_id'] = schema.id
+                            meta['schema_version'] = schema.version
                             meta['meta_version'] = 1
                             meta['revision'] = 1
                             meta['last_mod_id']=''
@@ -137,11 +140,12 @@ class Metawrite extends Component {
                                         },{}
                                     )
 
-                        Object.keys(sch).forEach( kind => {
+                        Object.keys(sch).map( kind => {
                             if(sch[kind].length > 0) {
+                                console.log(kind, data[kind][0])
                                 let tmpJson = JSON.parse(data[kind][0].schema);
                                 let json = []
-                                tmpJson.fields.forEach( (item) => {
+                                tmpJson.fields.map( (item) => {
                                     let temp = {};
                                     temp['p_name'] = item.name;
                                     temp['p_type'] = item.type;
@@ -162,10 +166,10 @@ class Metawrite extends Component {
 
                             meta['topic_name'] = topic_name
                             meta['subject'] = schema.subject
-                            meta['schema_id'] = schema.id || schema.id
-                            meta['schema_version'] = schema.version || schema.version
-                            meta['meta_version'] = meta
-                            .meta['revision'] = 1
+                            meta['schema_id'] = schema.id
+                            meta['schema_version'] = schema.version
+                            meta['meta_version'] = 1
+                            meta['revision'] = 1
                             meta['last_mod_id']=''
                             meta['last_mod_dt']=''
                             meta['is_used'] = true
@@ -174,6 +178,12 @@ class Metawrite extends Component {
                             meta['related_topics'] = ''
                             meta['topic_desc'] = ''
                         }
+                        this.setState({
+                            ...this.state,
+                            data: meta,
+                            userReady:true,
+                            type: type
+                        })
 
                     }
                 )
@@ -215,7 +225,7 @@ class Metawrite extends Component {
     onChangeValueTemp = (e, index, field) =>{
         e.preventDefault();
         let metas = [...this.state.data[field]];
-        metas.forEach((ele, idx) => {
+        metas.map((ele, idx) => {
             if(idx === index) {
                 let meta = {...metas[index]};
                 meta[e.target.name] = e.target.value;
@@ -313,7 +323,7 @@ class Metawrite extends Component {
 
     onSubmit = async(e, type) => {
         e.preventDefault();
-        const { data, history } = this.state
+        const { data, prev, history } = this.state
         // console.log(data, prev, history)
         // console.log(type)
         // console.log(data.is_used)
@@ -396,7 +406,7 @@ class Metawrite extends Component {
         const hasOnlyTheKeys = Array.isArray(fields) ? JSON.stringify(Object.keys(obj).filter(x => fields.includes(x)).sort()) ===  JSON.stringify(fields.sort()) : false
         if (false === hasOnlyTheKeys) formIsValid = false;
 
-        fields.forEach( prop => {
+        fields.map( prop => {
             switch(obj[prop]){
               case null:
               case undefined:
@@ -476,7 +486,7 @@ class Metawrite extends Component {
     render()
     {
         const {userReady, data } = this.state;
-        let schema = Object.keys(data).forEach(field => {
+        let schema = Object.keys(data).map(field => {
             if(typeof(data[field]) === 'object' && data[field].length > 0) return field
         }).filter(ele => ele)
         if(userReady){
@@ -520,7 +530,7 @@ class Metawrite extends Component {
                                                         </thead>
                                                     :<></>}
                                                     <tr>
-                                                        <th scope="row">{index+1}</th>
+                                                        <td scope="row">{index+1}</td>
                                                             {Object.keys(field).map((field2) => {
                                                                 return (
                                                                     <td><input type="text" name={field2} className={"field-input "+field2} value={field[field2]} onChange={(e)=>this.onChangeValueTemp(e, index, ele)} readOnly={this.readonly(field2, field)} placeholder="-"/></td>
