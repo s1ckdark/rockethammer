@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import {useNavigate, Redirect, Link, useLocation } from 'react-router-dom';
 import AuthService from "../../services/auth.service";
 import axios from "axios"
 import helpers from "../../common/helpers";
@@ -61,12 +60,11 @@ class Metawrite extends Component {
 
     componentDidMount(){
         console.log(this.props)
-        // const {topic_name} = this.props.router.params;
         const {data} = this.props.router.location.state;
         const {type, topic_name} = data;
-        const schema = helpers.isEmptyObj(this.props.router.location.state.data.schema) ? {} :this.props.router.location.state.data.schema;
+        const schema = helpers.isEmptyObj(this.props.router.location.state.data.schema) ? {} :JSON.parse(this.props.router.location.state.data.schema);
         let meta ={}
-        console.log(type)
+        console.log(schema)
         switch(type) {
             case 'reg':
                 axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:topic_name}).then( res => {
@@ -101,7 +99,6 @@ class Metawrite extends Component {
                                 meta[kind] = json
                             }
                         })
-
                             meta['topic_name'] = topic_name
                             meta['subject'] = schema.subject
                             meta['schema_id'] = schema.id
@@ -323,7 +320,7 @@ class Metawrite extends Component {
 
     onSubmit = async(e, type) => {
         e.preventDefault();
-        const { data, prev, history } = this.state
+        const { data, history } = this.state
         // console.log(data, prev, history)
         // console.log(type)
         // console.log(data.is_used)
@@ -530,7 +527,7 @@ class Metawrite extends Component {
                                                         </thead>
                                                     :<></>}
                                                     <tr>
-                                                        <td scope="row">{index+1}</td>
+                                                        <th scope="row">{index+1}</th>
                                                             {Object.keys(field).map((field2) => {
                                                                 return (
                                                                     <td><input type="text" name={field2} className={"field-input "+field2} value={field[field2]} onChange={(e)=>this.onChangeValueTemp(e, index, ele)} readOnly={this.readonly(field2, field)} placeholder="-"/></td>

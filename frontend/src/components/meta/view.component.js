@@ -17,7 +17,7 @@ class Metaview extends Component {
         e.preventDefault();
         console.log(e, type, topic_name,data);
         // console.log(this.props.router.location.state.schema)
-        this.props.router.navigate('/meta/write/'+topic_name, {state:{data:{schema:data,meta:this.props.router.location.state.meta_join,type:type,topic_name:topic_name}}})
+        this.props.router.navigate('/meta/write/'+topic_name, {state:{data:{schema:data,meta:this.props.router.location.state.meta_join,type:type,topic_name:topic_name   }}})
     }
 
     viewer = (e,type,topic_name, state) => {

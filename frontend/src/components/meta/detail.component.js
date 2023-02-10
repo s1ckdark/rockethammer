@@ -22,6 +22,7 @@ class Metadetail extends Component {
         e.preventDefault();
         let tmp = this.props.data
         tmp.type = type
+        tmp.topic_name = topic_name
         this.props.router.navigate('/meta/'+type+'/'+topic_name, {state:{data:tmp}})
     }
 
@@ -34,7 +35,7 @@ class Metadetail extends Component {
 
     // 케이스별로 삭제룰 진행한다
     onDel = async (typeofapi, topic_name) => {
-        // console.log(typeofapi, topic_name);
+        console.log("typeofapi:",typeofapi, "topic_name:",topic_name);
         let url, type = typeofapi === 'api1' ? "logical":"physical"
 
         switch(typeofapi){
@@ -99,8 +100,8 @@ class Metadetail extends Component {
         const me = helpers.isEmptyObj(meta)
         const mi = Boolean(meta.is_used) === true ? true : false
         const ch = this.changed(meta, sch);
-        console.log(helpers.isEmptyObj(sch.schema), sc)
-        console.log(ch, sc)
+        // console.log(helpers.isEmptyObj(sch.schema), sc)
+        // console.log(ch, sc)
         const cond = [sc, me]
         let typeofapi;
         function arrayEquals(a, b){
@@ -117,7 +118,7 @@ class Metadetail extends Component {
         if(arrayEquals(cond, [true, false]) === true) typeofapi = "api3"
 
 
-        console.log(sc, me, mi, ch)
+        console.log("sc:",sc, "me:",me, "mi:",mi, "ch:",ch)
         return (
             <>
                 {ch === true && sc === false ? <button type="button" className="btn btn-changed" onClick={(e)=> this.changing(e, sch.subject, sch, meta)}>변경 등록</button>:<></>}
@@ -183,9 +184,11 @@ class Metadetail extends Component {
         const { schema, meta_join } = helpers.parseNested(this.props.data) || {}
         // const { schema } = helpers.parseNested(this.props.data) || {}
         let sch = JSON.parse(schema);
-        let meta = helpers.isEmptyObj(meta_join) === false && JSON.parse(meta_join).is_used === 'true' ? JSON.parse(meta_join):{}
+
+        let meta = helpers.isEmptyObj(meta_join) === false && JSON.parse(meta_join).is_used === 'true' ? meta_join:{}
         // const { meta }= this.props || {}
-        // console.log("meta ->",meta)
+        console.log("meta ->",meta)
+        console.log(sch)
         const topic_name = sch.subject.replace(/(-value|-key)/g, "")
         // console.log("schema ->",helpers.isEmptyObj(sch.schema), "meta ->",helpers.isEmptyObj(meta), "is_used ->", meta.is_used)
         return (
@@ -197,7 +200,7 @@ class Metadetail extends Component {
                 </div>
                     <div className="info-group schema_id">
                         <label className="info-label">물리 스키마 버전</label>
-                        <p>{meta.schema_id ? meta.schema_id : "-"}</p>
+                        <p>{sch.version}</p>
                     </div>
                     <div className="info-group revision">
                         <label className="info-label">논리 스키마 버전</label>

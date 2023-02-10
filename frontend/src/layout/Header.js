@@ -17,19 +17,25 @@ class Header extends Component {
     };
   }
   componentDidMount() {
-    EventBus.on("logout", () => {
-      this.logOut();
-    });
-  }
-
-  componentWillMount() {
     const user = AuthService.getCurrentUser();
     if (user) {
       this.setState({
         currentUser: user,
       });
     }
+    EventBus.on("logout", () => {
+      this.logOut();
+    });
   }
+
+  // componentWillMount() {
+  //   const user = AuthService.getCurrentUser();
+  //   if (user) {
+  //     this.setState({
+  //       currentUser: user,
+  //     });
+  //   }
+  // }
 
   componentWillUnmount() {
     EventBus.remove("logout");
