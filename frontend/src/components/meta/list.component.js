@@ -152,8 +152,9 @@ class Metalist extends Component {
 
     getData = () => {
         // const { idx, topic_name, changed } = this.state.select;
-        const currentPage = this.props.router.params.currentPage;
-        this.fetchData(currentPage-1);
+        const currentPage = this.state.data.current;
+        console.log("currentPage",currentPage);
+        this.fetchData(currentPage);
     };
 
     changed = (meta_join, schema) => {
