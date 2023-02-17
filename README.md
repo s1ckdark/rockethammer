@@ -36,7 +36,7 @@
 │       ├── services
 │       └── setupTests.js
 ├── nohup.out
-└── spring-boot-security-jwt-mongodb-0.2.7-SNAPSHOT.jar
+└── spring-boot-security-jwt-mongodb.jar
 ```
 
 # Clone
@@ -79,5 +79,5 @@ goodusdata.app.jwtExpirationMs=86400000
 logging.level.root=INFO
 
 ```
-> nohup java -jar -Dspring.config.location={/path/to/properties} spring-boot-security-jwt-mongodb-0.2.7-SNAPSHOT.jar &
+> nohup java -jar -Dspring.config.location=default.properties spring-boot-security-jwt-mongodb.jar &
 ```
