@@ -62,7 +62,10 @@ class Metawrite extends Component {
         console.log(this.props)
         const {data} = this.props.router.location.state;
         const {type, topic_name} = data;
-        const schema = helpers.isEmptyObj(this.props.router.location.state.data.schema) ? {} :JSON.parse(this.props.router.location.state.data.schema);
+        console.log(type)
+        console.log(typeof(this.props.router.location.state.data.schema))
+        let tmpdata = typeof(this.props.router.location.state.data.schema) === 'string' ? JSON.parse(this.props.router.location.state.data.schema):this.props.router.location.state.data.schema
+        const schema = helpers.isEmptyObj(tmpdata) ? {} :tmpdata;
         let meta ={}
         console.log(schema)
         switch(type) {

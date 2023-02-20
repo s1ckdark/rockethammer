@@ -23,6 +23,7 @@ class Metadetail extends Component {
         let tmp = this.props.data
         tmp.type = type
         tmp.topic_name = topic_name
+
         this.props.router.navigate('/meta/'+type+'/'+topic_name, {state:{data:tmp}})
     }
 
