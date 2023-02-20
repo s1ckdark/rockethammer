@@ -93,9 +93,8 @@ class Metadetail extends Component {
 
     // detail 화면에 나오는 버튼을 정의한다
     detailBtn = (topic_name, sch, meta) => {
-        // console.log(topic_name, sch, meta)
         console.log("schema ->",sch.schema, "meta ->",meta, "is_used ->", Boolean(meta.is_used))
-
+        console.log(typeof(sch),typeof(meta))
         const sc = helpers.isEmptyObj(sch.schema)
         const me = helpers.isEmptyObj(meta)
         const mi = Boolean(meta.is_used) === true ? true : false
@@ -136,7 +135,7 @@ class Metadetail extends Component {
 
     // 스키마의 버전이 다른 새로운 스키마가 들어와서 새로 등록한 메타가 있음을 알려준다
     changed = (meta_join, schema) => {
-        console.log(schema.version, meta_join.schema_version)
+        // console.log(schema.version, meta_join.schema_version)
         return meta_join && schema.version > meta_join.schema_version ? true : false
     }
 
@@ -181,14 +180,9 @@ class Metadetail extends Component {
 
     render(){
         if(this.props.data === null) return false;
-        const { schema, meta_join } = helpers.parseNested(this.props.data) || {}
-        // const { schema } = helpers.parseNested(this.props.data) || {}
+        const { schema, meta_join } = this.props.data || {}
         let sch = JSON.parse(schema);
-
-        let meta = helpers.isEmptyObj(meta_join) === false && JSON.parse(meta_join).is_used === 'true' ? meta_join:{}
-        // const { meta }= this.props || {}
-        console.log("meta ->",meta)
-        console.log(sch)
+        let meta = helpers.isEmptyObj(JSON.parse(meta_join)) === false && JSON.parse(meta_join).is_used === 'true' ? JSON.parse(meta_join):{}
         const topic_name = sch.subject.replace(/(-value|-key)/g, "")
         // console.log("schema ->",helpers.isEmptyObj(sch.schema), "meta ->",helpers.isEmptyObj(meta), "is_used ->", meta.is_used)
         return (

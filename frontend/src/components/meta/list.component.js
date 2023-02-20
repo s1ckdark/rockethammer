@@ -181,8 +181,9 @@ class Metalist extends Component {
                                 <thead className="thead-light">
                                     <tr className="text-center p-3">
                                         <th scope="col" className="col-md-1">번호</th>
-                                        <th scope="col" className="col-md-6">토픽명</th>
-                                        <th scope="col" className="col-md-3">등록일시</th>
+                                        <th scope="col" className="col-md-4">토픽명</th>
+                                        <th scope="col" className="col-md-1">등록자</th>
+                                        <th scope="col" className="col-md-2">등록일시</th>
                                         <th scope="col" className="col-md-1" data-tooltip="물리 스키마 변경 여부입니다. 값이 Y 이면 등록되어 있는 물리 스키마 버전이 최신이 아니므로 변경 등록 해주세요!">변경(물리)<span className="info-icon">&#x24D8;</span></th>
                                         <th scope="col" className="col-md-1" data-tooltip="물리 스키마 삭제 여부입니다. 값이 Y 이면 물리 스키마 삭제된 상태이므로 논리 메타를 삭제해주세요!">삭제(물리)<span className="info-icon">&#x24D8;</span></th>
                                     </tr>
@@ -195,6 +196,9 @@ class Metalist extends Component {
                                             <th scope="row">{5*parseInt(data.current)+index+1}</th>
                                             <td className="value-subject value form-group clickable" onClick={(e)=>this.detailView(index, schema.subject, this.changed(meta_join, schema))}>
                                                 {schema.subject.replace(/(-value|-key)/g, "")}
+                                            </td>
+                                            <td className="value-id value form-group">
+                                                {helpers.isEmptyObj(meta_join) === false ? meta_join.last_mod_id : null}
                                             </td>
                                             <td className="value-id value form-group">
                                                 {helpers.schemaTime(schema.reg_dt)}
