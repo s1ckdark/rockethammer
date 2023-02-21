@@ -17,7 +17,7 @@ class Metaview extends Component {
         e.preventDefault();
         console.log(e, type, topic_name,data);
         // console.log(this.props.router.location.state.schema)
-        this.props.router.navigate('/meta/write/'+topic_name, {state:{data:{schema:data,meta:this.props.router.location.state.meta_join,type:type,topic_name:topic_name   }}})
+        this.props.router.navigate('/meta/write/'+topic_name, {state:{schema:data,meta:this.props.router.location.state.meta_join,type:type,topic_name:topic_name}})
     }
 
     viewer = (e,type,topic_name, state) => {
@@ -28,7 +28,7 @@ class Metaview extends Component {
 
     inputfield = ( field_name, field_type = 'input') => {
         console.log(this.props.router.location.state)
-        let data = JSON.parse(this.props.router.location.state.meta_join)
+        let data = this.props.router.location.state.meta_join
         return (
             <div className={"input-group "+field_name}>
                 <label htmlFor='field_name' className="field-label">{helpers.translate(field_name, "entokr")}</label>
@@ -43,7 +43,7 @@ class Metaview extends Component {
     view = ( type, props ) => {
         if(type === 'json') {
             console.log(props)
-            const meta = JSON.parse(props.meta_join)
+            const meta = props.meta_join
             return (
                 <>
                     <div className="viewer json">
@@ -71,7 +71,7 @@ class Metaview extends Component {
             )
         } else if(type === 'table'){
             console.log(props)
-            const data = JSON.parse(props.meta_join)
+            const data = props.meta_join
             let schema = Object.keys(data).map(field => {
                 if(typeof(data[field]) === 'object' && data[field].length > 0) return field
             }).filter(ele => ele)

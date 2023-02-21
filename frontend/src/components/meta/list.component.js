@@ -88,7 +88,7 @@ class Metalist extends Component {
         if(topic_name) {
             const tn = topic_name.replace(/(-value|-key)/g, "");
             // const meta_join = await this.fetchMetaData(tn) || {}
-            const meta_join = JSON.parse(this.state.data.list[idx].meta_join) || {}
+            const meta_join = this.state.data.list[idx].meta_join || {}
             // console.log(meta_join)
             if(meta_join && meta_join.is_used === 'true') {
                     this.setState({
@@ -190,7 +190,7 @@ class Metalist extends Component {
                                 </thead>
                                 <tbody>
                             {data && data.list && data.list.length > 0 ? data.list.map((item,index) => {
-                                var schema = JSON.parse(item.schema), meta_join = item.meta_join !=='undefined' ? JSON.parse(item.meta_join):null;
+                                var schema = item.schema, meta_join = item.meta_join !=='undefined' ? item.meta_join:null;
                                 return(
                                         <tr data-index={index} className={idx === index ? "table-active":"text-center"} key={schema._id.$oid}>
                                             <th scope="row">{5*parseInt(data.current)+index+1}</th>
@@ -198,7 +198,7 @@ class Metalist extends Component {
                                                 {schema.subject.replace(/(-value|-key)/g, "")}
                                             </td>
                                             <td className="value-id value form-group">
-                                                {helpers.isEmptyObj(meta_join) === false ? meta_join.last_mod_id : null}
+                                                {helpers.isEmptyObj(meta_join) === false ? meta_join.last_mod_id : "-"}
                                             </td>
                                             <td className="value-id value form-group">
                                                 {helpers.schemaTime(schema.reg_dt)}

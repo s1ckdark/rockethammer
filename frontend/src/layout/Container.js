@@ -31,7 +31,7 @@ class Container extends Component {
               <Route path="/home" element={<Home />} />
               {/* <Route path="/login" element={<PrivateRoute isAllowed={!isAllowed} redirectTo="/profile"><Login /></PrivateRoute>} /> */}
               <Route path="/login" element={<Login />} />
-              <Route path="/register" element={<PrivateRoute isAllowed={!isAllowed}><Register /></PrivateRoute>} />
+              <Route path="/register" element={<Register />} />
               <Route path="/profile" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Profile /></PrivateRoute>} />
               <Route path="/manager" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><KafkaAdmin /></PrivateRoute>} />
               <Route path="/monitor" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><KafkaMonitor /></PrivateRoute>} />

@@ -59,19 +59,14 @@ class Metawrite extends Component {
     }
 
     componentDidMount(){
-        console.log(this.props)
-        const {data} = this.props.router.location.state;
-        const {type, topic_name} = data;
-        console.log(type)
-        console.log(typeof(this.props.router.location.state.data.schema))
-        let tmpdata = typeof(this.props.router.location.state.data.schema) === 'string' ? JSON.parse(this.props.router.location.state.data.schema):this.props.router.location.state.data.schema
-        const schema = helpers.isEmptyObj(tmpdata) ? {} :tmpdata;
+        const {schema, meta_join, type, topic_name} = this.props.router.location.state;
         let meta ={}
-        console.log(schema)
+        // console.log(schema, meta_join)
         switch(type) {
             case 'reg':
                 axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:topic_name}).then( res => {
                     const {data, status } = res;
+                    console.log(data)
                     if(status === 200) {
                         const sch = Object.keys(data)
                                     .sort()
@@ -81,12 +76,11 @@ class Metawrite extends Component {
                                             return newObj;
                                         },{}
                                     )
-
-                        Object.keys(sch).map( kind => {
+                        Object.keys(sch).forEach( kind => {
                             if(sch[kind].length > 0) {
                                 let tmpJson = JSON.parse(data[kind][0].schema);
                                 let json = []
-                                tmpJson.fields.map( (item) => {
+                                tmpJson.fields.forEach(item => {
                                     let temp = {};
                                     temp['p_name'] = item.name;
                                     temp['p_type'] = item.type;
@@ -140,12 +134,12 @@ class Metawrite extends Component {
                                         },{}
                                     )
 
-                        Object.keys(sch).map( kind => {
+                        Object.keys(sch).forEach(kind => {
                             if(sch[kind].length > 0) {
                                 console.log(kind, data[kind][0])
                                 let tmpJson = JSON.parse(data[kind][0].schema);
                                 let json = []
-                                tmpJson.fields.map( (item) => {
+                                tmpJson.fields.forEach(item => {
                                     let temp = {};
                                     temp['p_name'] = item.name;
                                     temp['p_type'] = item.type;
@@ -158,7 +152,6 @@ class Metawrite extends Component {
 
                                     json.push(temp)
                                 })
-
 
                                 meta[kind] = json
                             }
@@ -191,17 +184,15 @@ class Metawrite extends Component {
             break;
 
             case 'update':
-                meta = JSON.parse(data.meta_join)
                 this.setState({
                     ...this.state,
-                    data: meta,
-                    prev: meta,
+                    data: meta_join,
+                    prev: meta_join,
                     userReady:true,
                     type: type
                 })
 
             break;
-
             default:
 
         }
@@ -225,7 +216,7 @@ class Metawrite extends Component {
     onChangeValueTemp = (e, index, field) =>{
         e.preventDefault();
         let metas = [...this.state.data[field]];
-        metas.map((ele, idx) => {
+        metas.forEach((ele, idx) => {
             if(idx === index) {
                 let meta = {...metas[index]};
                 meta[e.target.name] = e.target.value;
@@ -318,7 +309,7 @@ class Metawrite extends Component {
           ...this.state,
           message: ""
         })
-        if(this.state.successful === true) this.props.router.navigate(-1)
+        if(this.state.successful === true) this.props.router.navigate(this.state.type === 'reg' ? -1:-2)
       }
 
     onSubmit = async(e, type) => {
@@ -406,7 +397,7 @@ class Metawrite extends Component {
         const hasOnlyTheKeys = Array.isArray(fields) ? JSON.stringify(Object.keys(obj).filter(x => fields.includes(x)).sort()) ===  JSON.stringify(fields.sort()) : false
         if (false === hasOnlyTheKeys) formIsValid = false;
 
-        fields.map( prop => {
+        fields.forEach( prop => {
             switch(obj[prop]){
               case null:
               case undefined:
@@ -485,7 +476,7 @@ class Metawrite extends Component {
 
     render()
     {
-        const {userReady, data } = this.state;
+        const {userReady, data} = this.state;
         let schema = Object.keys(data).map(field => {
             if(typeof(data[field]) === 'object' && data[field].length > 0) return field
         }).filter(ele => ele)

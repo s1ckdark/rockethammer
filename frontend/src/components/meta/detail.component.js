@@ -24,7 +24,7 @@ class Metadetail extends Component {
         tmp.type = type
         tmp.topic_name = topic_name
 
-        this.props.router.navigate('/meta/'+type+'/'+topic_name, {state:{data:tmp}})
+        this.props.router.navigate('/meta/'+type+'/'+topic_name, {state:tmp})
     }
 
 
@@ -181,10 +181,9 @@ class Metadetail extends Component {
 
     render(){
         if(this.props.data === null) return false;
-        const { schema, meta_join } = this.props.data || {}
-        let sch = JSON.parse(schema);
-        let meta = helpers.isEmptyObj(JSON.parse(meta_join)) === false && JSON.parse(meta_join).is_used === 'true' ? JSON.parse(meta_join):{}
-        const topic_name = sch.subject.replace(/(-value|-key)/g, "")
+        const { schema } = this.props.data
+        const meta_join = this.props.data.meta_join || {}
+        const topic_name = schema.subject.replace(/(-value|-key)/g, "")
         // console.log("schema ->",helpers.isEmptyObj(sch.schema), "meta ->",helpers.isEmptyObj(meta), "is_used ->", meta.is_used)
         return (
             <>
@@ -195,22 +194,22 @@ class Metadetail extends Component {
                 </div>
                     <div className="info-group schema_id">
                         <label className="info-label">물리 스키마 버전</label>
-                        <p>{sch.version}</p>
+                        <p>{schema.version}</p>
                     </div>
                     <div className="info-group revision">
                         <label className="info-label">논리 스키마 버전</label>
-                        <p>{meta.revision ? meta.revision : "-"}</p>
+                        <p>{meta_join.revision ? meta_join.revision : "-"}</p>
                     </div>
                     <div className="info-group last_mod_id">
                         <label className="info-label">마지막 수정자</label>
-                        <p>{meta.last_mod_id ?meta.last_mod_id:"-" }</p>
+                        <p>{meta_join.last_mod_id ? meta_join.last_mod_id:"-" }</p>
                     </div>
                     <div className="info-group last_mod_dt">
                         <label className="info-label">마지막 수정 일시</label>
-                        <p>{meta.last_mod_dt ? helpers.krDateTime(meta.last_mod_dt) : "-"}</p>
+                        <p>{meta_join.last_mod_dt ? helpers.krDateTime(meta_join.last_mod_dt) : "-"}</p>
                     </div>
                 <div className="btn-group">
-                    {this.detailBtn(topic_name,sch,meta)}
+                    {this.detailBtn(topic_name,schema,meta_join)}
                 </div>
             </div>
             {this.state.message && (

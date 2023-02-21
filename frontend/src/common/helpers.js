@@ -179,10 +179,6 @@ const helpers = {
                 return str
             }
     },
-    // string을 json으로 바꾼다
-    parse : (str) => {
-        return JSON.parse(str);
-    },
     // javascript의 confirm을 구현
     useConfirm : (e, message, onConfirm, onCancel) => {
         e.preventDefault()
