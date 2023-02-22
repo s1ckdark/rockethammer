@@ -309,7 +309,7 @@ class Metawrite extends Component {
           ...this.state,
           message: ""
         })
-        if(this.state.successful === true) this.props.router.navigate(this.state.type === 'reg' ? -1:-2)
+        if(this.state.successful === true) this.props.router.navigate(this.state.type === 'changed' ? -2:-1)
       }
 
     onSubmit = async(e, type) => {
