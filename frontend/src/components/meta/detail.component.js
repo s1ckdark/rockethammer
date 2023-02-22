@@ -38,7 +38,7 @@ class Metadetail extends Component {
     onDel = async (typeofapi, topic_name) => {
         console.log("typeofapi:",typeofapi, "topic_name:",topic_name);
         let url, type = typeofapi === 'api1' ? "logical":"physical"
-
+        console.log(typeofapi)
         switch(typeofapi){
             case 'api1':
                 url = process.env.REACT_APP_API+"/meta/delete";
@@ -94,11 +94,11 @@ class Metadetail extends Component {
 
     // detail 화면에 나오는 버튼을 정의한다
     detailBtn = (topic_name, sch, meta) => {
-        console.log("schema ->",sch.schema, "meta ->",meta, "is_used ->", Boolean(meta.is_used))
+        // console.log("schema ->",sch.schema, "meta ->",meta, "is_used ->", JSON.parse(meta.is_used))
         console.log(typeof(sch),typeof(meta))
         const sc = helpers.isEmptyObj(sch.schema)
         const me = helpers.isEmptyObj(meta)
-        const mi = Boolean(meta.is_used) === true ? true : false
+        const mi = me ? false:JSON.parse(meta.is_used)
         const ch = this.changed(meta, sch);
         // console.log(helpers.isEmptyObj(sch.schema), sc)
         // console.log(ch, sc)
@@ -182,7 +182,7 @@ class Metadetail extends Component {
     render(){
         if(this.props.data === null) return false;
         const { schema } = this.props.data
-        const meta_join = this.props.data.meta_join || {}
+        const meta_join = this.props.data.meta_join && this.props.data.meta_join.is_used === 'true' ? this.props.data.meta_join : {}
         const topic_name = schema.subject.replace(/(-value|-key)/g, "")
         // console.log("schema ->",helpers.isEmptyObj(sch.schema), "meta ->",helpers.isEmptyObj(meta), "is_used ->", meta.is_used)
         return (

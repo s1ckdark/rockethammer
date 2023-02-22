@@ -85,6 +85,7 @@ class Metaview extends Component {
                         {this.inputfield("op_name")}
                         {this.inputfield("service")}
                         {this.inputfield("related_topics")}
+                        {this.inputfield("retension")}
                         {this.inputfield("topic_desc", 'textarea')}
                     </div>
                     <div className="schema-group">

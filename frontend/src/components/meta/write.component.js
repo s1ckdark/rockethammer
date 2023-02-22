@@ -24,6 +24,7 @@ class Metawrite extends Component {
                 op_name:'',
                 service:'',
                 related_topics:'',
+                retension:'',
                 topic_desc:'',
                 key:[],
                 value:[]
@@ -50,6 +51,7 @@ class Metawrite extends Component {
                 is_used: true,
                 op_name:'',
                 service:'',
+                rentesion:'',
                 topic_desc:''
             },
             message:'',
@@ -89,7 +91,6 @@ class Metawrite extends Component {
                                     temp['is_null'] = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'Y': 'N'
                                     temp['default'] = item.default ? item.default : '-'
                                     if(kind === 'value') temp['pii'] = '';
-                                    if(kind === 'value') temp['retension'] = '';
 
                                     json.push(temp)
                                 })
@@ -108,6 +109,7 @@ class Metawrite extends Component {
                             meta['op_name'] = ''
                             meta['service'] = ''
                             meta['related_topics'] = ''
+                            meta['retension'] = ''
                             meta['topic_desc'] = ''
                         }
                         this.setState({
@@ -148,7 +150,6 @@ class Metawrite extends Component {
                                     temp['is_null'] = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'Y': 'N'
                                     temp['default'] = item.default ? item.default : '-'
                                     if(kind === 'value') temp['pii'] = '';
-                                    if(kind === 'value') temp['retension'] = '';
 
                                     json.push(temp)
                                 })
@@ -169,6 +170,7 @@ class Metawrite extends Component {
                             meta['op_name'] = ''
                             meta['service'] = ''
                             meta['related_topics'] = ''
+                            meta['retension'] = ''
                             meta['topic_desc'] = ''
                         }
                         this.setState({
@@ -294,6 +296,7 @@ class Metawrite extends Component {
                     is_used: '',
                     op_name:'',
                     service:'',
+                    retension:'',
                     topic_desc:''
                 },
                 successful:false,
@@ -450,7 +453,7 @@ class Metawrite extends Component {
     readonly = (name, schema=null) => {
         if(!this.state.preview) {
             if(schema !== 'key') {
-                var tmp = ["p_name","p_type","topic_name","schema_id","schema_version","_id","is_null","default","revision","schema_id","meta_version","last_mod_id","last_mod_dt","subject"];
+                var tmp = ["p_name","p_type","topic_name","schema_id","schema_version","_id","is_null","default","revision","schema_id","meta_version","last_mod_id","last_mod_dt","subject","retnesion"];
                 let result = tmp.filter(ele => ele === name)
                 return result.length > 0 ? true : false
             } else { return true; }
@@ -495,6 +498,7 @@ class Metawrite extends Component {
                                 {this.inputfield("op_name")}
                                 {this.inputfield("service")}
                                 {this.inputfield("related_topics")}
+                                {this.inputfield("retension")}
                                 {this.inputfield("topic_desc", 'textarea')}
                             </div>
                         </div>

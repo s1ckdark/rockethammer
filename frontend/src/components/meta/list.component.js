@@ -198,7 +198,7 @@ class Metalist extends Component {
                                                 {schema.subject.replace(/(-value|-key)/g, "")}
                                             </td>
                                             <td className="value-id value form-group">
-                                                {helpers.isEmptyObj(meta_join) === false ? meta_join.last_mod_id : "-"}
+                                                {helpers.isEmptyObj(meta_join) === false && JSON.parse(meta_join.is_used) ? meta_join.last_mod_id : "-"}
                                             </td>
                                             <td className="value-id value form-group">
                                                 {helpers.schemaTime(schema.reg_dt)}

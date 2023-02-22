@@ -85,3 +85,15 @@
 		}
 	}
 }
+
+@media (max-width: 1920px) {
+	.register {
+		height: auto;
+		.register-box {
+			transform: scale(0.8);
+			.input-group {
+				padding: 0 0 15px;
+			}
+		}
+	}
+}
