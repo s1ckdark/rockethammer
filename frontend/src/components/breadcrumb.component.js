@@ -15,11 +15,11 @@ class Breadcrumb extends Component {
           <img src={path[1] !=='admin' ? "/img/"+path[1]+"-service-color.svg":"/img/"+path[1]+"-service-white.svg"} alt={helpers.translate(path[1])}></img>
           <h3>{helpers.translate(path[1])}</h3>
           <ol className="current">
-            {path.slice(0,3).map((item, index) => {
-              // console.log(index, this.isInt(item), typeof(this.isInt(item)));
+            {path.map((item, index) => {
+              // console.log(index,item);
               const tmpPath = path.slice(0, index+1);
               let tmpUrl = index === 0 ? '/home':tmpPath.join('/')
-              if(index !== path.slice(0,3).length -1) {
+              if(index !== path.length -1) {
                 return (<li key={index} className="breadcrumb-item"><Link to={tmpUrl} className={"depth"+index}>{helpers.translate(item)}</Link></li>)}
                 else {return (
                   <li key={index} className="breadcrumb-item active">{helpers.translate(item)}</li>)}

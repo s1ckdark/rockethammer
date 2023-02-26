@@ -33,9 +33,11 @@ class UserManager extends Component {
         confirmPassword:"",
         result:false
       },
+      user:{},
       successful: false,
       message: "",
       messageType:'',
+      passwd:false,
       act:{
         idx:'',
         type:''
@@ -65,11 +67,17 @@ class UserManager extends Component {
   componentDidMount() {
     const currentPage = this.props.router.params.currentPage || 1
     this.fetchData(currentPage-1);
+    const user = JSON.parse(localStorage.getItem("user"));
+    this.setState({
+      ...this.state,
+      user:user
+    })
     }
 
   writeHistory(type, userid){
     axios.post(process.env.REACT_APP_API+"/user/upthistory",
       {
+        modifier:this.state.user.userid,
         userid: userid,
         mod_item:type
       }
@@ -134,6 +142,11 @@ class UserManager extends Component {
     }
   }
 
+  passwdToggle = (e) => {
+    e.preventDefault();
+    this.state.passwd ? this.setState({...this.state, passwd: false}):this.setState({...this.state, passwd: true})
+  }
+
 
   async action(type) {
     const {fields, act} = this.state
@@ -152,7 +165,7 @@ class UserManager extends Component {
             axios.post(process.env.REACT_APP_API+"/user/upthistory", {userid: fields.userid,mod_item: "사용자 수정"}).then( res => {
               if(res.status === 200) {
                 let ele = [];
-                if(this.state.compare.result) ele.push("비밀번호 변경")
+                if(this.state.passwd && this.state.compare.result) ele.push("비밀번호 변경")
                 if(data.name !== fields.name) ele.push("이름을 {"+data.name+"} -> {"+fields.name+"} "+conType)
                 if(data.dept !== fields.dept) ele.push("소속을 {"+data.dept+"} -> {"+fields.dept+"} "+conType)
                 if(data.group !== fields.group) ele.push("그룹을 {"+data.group+"} -> {"+fields.group+"} "+conType)
@@ -165,7 +178,7 @@ class UserManager extends Component {
                 message: fields.userid+" 수정이 완료되었습니다",
                 messageType:'alert'
               })
-              this.fetchData(this.router.props.params.currentPage-1)
+              if(this.state.successful === true) this.props.router.navigate('/admin/manager');
             }, 1000)
           }})
 
@@ -198,7 +211,7 @@ class UserManager extends Component {
         break;
 
       case 'delete':
-        if(data.userid !== 'admin') {
+        if(data.group !== 'ADMIN') {
           historytype = data.userid+"를 "+conType;
           await axios.post(process.env.REACT_APP_API+'/user/delete',{keyword:data.userid}).then(res => {
                 if(res.status === 200) {
@@ -237,17 +250,17 @@ class UserManager extends Component {
 
     let formIsValid = true;
 
-    if (!fields["password"]) {
+    if(this.state.passwd && !fields["password"]) {
       formIsValid = false;
       errors["password"] = "비밀 번호를 입력해주세요";
     }
 
-    if (fields["password"].includes(" ")) {
+    if (this.state.passwd && fields["password"].includes(" ")) {
       formIsValid = false;
       errors["password"] = "비밀 번호에는 공백이 허용되지 않습니다";
     }
 
-    if (typeof fields["password"] !== "undefined") {
+    if(this.state.passwd && typeof fields["password"] !== "undefined") {
       // if (!fields["password"].match(/^.*(?=.{8,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%&]).*$/)) {
         if(fields["password"].length < 4 || fields['password'].length > 20){
         formIsValid = false;
@@ -358,8 +371,6 @@ class UserManager extends Component {
     })
   }
 
-
-
   render() {
     const { data, userReady, type } = this.state;
     if(userReady && type ==='list') {
@@ -385,12 +396,12 @@ class UserManager extends Component {
               <tbody>
               {data.list && data.list.length > 0 ? data.list.map((item,index)=>(
                 <tr data-index={index} key={data.size*parseInt(data.current)+index+1}>
-                  <td className="index">{data.size*parseInt(data.current)+index+1}</td>
+                  <td className="index">{data.count - (data.size * data.current) - index}</td>
                   <td className="userid">{item.userid}</td>
                   <td className="name">{item.name}</td>
                   <td className="dept">{item.dept}</td>
                   <td className="group">{item.group ==='ADMIN' ? "관리자":"일반"}</td>
-                  <td className="last_login_dt">{helpers.krDateTime(item.last_login_dt)}</td>
+                  <td className="last_login_dt">{item.last_login_dt ? helpers.krDateTime(item.last_login_dt):"-"}</td>
                   <td className="btn-group">
                     <button className="btn btn-modify" data-tooltip="사용자 수정" onClick={(e)=> this.callAction(e,"edit", index)}>수정</button>
                     <button className="btn btn-delete" data-tooltip="사용자 삭제" onClick={(e)=> this.callAction(e,"delete", index)}>삭제</button>
@@ -432,8 +443,9 @@ class UserManager extends Component {
                 </div>
                 <div className="input-group">
                   <label htmlFor="password">비밀번호</label>
+                  <button className="passwordReset btn btn-reset" onClick={this.passwdToggle}>재설정</button>
                   <input type="hidden" className="input-password" name="password" value={this.state.fields.password} onChange={this.onChangeValue} />
-                  <div className="passwordLayer">
+                  <div className={this.state.passwd ? "active passwordLayer":"passwordLayer"}>
                     <div className="comparePassword my-3">
                       <input type="password" name="newPassword" className="input-newPassword" onClick={this.clear} onChange={e=>this.onPasswordChangeValue(e)} value={this.state.compare.newPassword} placeholder="비밀번호를 입력하세요" />
                       <input type="password" name="confirmPassword" className="input-confrimPassword" onClick={this.clear} onChange={e=>this.onPasswordChangeValue(e)} value={this.state.compare.confirmPassword} placeholder="비밀번호를 다시 입력해주세요" />
@@ -476,4 +488,5 @@ class UserManager extends Component {
     }
 
 export default withRouter(UserManager)
+
 

@@ -68,7 +68,7 @@ class Metawrite extends Component {
             case 'reg':
                 axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:topic_name}).then( res => {
                     const {data, status } = res;
-                    console.log(data)
+                    // console.log(data)
                     if(status === 200) {
                         const sch = Object.keys(data)
                                     .sort()
@@ -262,7 +262,7 @@ class Metawrite extends Component {
                 return false
             }
                 temp.revision = data.revision + 1;
-                history.before = JSON.stringify(this.state.prev)
+                history.before = JSON.stringify(this.state.prev);
 
             break;
             default:
@@ -274,7 +274,7 @@ class Metawrite extends Component {
             history.last_mod_dt = new Date().toISOString();
             history.last_mod_id = AuthService.getCurrentUser().userid;
             history.topic_name = temp.topic_name;
-            history.after = JSON.stringify(temp)
+            history.after = JSON.stringify(temp);
 
 
         if(this.onValidation(temp, ["topic_name","subject","schema_id","schema_version","meta_version","op_name","service","revision","topic_desc","last_mod_dt","last_mod_id","is_used"])) {

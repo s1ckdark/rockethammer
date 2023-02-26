@@ -9,6 +9,8 @@ class Admin extends Component {
         <div className="page-header admin-home">
           <Breadcrumb/>
         </div>
+        <div className="overviewing">
+        <div className="inner">
             <div className="info">
               <div className="info-userRegister" onClick={(e) => this.props.router.navigate('/admin/register')}>
                 <h1>사용자 등록</h1>
@@ -28,6 +30,8 @@ class Admin extends Component {
               </div>
             </div>
           </div>
+        </div>
+        </div>
     );
   }
 }

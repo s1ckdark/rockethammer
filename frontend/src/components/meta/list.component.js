@@ -193,7 +193,7 @@ class Metalist extends Component {
                                 var schema = item.schema, meta_join = item.meta_join !=='undefined' ? item.meta_join:null;
                                 return(
                                         <tr data-index={index} className={idx === index ? "table-active":"text-center"} key={schema._id.$oid}>
-                                            <th scope="row">{5*parseInt(data.current)+index+1}</th>
+                                            <th scope="row">{data.count - (data.size * data.current) - index}</th>
                                             <td className="value-subject value form-group clickable" onClick={(e)=>this.detailView(index, schema.subject, this.changed(meta_join, schema))}>
                                                 {schema.subject.replace(/(-value|-key)/g, "")}
                                             </td>

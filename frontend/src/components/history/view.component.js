@@ -19,8 +19,6 @@ class Historyview extends Component {
 
     render(){
         const { before, after } = this.props.router.location.state.data;
-        let parseBefore = JSON.stringify(JSON.parse(before), null, 8);
-        let parseAfter = JSON.stringify(JSON.parse(after), null, 8);
         return (
             <>
                 <div className="meta history">
@@ -29,7 +27,7 @@ class Historyview extends Component {
                     </div>
                     <div className="viewing">
                         <div className="diff-viewer">
-                            <ReactDiffViewer leftTitle="변경 전" rightTitle="변경 후" oldValue={JSON.stringify(JSON.parse(parseBefore), null, 8)} newValue={parseAfter} splitView={true} />
+                            <ReactDiffViewer leftTitle="변경 전" rightTitle="변경 후" oldValue={JSON.stringify(JSON.parse(before), null,8)} newValue={JSON.stringify(JSON.parse(after), null, 8)} splitView={true} />
                         </div>
                         <div className="btn-group">
                             <button type="button" onClick={()=>this.props.router.navigate(-1)} className="btn btn-back">뒤로가기</button>
