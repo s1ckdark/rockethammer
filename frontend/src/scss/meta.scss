@@ -390,7 +390,7 @@
 				}
 
 				.schema-group {
-					width: 100%;
+					// width: 100%;
 					background: #fff;
 					margin: 0 auto;
 					padding: 70px 50px;
@@ -527,7 +527,7 @@
 										width: 160px;
 									}
 									&:nth-child(5) {
-										width: 480px;
+										width: 360px;
 									}
 									&:nth-child(6) {
 										width: 110px;
@@ -536,9 +536,6 @@
 										}
 									}
 									&:nth-child(7) {
-										width: 120px;
-									}
-									&:nth-child(8) {
 										width: 120px;
 									}
 								}

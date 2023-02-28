@@ -20,8 +20,8 @@ class Dialog extends Component {
           <div className={"btn-group btn-"+type}>
           {type === 'confirm' ?
              <>
-            <button className="btn btn-no" onClick={() => callback('no')}>No</button>
-            <button className="btn btn-yes" onClick={() =>callback('yes')}>Yes</button>
+            <button className="btn btn-no" onClick={() => callback('no')}>아니오</button>
+            <button className="btn btn-yes" onClick={() =>callback('yes')}>예</button>
             </>
             :<>
             <button className="btn btn-close" onClick={() => callback('close')}>닫기</button>
