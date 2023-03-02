@@ -487,6 +487,6 @@ class UserManager extends Component {
       }
     }
 
-export default withRouter(UserManager)
+    export default withRouter(UserManager)
 
 

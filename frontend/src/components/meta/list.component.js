@@ -66,10 +66,15 @@ class Metalist extends Component {
         const url = type === 'list' ? "/schema/getallschema" : "/schema/search"
         await axios.post(process.env.REACT_APP_API+url, {keyword:this.state.keyword,size:10,page:page})
             .then(res => {
+              let temp = [], tempObj = JSON.parse(JSON.stringify(res.data));
+              const {topic} = tempObj
+              tempObj.list.forEach( (item, index) => {
+                tempObj['list'][index]['schema']['wipeout'] =  topic.find( x => x === item.schema.subject.replace(/(-value|-key)/g, "")) ? true : false
+              })
               this.setState({
                 ...this.state,
                 list:'list',
-                data: res.data,
+                data: tempObj,
                 userReady:true
               })
             })
@@ -186,6 +191,7 @@ class Metalist extends Component {
                                         <th scope="col" className="col-md-2">등록일시</th>
                                         <th scope="col" className="col-md-1" data-tooltip="물리 스키마 변경 여부입니다. 값이 Y 이면 등록되어 있는 물리 스키마 버전이 최신이 아니므로 변경 등록 해주세요!">변경(물리)<span className="info-icon">&#x24D8;</span></th>
                                         <th scope="col" className="col-md-1" data-tooltip="물리 스키마 삭제 여부입니다. 값이 Y 이면 물리 스키마 삭제된 상태이므로 논리 메타를 삭제해주세요!">삭제(물리)<span className="info-icon">&#x24D8;</span></th>
+                                        <th scope="col" className="col-md-1" data-tooltip="물리 스키마 삭제 여부입니다. 값이 Y 이면 물리 스키마 삭제된 상태이므로 논리 메타를 삭제해주세요!">삭제(토픽)<span className="info-icon">&#x24D8;</span></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -206,6 +212,9 @@ class Metalist extends Component {
                                             <td className="modified value">{this.changed(meta_join, schema) ? <span className="clickable" onClick={(e)=> this.changing(e, index, schema.subject,item, schema, meta_join)}>Y</span> : <span>N</span>}</td>
                                             <td className="value-id value form-group">
                                                 {schema.schema ? <span>N</span>:<span>Y</span> }
+                                            </td>
+                                            <td className="value-id value form-group">
+                                                {schema.wipeout ? <span>N</span>:<span>Y</span> }
                                             </td>
                                         </tr>
                                     );
