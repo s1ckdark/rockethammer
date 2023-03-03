@@ -97,6 +97,7 @@ class Metadetail extends Component {
         // console.log("schema ->",sch.schema, "meta ->",meta, "is_used ->", JSON.parse(meta.is_used))
         console.log(typeof(sch),typeof(meta))
         const sc = helpers.isEmptyObj(sch.schema)
+        const td = sch.wipeout
         const me = helpers.isEmptyObj(meta)
         const mi = me ? false:JSON.parse(meta.is_used)
         const ch = this.changed(meta, sch);
@@ -115,19 +116,21 @@ class Metadetail extends Component {
         if(arrayEquals(cond, [false, true]) === true) typeofapi = "api1"
         if(arrayEquals(cond, [true, true]) === true) typeofapi = "api2"
         if(arrayEquals(cond, [undefined, true]) === true) typeofapi = "api2"
+        if(arrayEquals(cond, [undefined, false]) === true) typeofapi = "api2"
+        if(arrayEquals(cond, [true, false]) === true) typeofapi = "api2"
         if(arrayEquals(cond, [true, false]) === true) typeofapi = "api3"
+        if(td === false) typeofapi = "api2"
 
-
-        console.log("sc:",sc, "me:",me, "mi:",mi, "ch:",ch)
+        console.log("sc:",sc, "me:",me, "mi:",mi, "ch:",ch, "td:",td, "api:",typeofapi)
         return (
             <>
                 {ch === true && sc === false ? <button type="button" className="btn btn-changed" onClick={(e)=> this.changing(e, sch.subject, sch, meta)}>변경 등록</button>:<></>}
-                <button type="button" className="btn" onClick={e=>this.view(e, "json", topic_name)} disabled={me === false && mi === true ? false:true}>조회</button>
-                {sc === false && me === false && mi === true ?
-                <button type="button" className="btn" onClick={e=>this.write(e,"update", topic_name)} disabled={sc === true ? true:false}>수정</button>:
-                <button type="button" className="btn " onClick={e=>this.write(e,"reg", topic_name)} disabled={sc !== false && me !== false ? true:false}>등록</button>}
-                <button type="button" className="btn btn-delete" onClick={e=> this.callAction(e, "confirm", "정말 삭제하시겠습니까?",typeofapi, sch.subject)} role={typeofapi} disabled={typeofapi === 'api1' && mi === false ? true : false} role={typeofapi}>삭제</button>
-                <button type="button" className="btn btn-history" onClick={(e)=>this.view(e, "history", topic_name)} disabled={me ? true:false}>이력</button>
+                <button type="button" className="btn" onClick={e=>this.view(e, "json", topic_name)} disabled={me === false && mi === true && td === true ? false:true}>조회</button>
+                {sc === false && me === false && mi === true && td === true ?
+                <button type="button" className="btn" onClick={e=>this.write(e,"update", topic_name)} disabled={ch !== false && sc === false ? true:false}>수정</button>:
+                <button type="button" className="btn " onClick={e=>this.write(e,"reg", topic_name)} disabled={(sc !== false && me !== true) || td === false ? true:false}>등록</button>}
+                <button type="button" className="btn btn-delete" onClick={e=> this.callAction(e, "confirm", "정말 삭제하시겠습니까?",typeofapi, sch.subject)} role={typeofapi} disabled={typeofapi === 'api1' && mi === false && td === false ? true : false} role={typeofapi}>삭제</button>
+                <button type="button" className="btn btn-history" onClick={(e)=>this.view(e, "history", topic_name)} disabled={me && td === false ? true:false}>이력</button>
 
             </>
         )

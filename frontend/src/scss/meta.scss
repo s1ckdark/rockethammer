@@ -16,6 +16,7 @@
 			}
 			.search-bar {
 				max-width: 930px;
+				position: relative;
 				.btn {
 					display: flex;
 					align-items: center;
@@ -26,6 +27,44 @@
 						background-size: cover;
 						width: 18px;
 						height: 18px;
+					}
+					&.btn-advanced {
+						background-color: $btn-dark-blue;
+					}
+				}
+				.advanced-search-bar {
+					z-index: 999;
+					background-color: white;
+					position: absolute;
+					padding: 25px 28px;
+					top: 0;
+					left: 0;
+					right: 0;
+					height: 200px;
+					max-width: 930px;
+					display: flex;
+					flex-wrap: wrap;
+					justify-content: start;
+					&.d-none {
+						display: none;
+					}
+					input {
+						&.input-startdate,
+						&.input-enddate,
+						&.input-last_mod_id {
+							width: 25%;
+							height: 30px;
+							margin: 10px auto;
+						}
+					}
+					.input-group {
+						display: flex;
+						flex-wrap: nowrap;
+						justify-content: center;
+						align-items: center;
+						label {
+							width: 30px;
+						}
 					}
 				}
 			}

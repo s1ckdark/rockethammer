@@ -18,7 +18,15 @@ class Metalist extends Component {
               list:[]
           },
           schemas:{},
-          keyword:'',
+          search:{
+            status: false,
+            keyword: '',
+            startDate: '',
+            endData: '',
+            last_mod_id:'',
+            deleted: false,
+            changed: false
+          },
           select:{
             idx:'',
             topic_name:"",
@@ -64,9 +72,10 @@ class Metalist extends Component {
     // meta data를 가져온다
     fetchData = async(page = 0, type = 'list') => {
         const url = type === 'list' ? "/schema/getallschema" : "/schema/search"
-        await axios.post(process.env.REACT_APP_API+url, {keyword:this.state.keyword,size:10,page:page})
+        const { search } = this.state
+        await axios.post(process.env.REACT_APP_API+url, {keyword:search.keyword,startData:search.startDate,endDate:search.endDate, last_mod_id:search.last_mod_id,deleted:search.deleted, changed:search.changed,size:10,page:page})
             .then(res => {
-              let temp = [], tempObj = JSON.parse(JSON.stringify(res.data));
+              let tempObj = JSON.parse(JSON.stringify(res.data));
               const {topic} = tempObj
               tempObj.list.forEach( (item, index) => {
                 tempObj['list'][index]['schema']['wipeout'] =  topic.find( x => x === item.schema.subject.replace(/(-value|-key)/g, "")) ? true : false
@@ -80,11 +89,14 @@ class Metalist extends Component {
             })
     }
 
-    onChangeKeyword = (e,index) =>{
+    onChangeSearch = (e,index) =>{
         this.setState({
             ...this.state,
-            keyword:e.target.value
-        })
+            search:{
+                ...this.state.search,
+                [e.target.name]: e.target.value
+            }
+            })
     }
 
     // 리스트상에 row를 눌렀을때 detailview에 나오는 스키마의 데이터를 정의한다
@@ -166,6 +178,18 @@ class Metalist extends Component {
         return meta_join && schema.version > meta_join.schema_version ? true : false
     }
 
+    advanced = (e) => {
+        e.preventDefault()
+        this.setState({
+            ...this.state,
+            search:{
+                ...this.state.search,
+                status: !this.state.search.status
+            }
+        })
+
+    }
+
     render(){
         const { data, userReady } = this.state;
         const { topic_name, idx } = this.state.select;
@@ -176,9 +200,27 @@ class Metalist extends Component {
                     <div className="page-header list">
                         <Breadcrumb/>
                         <div className="search-bar">
-                                <input className="input-search" name="search" value={this.state.search} onChange = {this.onChangeKeyword} placeholder="검색 할 토픽명을 입력하세요"/>
-                                <button type="button" className="btn btn-search" onClick={e=>this.fetchData(0, 'search')}><span className="questionIcon"></span>토픽 검색</button>
+                            <input className="input-search" name="keyword" value={this.state.search.keyword} onChange = {this.onChangeSearch} placeholder="검색 할 토픽명을 입력하세요"/>
+                            <button type="button" className="btn btn-search" onClick={e=>this.fetchData(0, 'search')}><span className="questionIcon"></span>토픽 검색</button>
+                            <button type="button" className="btn btn-advanced" onClick={this.advanced}>상세 검색</button>
+                            <div className={this.state.search.status ? "advanced-search-bar":"advanced-search-bar d-none"}>
+                                <input className="input-keyword" type="text" name="keyword" value={this.state.search.keyword} onChange = {this.onChangeSearch} placeholder="검색 할 토픽명을 입력하세요"/>
+                                <input className="input-startdate" type="text" name="startDate" value={this.state.search.startDate} onChange = {this.onChangeSearch} placeholder="등록일자 시작 날짜"/>
+                                <input className="input-enddate" type="text" name="endDate" value={this.state.search.endDate} onChange = {this.onChangeSearch} placeholder="등록일자 끝 날짜"/>
+                                <input className="input-last_mod_id" type="text" name="last_mod_id" value={this.state.search.last_mod_id} onChange = {this.onChangeSearch} placeholder="등록자 id"/>
+                                <div className="input-group">
+                                    <label>삭제</label>
+                                    <input className="input-search" type="checkbox" name="deleted" value={this.state.search.deleted} onChange = {this.onChangeSearch}/>
+                                </div>
+                                <div className="input-group">
+                                    <label>변경</label>
+                                    <input className="input-search" type="checkbox" name="changed" value={this.state.search.changed} onChange = {this.onChangeSearch}/>
+                                </div>
+                                <button type="button" className="btn btn-search" onClick={e=>this.fetchData(0, 'search')}><span className="questionIcon"></span>상세 검색</button>
+                                <button type="button" className="btn btn-cancel" onClick={this.advanced}>검색 취소</button>
+                            </div>
                         </div>
+
                     </div>
                     <div className="listing">
                         <div className="inner">
