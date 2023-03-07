@@ -23,7 +23,7 @@ class UserHistory extends Component {
 
   handlePageChange(pageNumber) {
     // console.log(`active page is ${pageNumber}`);
-    this.props.router.navigate('/admin/history/'+pageNumber)
+    this.props.router.navigate('/admin/userhistory/'+pageNumber)
     this.fetchData(pageNumber-1)
   }
 

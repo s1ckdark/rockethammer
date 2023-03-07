@@ -175,7 +175,7 @@ class Metalist extends Component {
     };
 
     changed = (meta_join, schema) => {
-        return meta_join && schema.version > meta_join.schema_version ? true : false
+        return meta_join && meta_join.is_used ==='true' && schema.version > meta_join.schema_version ? true : false
     }
 
     advanced = (e) => {
@@ -205,17 +205,17 @@ class Metalist extends Component {
                             <button type="button" className="btn btn-advanced" onClick={this.advanced}>상세 검색</button>
                             <div className={this.state.search.status ? "advanced-search-bar":"advanced-search-bar d-none"}>
                                 <input className="input-keyword" type="text" name="keyword" value={this.state.search.keyword} onChange = {this.onChangeSearch} placeholder="검색 할 토픽명을 입력하세요"/>
-                                <input className="input-startdate" type="text" name="startDate" value={this.state.search.startDate} onChange = {this.onChangeSearch} placeholder="등록일자 시작 날짜"/>
-                                <input className="input-enddate" type="text" name="endDate" value={this.state.search.endDate} onChange = {this.onChangeSearch} placeholder="등록일자 끝 날짜"/>
+                                <input className="input-startdate" type="date" name="startDate" value={this.state.search.startDate} onChange = {this.onChangeSearch} placeholder="등록일자 시작 날짜"/>
+                                <input className="input-enddate" type="date" name="endDate" value={this.state.search.endDate} onChange = {this.onChangeSearch} placeholder="등록일자 끝 날짜"/>
                                 <input className="input-last_mod_id" type="text" name="last_mod_id" value={this.state.search.last_mod_id} onChange = {this.onChangeSearch} placeholder="등록자 id"/>
-                                <div className="input-group">
+                                {/* <div className="input-group">
                                     <label>삭제</label>
                                     <input className="input-search" type="checkbox" name="deleted" value={this.state.search.deleted} onChange = {this.onChangeSearch}/>
                                 </div>
                                 <div className="input-group">
                                     <label>변경</label>
                                     <input className="input-search" type="checkbox" name="changed" value={this.state.search.changed} onChange = {this.onChangeSearch}/>
-                                </div>
+                                </div> */}
                                 <button type="button" className="btn btn-search" onClick={e=>this.fetchData(0, 'search')}><span className="questionIcon"></span>상세 검색</button>
                                 <button type="button" className="btn btn-cancel" onClick={this.advanced}>검색 취소</button>
                             </div>

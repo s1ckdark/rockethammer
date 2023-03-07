@@ -125,7 +125,7 @@ const helpers = {
             "list":"목록",
             "write":"등록",
             "view":"조회",
-            "history":"사용자 이력",
+            "history":"이력",
             "retension":"보존기간(일)",
             "pii":"pii",
             "table":"테이블",
@@ -134,7 +134,8 @@ const helpers = {
             "update":"수정",
             "reg":"등록",
             "change":"변경 등록",
-            "":"홈"
+            "":"홈",
+            "userhistory":"사용자 이력"
         }
         return  defineName[name] ? defineName[name]:name;
     },

@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route  } from "react-router-dom";
 import { withRouter } from '../common/withRouter';
 
 import Home from "../components/home.component";
@@ -39,13 +39,16 @@ class Container extends Component {
               <Route path="/meta" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Metalist /></PrivateRoute>} />
               <Route path="/meta/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Metalist /></PrivateRoute>} />
               <Route path="/meta/view/:type/:topic_name" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Metaview /></PrivateRoute>} />
+              <Route path="/meta/view/" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Metalist /></PrivateRoute>} />
               <Route path="/meta/:type/:topic_name" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Metawrite /></PrivateRoute>} />
-              <Route path="/meta/view/history/list/:topic_name/" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Historylist/></PrivateRoute>} />
-              <Route path="/meta/view/history/list/:topic_name/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Historylist/></PrivateRoute>} />
-              <Route path="/meta/view/history/view/:topic_name" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Historyview/></PrivateRoute>} />
+              <Route path="/meta/history" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Historylist/></PrivateRoute>} />
+              <Route path="/meta/history/list" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Historylist/></PrivateRoute>} />
+              <Route path="/meta/history/list/:topic_name/" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Historylist/></PrivateRoute>} />
+              <Route path="/meta/history/list/:topic_name/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Historylist/></PrivateRoute>} />
+              <Route path="/meta/history/view/:topic_name" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Historyview/></PrivateRoute>} />
               <Route path="/admin" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Admin /></PrivateRoute>} />
-              <Route path="/admin/history/" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><UserHistory /></PrivateRoute>} />
-              <Route path="/admin/history/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><UserHistory /></PrivateRoute>} />
+              <Route path="/admin/userhistory/" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><UserHistory /></PrivateRoute>} />
+              <Route path="/admin/userhistory/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><UserHistory /></PrivateRoute>} />
               <Route path="/admin/weblog" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><UserWeblog /></PrivateRoute>} />
               <Route path="/admin/weblog/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><UserWeblog /></PrivateRoute>} />
               <Route path="/admin/register" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><UserRegister /></PrivateRoute>} />

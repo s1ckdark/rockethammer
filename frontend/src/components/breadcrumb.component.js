@@ -6,7 +6,8 @@ import helpers from "../common/helpers";
 class Breadcrumb extends Component {
   render(){
     const { pathname } = this.props.router.location;
-    const path = pathname.split('/');
+    console.log(pathname)
+    const path = pathname.split('/').slice(0,3);
     if(helpers.isInt(path[path.length -1]) === 'number') path.pop()
     const current = path[path.length-1]
     return(
@@ -16,11 +17,10 @@ class Breadcrumb extends Component {
           <h3>{helpers.translate(path[1])}</h3>
           <ol className="current">
             {path.map((item, index) => {
-              // console.log(index,item);
               const tmpPath = path.slice(0, index+1);
               let tmpUrl = index === 0 ? '/home':tmpPath.join('/')
               if(index !== path.length -1) {
-                return (<li key={index} className="breadcrumb-item"><Link to={tmpUrl} className={"depth"+index}>{helpers.translate(item)}</Link></li>)}
+                return (<li key={index} className="breadcrumb-item"><Link key={tmpUrl} to={tmpUrl} className={"depth"+index}>{helpers.translate(item)}</Link></li>)}
                 else {return (
                   <li key={index} className="breadcrumb-item active">{helpers.translate(item)}</li>)}
 
@@ -31,7 +31,7 @@ class Breadcrumb extends Component {
       <div className="admin-navi">
         <button className={current === 'register' ? "btn active":"btn"} onClick={()=>this.props.router.navigate('/admin/register')}>사용자 등록</button>
         <button className={current === 'manager' ? "btn active":"btn"} onClick={()=>this.props.router.navigate('/admin/manager/1')}>사용자 관리</button>
-        <button className={current === 'history' ? "btn active":"btn"} onClick={()=>this.props.router.navigate('/admin/history/1')}>사용자 이력</button>
+        <button className={current === 'history' ? "btn active":"btn"} onClick={()=>this.props.router.navigate('/admin/userhistory/1')}>사용자 이력</button>
         <button className={current === 'weblog' ? "btn active":"btn"} onClick={()=>this.props.router.navigate('/admin/weblog/1')}>사용자 로그</button>
       </div>
       :<></>}

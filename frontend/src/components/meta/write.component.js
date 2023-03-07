@@ -355,7 +355,7 @@ class Metawrite extends Component {
             break;
 
             case 'update':
-                    await axios.post(process.env.REACT_APP_API+"/meta/deleteall/",{keyword:data.topic_name}).then( res => {
+                    await axios.post(process.env.REACT_APP_API+"/meta/delete/",{keyword:data.topic_name}).then( res => {
                         if(res.status ===200) {
                             axios.post(process.env.REACT_APP_API+"/meta/insert/", data).then( res => {
                                 axios.post(process.env.REACT_APP_API+"/history/inserthistory/", history).then(res =>{

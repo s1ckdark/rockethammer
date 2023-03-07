@@ -30,8 +30,8 @@ class Metadetail extends Component {
 
     // meta의 detail이나 history를 조회
     view = (e, type, topic_name, currentPage = 1) => {
-        let url = type ==='history' ? 'history/list/'+topic_name+'/'+currentPage : type+'/'+topic_name
-        this.props.router.navigate('/meta/view/'+url, type !== 'history' ? {state:this.props.data}:{state:{}})
+        let url = type ==='history' ? 'history/list/'+topic_name+'/'+currentPage : 'view/'+type+'/'+topic_name
+        this.props.router.navigate('/meta/'+url, type !== 'history' ? {state:this.props.data}:{state:{}})
     }
 
     // 케이스별로 삭제룰 진행한다
@@ -42,7 +42,6 @@ class Metadetail extends Component {
         switch(typeofapi){
             case 'api1':
                 url = process.env.REACT_APP_API+"/meta/delete";
-                console.log("api1")
                 axios.post(url, {keyword:topic_name,last_mod_dt:new Date().toISOString()}).then(res => console.log(res))
                 break;
             case 'api3':
@@ -65,12 +64,18 @@ class Metadetail extends Component {
         }
 
 
-        await axios.post(process.env.REACT_APP_API+"/history/history_del", {topic_name:topic_name.replace(/(-value|-key)/g, ""), type:type, reg_dt:(new Date()).toISOString(),user_id:AuthService.getCurrentUser().userid,op:"delete"})
+        await axios.post(process.env.REACT_APP_API+"/history/inserthistory", {topic_name:topic_name.replace(/(-value|-key)/g, ""), last_mod_dt:(new Date()).toISOString(),last_mod_id:AuthService.getCurrentUser().userid,before:JSON.stringify(this.props.data.meta_join), after:JSON.stringify("{}")})
         this.setState({
             ...this.state,
             message:"삭제가 완료되었습니다",
             messageType:"alert"
         })
+        // axios.post(process.env.REACT_APP_API+"/history/history_del", {topic_name:topic_name.replace(/(-value|-key)/g, ""), type:type, reg_dt:(new Date()).toISOString(),user_id:AuthService.getCurrentUser().userid,op:"delete"})
+        // this.setState({
+        //     ...this.state,
+        //     message:"삭제가 완료되었습니다",
+        //     messageType:"alert"
+        // })
         // setTimeout(() => {
         this.props.getData()
         // }, 1000)
@@ -94,7 +99,6 @@ class Metadetail extends Component {
 
     // detail 화면에 나오는 버튼을 정의한다
     detailBtn = (topic_name, sch, meta) => {
-        // console.log("schema ->",sch.schema, "meta ->",meta, "is_used ->", JSON.parse(meta.is_used))
         console.log(typeof(sch),typeof(meta))
         const sc = helpers.isEmptyObj(sch.schema)
         const td = sch.wipeout
@@ -124,13 +128,13 @@ class Metadetail extends Component {
         console.log("sc:",sc, "me:",me, "mi:",mi, "ch:",ch, "td:",td, "api:",typeofapi)
         return (
             <>
-                {ch === true && sc === false ? <button type="button" className="btn btn-changed" onClick={(e)=> this.changing(e, sch.subject, sch, meta)}>변경 등록</button>:<></>}
-                <button type="button" className="btn" onClick={e=>this.view(e, "json", topic_name)} disabled={me === false && mi === true && td === true ? false:true}>조회</button>
+                {ch === true && sc === false && td === true ? <button type="button" className="btn btn-changed" onClick={(e)=> this.changing(e, sch.subject, sch, meta)}>변경 등록</button>:<></>}
+                <button type="button" className="btn" onClick={e=>this.view(e, "json", topic_name)} disabled={me === false && mi === true ? false:true}>조회</button>
                 {sc === false && me === false && mi === true && td === true ?
                 <button type="button" className="btn" onClick={e=>this.write(e,"update", topic_name)} disabled={ch !== false && sc === false ? true:false}>수정</button>:
-                <button type="button" className="btn " onClick={e=>this.write(e,"reg", topic_name)} disabled={(sc !== false && me !== true) || td === false ? true:false}>등록</button>}
-                <button type="button" className="btn btn-delete" onClick={e=> this.callAction(e, "confirm", "정말 삭제하시겠습니까?",typeofapi, sch.subject)} role={typeofapi} disabled={typeofapi === 'api1' && mi === false && td === false ? true : false} role={typeofapi}>삭제</button>
-                <button type="button" className="btn btn-history" onClick={(e)=>this.view(e, "history", topic_name)} disabled={me && td === false ? true:false}>이력</button>
+                <button type="button" className="btn " onClick={e=>this.write(e,"reg", topic_name)} disabled={sc !== false|| td === false ? true:false}>등록</button>}
+                <button type="button" className="btn btn-delete" onClick={e=> this.callAction(e, "confirm", "정말 삭제하시겠습니까?",typeofapi, sch.subject)} role={typeofapi} disabled={mi === true  || td === false ? false:true} role={typeofapi}>삭제</button>
+                <button type="button" className="btn btn-history" onClick={(e)=>this.view(e, "history", topic_name)} disabled={me === true ? true:false}>이력</button>
 
             </>
         )
