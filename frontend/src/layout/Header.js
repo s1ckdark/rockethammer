@@ -143,7 +143,7 @@ class Header extends Component {
     let mode = tmp[0] === 'home' || tmp[0] === 'register' || tmp[0] === 'login' || tmp[0] === 'admin' || tmp[0] === '' || tmp[0] === 'profile'? "Blue":"White";
     let logoMode = mode === 'Blue' ? logo:logoDark;
     return(
-      <header className={"header h_"+tmp[0]}>
+      <header className={"header h-"+tmp[0]}>
         <nav className={mode+' navigation'}>
           <Link to={"/home"} className="logo"><img src={logoMode} alt="ROCKETHAMMER" className="logoImg"/></Link>
           <div className="navbar-nav nav">
