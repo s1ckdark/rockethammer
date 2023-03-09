@@ -67,12 +67,7 @@ module.exports = webpackEnv => {
                   type: 'asset',
                   generator: {
                     filename: 'fonts/[name][ext]'
-                  },
-                  parser: {
-                    dataUrlCondition: {
-                      maxSize: 4 * 1024,
-                    },
-                  },
+                  }
                 },
             ]
         },
@@ -104,7 +99,10 @@ module.exports = webpackEnv => {
             host: 'localhost', // host 설정
             open: true, // 서버를 실행했을 때, 브라우저를 열어주는 여부
             compress: true,
-            historyApiFallback: true
+            historyApiFallback: true,
+            proxy: {
+              '/api': 'http://localhost:8085'
+            }
         },
         watchOptions: {
           poll: true,
