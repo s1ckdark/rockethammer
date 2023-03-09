@@ -9,7 +9,7 @@ const helpers = {
     },
     // connector에 의해 들어온 topic들의 시간은 mongodb의 ISODate로 들어오기 떄문에 KR time으로 변경해줘야한다
     schemaTime : (date) => {
-        var tmp = new Date(date);
+        var tmp = new Date(date.replace(/:[0-9]{3}/,""))
         tmp = tmp.setHours(tmp.getHours() + 9);
         return new Date(new Date(tmp) - new Date().getTimezoneOffset() * 60000).toISOString().split('.')[0].replace('T', ' ')
     },
