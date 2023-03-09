@@ -161,12 +161,17 @@ class Header extends Component {
                  <li className={mode+" nav-item"}><Link to={"/login"} className="nav-link"><p>로그인</p></Link></li>
                 </>:
               <>
-                <li className={mode+" nav-item profile_service"}>
+                <li className={"profile-service-"+mode+" nav-item profile-service"}>
                   <Link to={"/profile"} className="nav-link">
                     <p>{currentUser.name} 님</p>
                   </Link>
                 </li>
-                {this.navItem('logout',mode,"로그 아웃")}
+                <li className={"logout-service-"+mode+" nav-item"} onMouseEnter={(e)=>this.onMouseEnter(e,mode)} onMouseLeave={(e)=>this.onMouseLeave(e,mode)} onClick={this.props.logOut}>
+                  <Link className="nav-link" role="logout">
+                  <img className="logoutService" src={mode === 'Blue' ? logoutServiceBlue:logoutServiceColor} />
+                  <p>로그아웃</p>
+                </Link>
+              </li>
               </>}
               {currentUser && currentUser.group === 'ADMIN' ?
                  this.navItem('admin',mode,"설정")
