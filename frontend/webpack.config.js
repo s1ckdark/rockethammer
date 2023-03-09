@@ -51,17 +51,27 @@ module.exports = webpackEnv => {
                   }],
                 },
                 {
-                  test: /\.(svg|png|jpg|gif)$/i,
-                  type: 'asset/resource',
+                  test: /\.(png|jpg|svg)$/i,
+                  type: 'asset',
                   generator: {
                     filename: 'img/[name][ext]'
+                  },
+                  parser: {
+                    dataUrlCondition: {
+                      maxSize: 4 * 1024,
+                    },
                   },
                 },
                 {
                   test: /\.(woff|woff2|eot|ttf|otf)$/i,
-                  type: 'asset/resource',
+                  type: 'asset',
                   generator: {
                     filename: 'fonts/[name][ext]'
+                  },
+                  parser: {
+                    dataUrlCondition: {
+                      maxSize: 4 * 1024,
+                    },
                   },
                 },
             ]

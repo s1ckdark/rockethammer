@@ -2,7 +2,16 @@ import React, { Component } from 'react'
 import { gsap } from "gsap/all";
 import { Link } from "react-router-dom";
 import "../App.scss";
-
+import "../img/logo_dark.svg";
+import "../img/logo.png";
+import "../img/meta-service-blue.svg";
+import "../img/meta-service-color.svg";
+import "../img/manager-service-blue.svg";
+import "../img/manager-service-color.svg";
+import "../img/monitor-service-blue.svg";
+import "../img/monitor-service-color.svg";
+import "../img/collector-service-blue.svg";
+import "../img/collector-service-color.svg";
 import AuthService from "../services/auth.service";
 import EventBus from "../common/EventBus";
 import { withRouter } from "../common/withRouter";
