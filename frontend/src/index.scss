@@ -10,7 +10,8 @@ body {
 	font-weight: 400;
 	box-sizing: border-box;
 	> div {
-		mix-blend-mode: overlay;
+		// mix-blend-mode: overlay;
+		transform: translate3d(0, 0, 0);
 	}
 	* {
 		letter-spacing: -0.5px;
