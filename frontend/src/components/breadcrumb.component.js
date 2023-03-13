@@ -6,7 +6,6 @@ import helpers from "../common/helpers";
 class Breadcrumb extends Component {
   render(){
     const { pathname } = this.props.router.location;
-    console.log(pathname)
     const path = pathname.split('/').slice(0,3);
     if(helpers.isInt(path[path.length -1]) === 'number') path.pop()
     const current = path[path.length-1]

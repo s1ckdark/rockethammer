@@ -21,6 +21,11 @@
 					display: flex;
 					align-items: center;
 					justify-content: center;
+					color: #fff;
+					font-weight: 600;
+					background-color: #565b78;
+					border-radius: 100px;
+					height: 32px;
 					.questionIcon {
 						background-image: url(../img/questionIcon.svg);
 						display: block;
@@ -28,43 +33,93 @@
 						width: 18px;
 						height: 18px;
 					}
+					&.btn-search {
+						border-top-right-radius: 0;
+						border-bottom-right-radius: 0;
+					}
 					&.btn-advanced {
-						background-color: $btn-dark-blue;
+						width: 120px;
+						border-top-left-radius: 0;
+						border-bottom-left-radius: 0;
+						border-left: 1px solid #fff;
+						&.open {
+							border-top-left-radius: 100px;
+							border-bottom-left-radius: 100px;
+							border-top-right-radius: 0;
+							border-bottom-right-radius: 0;
+						}
+					}
+					&.btn-cancel {
+						width: 120px;
+						border-top-left-radius: 0;
+						border-bottom-left-radius: 0;
+						border-left: 1px solid #fff;
+					}
+				}
+				.input-group {
+					padding: 0;
+				}
+				.normal-search-bar {
+					display: flex;
+					width: 100%;
+					justify-content: space-between;
+					align-items: center;
+					.input-group {
+						width: 75%;
+						input {
+							height: 30px;
+						}
+					}
+					.btn-group {
+						display: flex;
+						flex-wrap: nowrap;
+						width: 24%;
 					}
 				}
 				.advanced-search-bar {
 					z-index: 999;
 					background-color: white;
 					position: absolute;
-					padding: 25px 28px;
+					padding: 20px 28px;
 					top: 0;
 					left: 0;
 					right: 0;
-					height: 200px;
 					max-width: 930px;
 					display: flex;
 					flex-wrap: wrap;
-					justify-content: start;
+					justify-content: space-between;
+					align-items: center;
+					box-shadow: 0px 8px 10px rgba(195, 203, 216, 0.8);
 					&.d-none {
 						display: none;
 					}
-					input {
-						&.input-startdate,
-						&.input-enddate,
-						&.input-last_mod_id {
-							width: 25%;
-							height: 30px;
-							margin: 10px auto;
-						}
-					}
 					.input-group {
+						width: 75%;
 						display: flex;
-						flex-wrap: nowrap;
+						flex-wrap: wrap;
 						justify-content: center;
 						align-items: center;
 						label {
 							width: 30px;
 						}
+						input {
+							height: 23px;
+							&.input-startdate,
+							&.input-enddate,
+							&.input-last_mod_id {
+								width: 32%;
+								margin: 10px auto;
+							}
+							&.input-enddate {
+								margin: 10px 2%;
+							}
+						}
+					}
+					.btn-group {
+						display: flex;
+						flex-wrap: nowrap;
+						width: 24%;
+						justify-self: center;
 					}
 				}
 			}
@@ -96,6 +151,7 @@
 	}
 	.listing {
 		justify-content: space-between;
+		box-shadow: none;
 		.inner {
 			width: 1120px;
 			background: #ffffff;

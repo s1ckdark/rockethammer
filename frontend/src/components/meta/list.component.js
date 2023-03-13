@@ -73,7 +73,7 @@ class Metalist extends Component {
     fetchData = async(page = 0, type = 'list') => {
         const url = type === 'list' ? "/schema/getallschema" : "/schema/search"
         const { search } = this.state
-        await axios.post(process.env.REACT_APP_API+url, {keyword:search.keyword,startData:search.startDate,endDate:search.endDate, last_mod_id:search.last_mod_id,deleted:search.deleted, changed:search.changed,size:10,page:page})
+        await axios.post(process.env.REACT_APP_API+url, this.state.search)
             .then(res => {
               let tempObj = JSON.parse(JSON.stringify(res.data));
               const {topic} = tempObj
@@ -200,24 +200,26 @@ class Metalist extends Component {
                     <div className="page-header list">
                         <Breadcrumb/>
                         <div className="search-bar">
-                            <input className="input-search" name="keyword" value={this.state.search.keyword} onChange = {this.onChangeSearch} placeholder="검색 할 토픽명을 입력하세요"/>
-                            <button type="button" className="btn btn-search" onClick={e=>this.fetchData(0, 'search')}><span className="questionIcon"></span>토픽 검색</button>
-                            <button type="button" className="btn btn-advanced" onClick={this.advanced}>상세 검색</button>
-                            <div className={this.state.search.status ? "advanced-search-bar":"advanced-search-bar d-none"}>
-                                <input className="input-keyword" type="text" name="keyword" value={this.state.search.keyword} onChange = {this.onChangeSearch} placeholder="검색 할 토픽명을 입력하세요"/>
-                                <input className="input-startdate" type="date" name="startDate" value={this.state.search.startDate} onChange = {this.onChangeSearch} placeholder="등록일자 시작 날짜"/>
-                                <input className="input-enddate" type="date" name="endDate" value={this.state.search.endDate} onChange = {this.onChangeSearch} placeholder="등록일자 끝 날짜"/>
-                                <input className="input-last_mod_id" type="text" name="last_mod_id" value={this.state.search.last_mod_id} onChange = {this.onChangeSearch} placeholder="등록자 id"/>
-                                {/* <div className="input-group">
-                                    <label>삭제</label>
-                                    <input className="input-search" type="checkbox" name="deleted" value={this.state.search.deleted} onChange = {this.onChangeSearch}/>
-                                </div>
+                            <div className={!this.state.search.status ? "normal-search-bar":"normal-search-bar d-none"}>
                                 <div className="input-group">
-                                    <label>변경</label>
-                                    <input className="input-search" type="checkbox" name="changed" value={this.state.search.changed} onChange = {this.onChangeSearch}/>
-                                </div> */}
-                                <button type="button" className="btn btn-search" onClick={e=>this.fetchData(0, 'search')}><span className="questionIcon"></span>상세 검색</button>
-                                <button type="button" className="btn btn-cancel" onClick={this.advanced}>검색 취소</button>
+                                    <input className="input-search" name="keyword" value={this.state.search.keyword} onChange = {this.onChangeSearch} placeholder="검색 할 토픽명을 입력하세요"/>
+                                </div>
+                                <div className="btn-group">
+                                    <button type="button" className="btn btn-search" onClick={e=>this.fetchData(0, 'search')}><span className="questionIcon"></span>토픽 검색</button>
+                                    <button type="button" className="btn btn-advanced" onClick={this.advanced}>상세 검색</button>
+                                </div>
+                            </div>
+                            <div className={this.state.search.status ? "advanced-search-bar":"advanced-search-bar d-none"}>
+                                <div className="input-group">
+                                    <input className="input-keyword" type="text" name="keyword" value={this.state.search.keyword} onChange = {this.onChangeSearch} placeholder="검색 할 토픽명을 입력하세요"/>
+                                    <input className="input-startdate" type="date" name="startDate" value={this.state.search.startDate} onChange = {this.onChangeSearch} placeholder="등록일자 시작 날짜"/>
+                                    <input className="input-enddate" type="date" name="endDate" value={this.state.search.endDate} onChange = {this.onChangeSearch} placeholder="등록일자 끝 날짜"/>
+                                    <input className="input-last_mod_id" type="text" name="last_mod_id" value={this.state.search.last_mod_id} onChange = {this.onChangeSearch} placeholder="등록자 id"/>
+                                </div>
+                                <div className="btn-group">
+                                    <button type="button" className="btn btn-advanced open" onClick={e=>this.fetchData(0, 'search')}><span className="questionIcon"></span>상세 검색</button>
+                                    <button type="button" className="btn btn-cancel" onClick={this.advanced}>일반 검색</button>
+                                </div>
                             </div>
                         </div>
 
