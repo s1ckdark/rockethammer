@@ -72,8 +72,7 @@ REACT_APP_KAFAKUI={url:port}
 ```
 app.properties template을 수정하여 환경 설정 후 실행한다.
 > cd rockethammer-admin
-> cp app.properties default.properties
-> vi default.properties
+> vi app.properties
 ```
 
 spring.data.mongodb.uri={mongodb uri}
@@ -90,5 +89,5 @@ goodusdata.app.jwtExpirationMs=86400000
 logging.level.root=INFO
 
 ```
-> nohup java -jar -Dspring.config.location=default.properties spring-boot-security-jwt-mongodb.jar &
+> nohup java -jar -Dspring.config.location=app.properties spring-boot-security-jwt-mongodb.jar &
 ```
