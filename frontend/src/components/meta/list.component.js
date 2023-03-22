@@ -72,20 +72,27 @@ class Metalist extends Component {
     // meta data를 가져온다
     fetchData = async(page = 0, type = 'list') => {
         const url = type === 'list' ? "/schema/getallschema" : "/schema/search"
-        const { search } = this.state
-        await axios.post(process.env.REACT_APP_API+url, this.state.search)
+        const param = type === 'list' ? {"page":page}:this.state.search
+        await axios.post(process.env.REACT_APP_API+url, param)
             .then(res => {
-              let tempObj = JSON.parse(JSON.stringify(res.data));
+                let tempObj;
+                if(res.data.list.length > 0 ) {
+                // if(res.data.length);
+            tempObj = JSON.parse(JSON.stringify(res.data));
               const {topic} = tempObj
               tempObj.list.forEach( (item, index) => {
                 tempObj['list'][index]['schema']['wipeout'] =  topic.find( x => x === item.schema.subject.replace(/(-value|-key)/g, "")) ? true : false
               })
+            } else {
+            tempObj = []
+            }
               this.setState({
                 ...this.state,
                 list:'list',
                 data: tempObj,
                 userReady:true
               })
+
             })
     }
 
