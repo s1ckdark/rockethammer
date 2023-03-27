@@ -133,7 +133,7 @@ class Metadetail extends Component {
                 {sc === false && me === false && mi === true && td === true ?
                 <button type="button" className="btn" onClick={e=>this.write(e,"update", topic_name)} disabled={ch !== false && sc === false ? true:false}>수정</button>:
                 <button type="button" className="btn " onClick={e=>this.write(e,"reg", topic_name)} disabled={sc !== false|| td === false ? true:false}>등록</button>}
-                <button type="button" className="btn btn-delete" onClick={e=> this.callAction(e, "confirm", "정말 삭제하시겠습니까?",typeofapi, sch.subject)} role={typeofapi} disabled={mi === true  || td === false ? false:true} role={typeofapi}>삭제</button>
+                <button type="button" className="btn btn-delete" onClick={e=> this.callAction(e, "confirm", "정말 삭제하시겠습니까?",typeofapi, sch.subject)} role={typeofapi} disabled={sc != false || mi === true  || td === false ? false:true} role={typeofapi}>삭제</button>
                 <button type="button" className="btn btn-history" onClick={(e)=>this.view(e, "history", topic_name)} disabled={me === true ? true:false}>이력</button>
 
             </>
