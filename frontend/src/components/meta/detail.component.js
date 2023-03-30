@@ -98,7 +98,7 @@ class Metadetail extends Component {
     }
 
     // detail 화면에 나오는 버튼을 정의한다
-    detailBtn = (topic_name, sch, meta) => {
+    detailBtn = (topic_name, sch, meta, changed) => {
         console.log(typeof(sch),typeof(meta))
         const sc = helpers.isEmptyObj(sch.schema)
         const td = sch.wipeout
@@ -188,8 +188,9 @@ class Metadetail extends Component {
 
     render(){
         if(this.props.data === null) return false;
-        const { schema } = this.props.data
+        const { schema, changed } = this.props.data
         const meta_join = this.props.data.meta_join && this.props.data.meta_join.is_used === 'true' ? this.props.data.meta_join : {}
+        const history = this.props.data.history && this.props.data.history.is_used === 'true' ? this.props.data.history : {}
         const topic_name = schema.subject.replace(/(-value|-key)/g, "")
         // console.log("schema ->",helpers.isEmptyObj(sch.schema), "meta ->",helpers.isEmptyObj(meta), "is_used ->", meta.is_used)
         return (
@@ -216,7 +217,7 @@ class Metadetail extends Component {
                         <p>{meta_join.last_mod_dt ? helpers.krDateTime(meta_join.last_mod_dt) : "-"}</p>
                     </div>
                 <div className="btn-group">
-                    {this.detailBtn(topic_name,schema,meta_join)}
+                    {this.detailBtn(topic_name,schema,meta_join, changed)}
                 </div>
             </div>
             {this.state.message && (

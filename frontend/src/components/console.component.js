@@ -247,12 +247,11 @@ class Metalist extends Component {
                                 </thead>
                                 <tbody>
                             {data && data.list && data.list.length > 0 ? data.list.map((item,index) => {
-                                var {schema, meta_join, changed } = item;
-                                // var meta_join = item.meta_join !=='undefined' ? item.meta_join:{}
+                                var schema = item.schema, meta_join = item.meta_join !=='undefined' ? item.meta_join:null;
                                 return(
                                         <tr data-index={index} className={idx === index ? "table-active":"text-center"} key={schema._id.$oid}>
                                             <th scope="row">{data.count - (data.size * data.current) - index}</th>
-                                            <td className="value-subject value form-group clickable" onClick={(e)=>this.detailView(index, schema.subject, changed)}>
+                                            <td className="value-subject value form-group clickable" onClick={(e)=>this.detailView(index, schema.subject, this.changed(meta_join, schema))}>
                                                 {schema.subject.replace(/(-value|-key)/g, "")}
                                             </td>
                                             <td className="value-id value form-group">
@@ -262,7 +261,7 @@ class Metalist extends Component {
                                                 {helpers.schemaTime(schema.reg_dt)}
                                             </td>
                                             {/* <td className="modified value">{this.changed(meta_join, schema) ? <span className="clickable" onClick={(e)=> this.changing(e, index, schema.subject,item, schema, meta_join)}>Y</span> : <span>N</span>}</td> */}
-                                            <td className="modified value">{changed ? <span className="clickable" onClick={(e)=> this.changing(e, index, schema.subject,item, schema, meta_join)}>Y</span> : <span>N</span>}</td>
+                                            <td className="modified value">{!helpers.isEmptyObj(history) ? <span className="clickable" onClick={(e)=> this.changing(e, index, schema.subject,item, schema, meta_join)}>Y</span> : <span>N</span>}</td>
                                             <td className="value-id value form-group">
                                                 {schema.schema ? <span>N</span>:<span className="clickable">Y</span> }
                                             </td>
