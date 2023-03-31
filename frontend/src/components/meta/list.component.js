@@ -86,6 +86,7 @@ class Metalist extends Component {
             } else {
             tempObj = []
             }
+            console.log(tempObj)
               this.setState({
                 ...this.state,
                 list:'list',
