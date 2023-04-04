@@ -35,25 +35,43 @@ class Terminal extends Component {
       }
     }
 
+    onChangeValue = (e) =>{
+      console.log(e.target.value)
+      this.setState({
+        ...this.state,
+        selected:e.target.value
+      })
+
+    }
 
     render(){
-      const {userReady, selected, terminal} = this.state
-
+      const {userReady, selected} = this.state
       if(userReady){
-        console.log(selected)
-        console.log(terminal[selected])
+      const {terminal} = this.state;
       return (
             <>
-                <div className="terminal" key={this.state.time}>
-                    <div className="page-header list">
-                        <Breadcrumb/>
+              <div className="terminal" key={this.state.time}>
+                <div className="page-header list">
+                    <Breadcrumb/>
+                    <div className="cluster-select">
+                      <select name="cluster-name" onChange={this.onChangeValue}>
+                          {Object.keys(terminal).map(item => {
+                            return (
+                              <option key={item} value={item}>{item}</option>
+                            )
+                          }
+                            )
+                          }
+                      </select>
                     </div>
-                    <div className="terminal-window">
-                    {this.state.redirect ? <Navigate to='/home' />:<></>}
-                      <Iframe url={"http://"+terminal[selected]} id="Terminal" className="cors-iframe"/>
-                    </div>
-                  </div>
-            </>
+                </div>
+
+                <div className="terminal-window">
+                {this.state.redirect ? <Navigate to='/home' />:<></>}
+                  <Iframe url={"http://"+terminal[selected]} id="Terminal" className="cors-iframe"/>
+                </div>
+              </div>
+          </>
         );
     }
   }

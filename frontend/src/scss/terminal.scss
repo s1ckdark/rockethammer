@@ -7,9 +7,21 @@
 		border-radius: 6px;
 		justify-content: center;
 		flex-wrap: wrap;
-
-		.cors-iframe {
-			position: relative;
+	}
+	.cluster-select {
+		select {
+			width: 100%;
+			height: unset;
+			border: 1px solid #eee;
+			border-radius: 6px;
+			padding: 25px 30px;
 		}
+	}
+	.cors-iframe {
+		position: relative;
+		height: 100vh;
+		top: 0;
+		left: 0;
+		right: 0;
 	}
 }

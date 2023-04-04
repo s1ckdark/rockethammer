@@ -16,6 +16,9 @@ import monitorServiceColor from "../img/monitor-service-color.svg";
 import collectorServiceBlue from "../img/collector-service.svg";
 import collectorServiceWhite from "../img/collector-service-gray.svg";
 import collectorServiceColor from "../img/collector-service-color.svg";
+import terminalServiceColor from "../img/terminal-service-color.svg";
+import terminalServiceBlue from "../img/terminal-service.svg";
+import terminalServiceWhite from "../img/terminal-service-white.svg";
 import adminServiceBlue from "../img/admin-service.svg";
 import adminServiceWhite from "../img/admin-service-gray.svg";
 import adminServiceColor from "../img/admin-service-gray.svg";
@@ -110,6 +113,9 @@ class Header extends Component {
     collectorServiceBlue,
     collectorServiceWhite,
     collectorServiceColor,
+    terminalServiceColor,
+    terminalServiceBlue,
+    terminalServiceWhite,
     adminServiceBlue,
     adminServiceWhite,
     adminServiceColor,
@@ -152,6 +158,7 @@ class Header extends Component {
               {this.navItem('manager',mode,"카프카 어드민")}
               {this.navItem('monitor',mode,"카프카 모니터링")}
               {this.navItem('collector',mode,"로그 수집기")}
+              {this.navItem('terminal',mode,"웹터미널")}
             </ul>
           </div>
           <div className="navbar-nav auth">

@@ -64,7 +64,7 @@ class Metadetail extends Component {
         }
 
 
-        await axios.post(process.env.REACT_APP_API+"/history/inserthistory", {topic_name:topic_name.replace(/(-value|-key)/g, ""), last_mod_dt:(new Date()).toISOString(),last_mod_id:AuthService.getCurrentUser().userid,before:JSON.stringify(this.props.data.meta_join), after:JSON.stringify("{}")})
+        await axios.post(process.env.REACT_APP_API+"/history/inserthistory", {topic_name:topic_name.replace(/(-value|-key)/g, ""), last_mod_dt:(new Date()).toISOString(),last_mod_id:AuthService.getCurrentUser().userid,before:JSON.stringify(this.props.data.meta_join), after:JSON.stringify({})})
         this.setState({
             ...this.state,
             message:"삭제가 완료되었습니다",
@@ -98,13 +98,13 @@ class Metadetail extends Component {
     }
 
     // detail 화면에 나오는 버튼을 정의한다
-    detailBtn = (topic_name, sch, meta, changed) => {
-        console.log(typeof(sch),typeof(meta))
+    detailBtn = (topic_name, sch, meta, meta_history, changed) => {
         const sc = helpers.isEmptyObj(sch.schema)
         const td = sch.wipeout
         const me = helpers.isEmptyObj(meta)
         const mi = me ? false:JSON.parse(meta.is_used)
         const ch = this.changed(meta, sch);
+        const hi = meta_history.length > 0 ? true : false;
         // console.log(helpers.isEmptyObj(sch.schema), sc)
         // console.log(ch, sc)
         const cond = [sc, me]
@@ -125,7 +125,7 @@ class Metadetail extends Component {
         if(arrayEquals(cond, [true, false]) === true) typeofapi = "api3"
         if(td === false) typeofapi = "api2"
 
-        console.log("sc:",sc, "me:",me, "mi:",mi, "ch:",ch, "td:",td, "api:",typeofapi)
+        console.log("sc:",sc, "me:",me, "mi:",mi, "ch:",ch, "hi:",hi,"td:",td, "api:",typeofapi)
         return (
             <>
                 {ch === true && sc === false && td === true ? <button type="button" className="btn btn-changed" onClick={(e)=> this.changing(e, sch.subject, sch, meta)}>변경 등록</button>:<></>}
@@ -134,7 +134,7 @@ class Metadetail extends Component {
                 <button type="button" className="btn" onClick={e=>this.write(e,"update", topic_name)} disabled={ch !== false && sc === false ? true:false}>수정</button>:
                 <button type="button" className="btn " onClick={e=>this.write(e,"reg", topic_name)} disabled={sc !== false|| td === false ? true:false}>등록</button>}
                 <button type="button" className="btn btn-delete" onClick={e=> this.callAction(e, "confirm", "정말 삭제하시겠습니까?",typeofapi, sch.subject)} role={typeofapi} disabled={sc != false || mi === true  || td === false ? false:true} role={typeofapi}>삭제</button>
-                <button type="button" className="btn btn-history" onClick={(e)=>this.view(e, "history", topic_name)} disabled={ me === true && mi === false ? true:false}>이력</button>
+                <button type="button" className="btn btn-history" onClick={(e)=>this.view(e, "history", topic_name)} disabled={ hi ? false:true}>이력</button>
 
             </>
         )
@@ -190,7 +190,7 @@ class Metadetail extends Component {
         if(this.props.data === null) return false;
         const { schema, changed } = this.props.data
         const meta_join = this.props.data.meta_join && this.props.data.meta_join.is_used === 'true' ? this.props.data.meta_join : {}
-        const history = this.props.data.history && this.props.data.history.is_used === 'true' ? this.props.data.history : {}
+        const meta_history = this.props.data.meta_history ? this.props.data.meta_history : []
         const topic_name = schema.subject.replace(/(-value|-key)/g, "")
         // console.log("schema ->",helpers.isEmptyObj(sch.schema), "meta ->",helpers.isEmptyObj(meta), "is_used ->", meta.is_used)
         return (
@@ -217,7 +217,7 @@ class Metadetail extends Component {
                         <p>{meta_join.last_mod_dt ? helpers.krDateTime(meta_join.last_mod_dt) : "-"}</p>
                     </div>
                 <div className="btn-group">
-                    {this.detailBtn(topic_name,schema,meta_join, changed)}
+                    {this.detailBtn(topic_name,schema,meta_join, meta_history, changed)}
                 </div>
             </div>
             {this.state.message && (
