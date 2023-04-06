@@ -10,7 +10,6 @@ import KafkaAdmin from "../components/kafkaadmin.component";
 import KafkaMonitor from "../components/kafkamonitor.component";
 import Metric from "../components/metric.component";
 import Admin from "../components/admin.component.js";
-import Terminal from "../components/terminal.component.js";
 import UserRegister from "../components/admin/userRegister.component";
 import UserHistory from "../components/admin/userHistory.component";
 import UserWeblog from "../components/admin/userWeblog.component";
@@ -47,7 +46,6 @@ class Container extends Component {
               <Route path="/meta/history/list/:topic_name/" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Historylist/></PrivateRoute>} />
               <Route path="/meta/history/list/:topic_name/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Historylist/></PrivateRoute>} />
               <Route path="/meta/history/view/:topic_name" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Historyview/></PrivateRoute>} />
-              <Route path="/terminal" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Terminal /></PrivateRoute>} />
               <Route path="/admin" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Admin /></PrivateRoute>} />
               <Route path="/admin/userhistory/" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><UserHistory /></PrivateRoute>} />
               <Route path="/admin/userhistory/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><UserHistory /></PrivateRoute>} />

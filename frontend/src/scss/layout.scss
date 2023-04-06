@@ -29,6 +29,11 @@
 		display: flex;
 		align-items: center;
 		color: $blue-text;
+		.cluster-name {
+			border-radius: 12px;
+			padding: 0 25px;
+			margin: 0 15px;
+		}
 		&.Blue {
 			@extend .transition;
 			background-color: $blue;

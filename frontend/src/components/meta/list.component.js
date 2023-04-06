@@ -76,7 +76,8 @@ class Metalist extends Component {
         await axios.post(process.env.REACT_APP_API+url, param)
             .then(res => {
                 let tempObj;
-                if(res.data.list.length > 0 ) {
+                console.log(res)
+                if(res.status === 200 && res.data.list.length > 0 ) {
                 // if(res.data.length);
             tempObj = JSON.parse(JSON.stringify(res.data));
               const {topic} = tempObj
@@ -84,7 +85,9 @@ class Metalist extends Component {
                 tempObj['list'][index]['schema']['wipeout'] =  topic.find( x => x === item.schema.subject.replace(/(-value|-key)/g, "")) ? true : false
               })
             } else {
-            tempObj = []
+                tempObj = {
+                    list:[]
+                }
             }
             console.log(tempObj)
               this.setState({

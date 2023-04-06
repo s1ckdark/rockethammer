@@ -37,7 +37,9 @@ class Header extends Component {
     this.logOut = this.logOut.bind(this);
     this.state = {
       currentUser: undefined,
-      mode:''
+      mode:'',
+      terminal:{},
+      selected:''
     };
   }
   componentDidMount() {
@@ -45,6 +47,7 @@ class Header extends Component {
     if (user) {
       this.setState({
         currentUser: user,
+        terminal:JSON.parse(process.env.REACT_APP_TERMINAL)
       });
     }
     EventBus.on("logout", () => {
@@ -126,25 +129,62 @@ class Header extends Component {
     return images[img];
   }
 
+  onChangeValue = (e) =>{
+    console.log(e.target.value)
+    this.setState({
+      ...this.state,
+      selected:e.target.value
+    }, ()=> this.openInNewTab(this.state.terminal[this.state.selected])
+    )
+  }
+
+  openInNewTab = (url) => {
+    window.open('http://'+url, '_blank', 'noopener, noreferrer');
+  };
+
   navItem = (uri, mode, serviceName) => {
     let ext, classDef;
+    const {terminal, selected} = this.state
     const tmp = this.props.router.location.pathname.split('/')
     classDef = tmp[1] === uri ? uri+"-service-"+mode+" active nav-item": uri+"-service-"+mode+" nav-item"
     if(mode === 'Blue') {ext = uri+"ServiceBlue"}
     else if(mode === 'White') {ext = uri+"ServiceWhite"}
     if(tmp[1] === uri && tmp[1] !== 'admin') {ext = uri+"ServiceColor"}
     if(tmp[1] === uri && tmp[1] === 'admin' && mode === 'White') {ext = uri+"ServiceBlue"}
-    return (
-      <li className={classDef} onMouseEnter={(e)=>this.onMouseEnter(e,mode)} onMouseLeave={(e)=>this.onMouseLeave(e,mode)}>
-      <Link to={"/"+uri} className="nav-link" role={ext}>
-        <img className={ext} src={this.navImg(ext)}></img>
-        <p>{serviceName}</p>
-      </Link>
-    </li>
-    )
+    if(uri !== 'terminal') {
+      return (
+        <li className={classDef} onMouseEnter={(e)=>this.onMouseEnter(e,mode)} onMouseLeave={(e)=>this.onMouseLeave(e,mode)}>
+        <Link to={"/"+uri} className="nav-link" role={ext}>
+          <img className={ext} src={this.navImg(ext)}></img>
+          <p>{serviceName}</p>
+        </Link>
+      </li>
+      )
+    } else {
+      return (
+        <li className={classDef} onMouseEnter={(e)=>this.onMouseEnter(e,mode)} onMouseLeave={(e)=>this.onMouseLeave(e,mode)}>
+        <Link className="nav-link" role={ext}>
+          <img className={ext} src={this.navImg(ext)}></img>
+          <p>{serviceName}</p>
+          <p><select className="cluster-name" name="cluster-name" onChange={this.onChangeValue}>
+              {Object.keys(terminal).map(item => {
+                return (
+                  <option key={item} value={item}>{item} - {terminal[item]}</option>
+                )
+              }
+                )
+              }
+              </select>
+              </p>
+        </Link>
+      </li>
+      )
+    }
+
   }
   render(){
     let {currentUser, pathname} = this.props;
+    const {terminal} = this.state;
     const tmp = pathname;
     let mode = tmp[0] === 'home' || tmp[0] === 'register' || tmp[0] === 'login' || tmp[0] === 'admin' || tmp[0] === '' || tmp[0] === 'profile'? "Blue":"White";
     let logoMode = mode === 'Blue' ? logo:logoDark;

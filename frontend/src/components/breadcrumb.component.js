@@ -29,11 +29,11 @@ class Breadcrumb extends Component {
     const path = pathname.split('/').slice(0,3);
     if(helpers.isInt(path[path.length -1]) === 'number') path.pop()
     const current = path[path.length-1]
-    const svg = path[1] !=='admin' ? path[1]+"ServiceColor":path[1]+"ServiceWhite.svg"
+    const svgImg = path[1] !=='admin' ? path[1]+"ServiceColor":path[1]+"ServiceWhite"
     return(
     <div className="breadcrumb">
       <div className="breadcrumb-navi" aria-label="breadcrumb">
-          <img src={this.navImg(svg)}/>
+          <img src={this.navImg(svgImg)}/>
           <h3>{helpers.translate(path[1])}</h3>
           <ol className="current">
             {path.map((item, index) => {
