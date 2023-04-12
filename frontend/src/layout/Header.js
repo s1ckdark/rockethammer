@@ -166,7 +166,8 @@ class Header extends Component {
         <Link className="nav-link" role={ext}>
           <img className={ext} src={this.navImg(ext)}></img>
           <p>{serviceName}</p>
-          <p><select className="cluster-name" name="cluster-name" onChange={this.onChangeValue}>
+          <p><select className="cluster-name" name="cluster-Name" onChange={this.onChangeValue} defaultValue="default">
+              <option key="default" value="default" disabled>클러스터 선택</option>
               {Object.keys(terminal).map(item => {
                 return (
                   <option key={item} value={item}>{item} - {terminal[item]}</option>
