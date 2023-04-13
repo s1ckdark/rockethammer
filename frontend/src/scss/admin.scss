@@ -71,6 +71,7 @@
 					display: flex;
 					justify-content: space-around;
 					> div {
+						width: 250px;
 						cursor: pointer;
 						border-radius: 6px;
 						border: 2px solid $gray;
