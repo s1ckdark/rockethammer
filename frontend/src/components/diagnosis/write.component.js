@@ -12,47 +12,16 @@ class Diagwrite extends Component {
         this.state = {
             userReady: false,
             data:{
-                topic_name:'',
                 subject:'',
-                schema_id:'',
-                schema_version:'',
-                meta_version:'',
-                revision:'',
-                last_mod_id:'',
-                last_mod_dt:'',
-                is_used: true,
-                op_name:'',
-                service:'',
-                related_topics:'',
-                retension:'',
-                topic_desc:'',
-                key:[],
-                value:[]
+                content:'',
+                file:{}
             },
-            history:{
-                topic_name:'',
-                before:'',
-                after:'',
-                last_mod_dt:'',
-                last_mod_id:''
-            },
-            prev:{},
             type:'',
             preview: false,
             errors:{
-                topic_name:'',
                 subject:'',
-                schema_id:'',
-                schema_version:'',
-                meta_version:'',
-                revision:'',
-                last_mod_id:'',
-                last_mod_dt:'',
-                is_used: true,
-                op_name:'',
-                service:'',
-                rentesion:'',
-                topic_desc:''
+                content:'',
+                file:{}
             },
             message:'',
             messageType:'',
@@ -215,25 +184,6 @@ class Diagwrite extends Component {
         })
       }
 
-    onChangeValueTemp = (e, index, field) =>{
-        e.preventDefault();
-        let metas = [...this.state.data[field]];
-        metas.forEach((ele, idx) => {
-            if(idx === index) {
-                let meta = {...metas[index]};
-                meta[e.target.name] = e.target.value;
-                metas[idx] = meta;
-            }
-        }
-        )
-        this.setState({
-            ...this.state,
-            data: {
-                ...this.state.data,
-                [field]:metas
-            }
-        })
-    }
     preview = async(e, type) => {
         e.preventDefault();
         // console.log(type+" preview")
@@ -433,14 +383,6 @@ class Diagwrite extends Component {
         })
     }
 
-    onChangeValueJSON = (e, index, whatisit) =>{
-        e.preventDefault();
-        this.setState({
-            ...this.state,
-            json:e.target.value
-        })
-    }
-
     onCancel = (e) => {
         e.preventDefault();
         this.setState({
@@ -450,31 +392,8 @@ class Diagwrite extends Component {
         this.goBack()
     }
 
-    readonly = (name, schema=null) => {
-        if(!this.state.preview) {
-            if(schema !== 'key') {
-                var tmp = ["p_name","p_type","topic_name","schema_id","schema_version","_id","is_null","default","revision","schema_id","meta_version","last_mod_id","last_mod_dt","subject","retnesion"];
-                let result = tmp.filter(ele => ele === name)
-                return result.length > 0 ? true : false
-            } else { return true; }
-        } else { return true;}
-    }
-
     goBack = () => {
         this.props.router.navigate(-1)
-    }
-
-    inputfield = ( field_name, field_type = 'input') => {
-        const data = this.state.data;
-        return (
-            <div className={"input-group "+field_name}>
-                <label htmlFor='field_name' className="field-label">{helpers.translate(field_name, "entokr")}</label>
-                 {field_type === 'textarea' ?
-                    <textarea name={field_name} className={"input-"+field_name} value={data[field_name]} onChange={(e)=> this.onChangeValue(e, field_name)} readOnly={this.readonly(field_name)} placeholder={helpers.translate(field_name, "entokr")+"를 입력하세요"}/>
-                :<input name={field_name} className={"input-"+field_name} value={data[field_name]} onChange={(e)=> this.onChangeValue(e, field_name)} readOnly={this.readonly(field_name)} placeholder={helpers.translate(field_name, "entokr")+"를 입력하세요"}/>}
-                <span className={"input-validator error-msg input-validator-"+field_name}>{this.state.errors[field_name]}</span>
-            </div>
-        )
     }
 
     render()
@@ -490,64 +409,17 @@ class Diagwrite extends Component {
                         <Breadcrumb/>
                     </div>
                     <div className={ this.state.preview ? "writing preview":"writing"}>
-                        <div className="default-group">
-                            <div className="inner">
-                                {this.inputfield("topic_name")}
-                                {this.inputfield("schema_id")}
-                                {this.inputfield("schema_version")}
-                                {this.inputfield("op_name")}
-                                {this.inputfield("service")}
-                                {this.inputfield("related_topics")}
-                                {this.inputfield("retension")}
-                                {this.inputfield("topic_desc", 'textarea')}
-                            </div>
+                        <div className="inner">
+                            <input className="subject" name="subject" type="text" onChange={onChnageValue} placeholder="제목을 입력해주세요" />
+                            <textarea className="content" name="content" onChange={onChangeValue} placeholder="내용을 입력해주세요"/>
+                            <input type="file" name="upload" multiple="multiple" accept=".json,application/json" />
                         </div>
-                        <div className="schema-group">
-                            {schema.map(ele => {
-                                return (
-                                    <div className={ele+"-schema"}>
-                                        <h3 className={ele+"-schema-header"}>{ele} Schema</h3>
-                                        <table className={ele+"-schema-table"}>
-                                            {data[ele].map((field, index) => {
-                                                return (
-                                                    <>
-                                                    {index === 0 ?
-                                                        <thead>
-                                                            <tr>
-                                                                <th scope="col" className="col-1">번호</th>
-                                                                    {Object.keys(field).map((field2, index) => {
-                                                                        return (
-                                                                            <th scope="col">{helpers.translate(field2,"entokr")}</th>
-                                                                        );
-                                                                    })
-                                                                }
-                                                            </tr>
-                                                        </thead>
-                                                    :<></>}
-                                                    <tr>
-                                                        <th scope="row">{index+1}</th>
-                                                            {Object.keys(field).map((field2) => {
-                                                                return (
-                                                                    <td><input type="text" name={field2} className={"field-input "+field2} value={field[field2]} onChange={(e)=>this.onChangeValueTemp(e, index, ele)} readOnly={this.readonly(field2, field)} placeholder="-"/></td>
-                                                                );
-                                                            })}
-                                                    </tr>
-                                                    </>
-                                                )
-                                            })}
-                                        </table>
-                                    </div>
-                                    )
-                                })
-                            }
+                        <div className="btn-group text-center">
+                        { this.state.preview === false ?
+                        <>
+                            <button type="button" className="btn btn-write" onClick={e=>this.preview(e, this.state.type)}>저장 전 미리 보기</button><button type="button" className="btn btn-back" onClick={this.goBack}>뒤로가기</button></>
+                            :<><button type="button" className="btn btn-write" onClick={e=>this.onSubmit(e, this.state.type)}>{ this.state.type === 'reg' ? "등록":"저장"}</button><button type="button" className="btn btn-back" onClick={e=>this.previewCancel(e)}>뒤로가기</button></>}
 
-                            <div className="btn-group text-center">
-                            { this.state.preview === false ?
-                            <>
-                                <button type="button" className="btn btn-write" onClick={e=>this.preview(e, this.state.type)}>저장 전 미리 보기</button><button type="button" className="btn btn-back" onClick={this.goBack}>뒤로가기</button></>
-                                :<><button type="button" className="btn btn-write" onClick={e=>this.onSubmit(e, this.state.type)}>{ this.state.type === 'reg' ? "등록":"저장"}</button><button type="button" className="btn btn-back" onClick={e=>this.previewCancel(e)}>뒤로가기</button></>}
-
-                            </div>
                         </div>
                     </div>
                     {this.state.message && (

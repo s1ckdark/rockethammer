@@ -77,7 +77,7 @@ class Metalist extends Component {
             .then(res => {
                 let tempObj;
                 console.log(res)
-                if(res.status === 200 && res.data.list.length > 0 ) {
+                if(res.status === 200 && res.data.list && res.data.list.length > 0 ) {
                 // if(res.data.length);
             tempObj = JSON.parse(JSON.stringify(res.data));
               const {topic} = tempObj
