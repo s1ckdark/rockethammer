@@ -17,6 +17,9 @@ import UserManager from "../components/admin/userManager.component";
 import Metawrite from "../components/meta/write.component";
 import Metalist from "../components/meta/list.component";
 import Metaview from "../components/meta/view.component";
+import Diagwrite from "../components/diagnosis/write.component";
+import Diaglist from "../components/diagnosis/list.component";
+import Diagview from "../components/diagnosis/view.component";
 import Historylist from "../components/history/list.component";
 import Historyview from "../components/history/view.component";
 import Notfound from "../components/notfound.component";
@@ -45,7 +48,9 @@ class Container extends Component {
               <Route path="/meta/history/list" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Historylist/></PrivateRoute>} />
               <Route path="/meta/history/list/:topic_name/" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Historylist/></PrivateRoute>} />
               <Route path="/meta/history/list/:topic_name/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Historylist/></PrivateRoute>} />
-              <Route path="/meta/history/view/:topic_name" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Historyview/></PrivateRoute>} />
+              <Route path="/diag/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Diaglist/></PrivateRoute>} />
+              <Route path="/diag/view/:index" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Diagview/></PrivateRoute>} />
+              <Route path="/diag/:type/:index" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Diagwrite/></PrivateRoute>} />
               <Route path="/admin" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><Admin /></PrivateRoute>} />
               <Route path="/admin/userhistory/" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><UserHistory /></PrivateRoute>} />
               <Route path="/admin/userhistory/:currentPage" element={<PrivateRoute isAllowed={isAllowed} redirectTo="/home"><UserHistory /></PrivateRoute>} />

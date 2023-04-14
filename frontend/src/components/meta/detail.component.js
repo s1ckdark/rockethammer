@@ -108,7 +108,7 @@ class Metadetail extends Component {
         // console.log(helpers.isEmptyObj(sch.schema), sc)
         // console.log(ch, sc)
         const cond = [sc, me]
-        let typeofapi;
+        let typeofapi = "api3";
         function arrayEquals(a, b){
             return Array.isArray(a) &&
                 Array.isArray(b) &&
@@ -117,13 +117,17 @@ class Metadetail extends Component {
         }
 
         if(arrayEquals(cond, [false, false]) === true) typeofapi = "api1"
-        if(arrayEquals(cond, [false, true]) === true) typeofapi = "api1"
-        if(arrayEquals(cond, [true, true]) === true) typeofapi = "api2"
-        if(arrayEquals(cond, [undefined, true]) === true) typeofapi = "api2"
-        if(arrayEquals(cond, [undefined, false]) === true) typeofapi = "api2"
-        if(arrayEquals(cond, [true, false]) === true) typeofapi = "api2"
-        if(arrayEquals(cond, [true, false]) === true) typeofapi = "api3"
-        if(td === false) typeofapi = "api2"
+        // if(arrayEquals(cond, [false, true]) === true) typeofapi = "api3"
+        // if(arrayEquals(cond, [true, true]) === true) typeofapi = "api3"
+        // if(arrayEquals(cond, [undefined, true]) === true) typeofapi = "api3"
+        // if(arrayEquals(cond, [undefined, false]) === true) typeofapi = "api3"
+        // if(arrayEquals(cond, [true, false]) === true) typeofapi = "api2"
+        // if(arrayEquals(cond, [true, false]) === true) typeofapi = "api3"
+        // if(arrayEquals(cond, [true, false]) === true) typeofapi = "api3"
+        // if(arrayEquals(cond, [null, true]) === true) typeofapi = "api3"
+        // if(arrayEquals(cond, [null, false]) === true) typeofapi = "api3"
+        // if(td === false) typeofapi = "api2"
+
 
         console.log("sc:",sc, "me:",me, "mi:",mi, "ch:",ch, "hi:",hi,"td:",td, "api:",typeofapi)
         return (

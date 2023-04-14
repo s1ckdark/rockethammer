@@ -3,7 +3,6 @@ import axios from 'axios';
 import Pagination from "react-js-pagination";
 import helpers from "../../common/helpers";
 import { withRouter } from "../../common/withRouter";
-import Detail from "./detail.component";
 import Breadcrumb from "../breadcrumb.component";
 
 class Diaglist extends Component {
@@ -17,7 +16,6 @@ class Diaglist extends Component {
               count:0,
               list:[]
           },
-          schemas:{},
           search:{
             status: false,
             keyword: '',
@@ -105,74 +103,6 @@ class Diaglist extends Component {
                 [e.target.name]: e.target.value
             }
             })
-    }
-
-    // 리스트상에 row를 눌렀을때 detailview에 나오는 스키마의 데이터를 정의한다
-    detailView = async (idx, topic_name, changed) => {
-        // e.preventDefault();
-        if(topic_name) {
-            const tn = topic_name.replace(/(-value|-key)/g, "");
-            // const meta_join = await this.fetchMetaData(tn) || {}
-            const meta_join = this.state.data.list[idx].meta_join || {}
-            // console.log(meta_join)
-            if(meta_join && meta_join.is_used === 'true') {
-                    this.setState({
-                        ...this.state,
-                        // meta:meta_join,
-                        delete:meta_join,
-                        select:{
-                            idx:idx,
-                            topic_name:tn,
-                            subject:topic_name,
-                            changed:changed
-                        },
-                        userReady: true
-                    })
-            } else {
-                this.setState({
-                    ...this.state,
-                    select:{
-                        idx:idx,
-                        topic_name:tn,
-                        subject:topic_name,
-                        changed:changed
-                    },
-                    // meta:{},
-                    delete:{},
-                    userReady: true
-                })
-            }
-        }
-    }
-
-    changing = async (e, index, topic_name) => {
-        e.preventDefault();
-        // const temp = index ? this.state.data['list'][index]: null
-        // const meta_join = JSON.parse(this.state.data.list[index].meta_join)
-        // const schema = JSON.parse(this.state.data.list[index].schema)
-        const tn = topic_name.replace(/(-value|-key)/g, "");
-
-        await axios.post(process.env.REACT_APP_API+"/schema/changed", {"keyword":topic_name}).then(res => {
-            if(res.data.length > 1) {
-                let temp = [];
-                res.data.forEach((item,index) => {
-                    temp[index] = item;
-                    temp[index]['schema']= JSON.parse(item.schema);
-                })
-                console.log(temp)
-                this.props.router.navigate('/meta/view/changed/'+tn, {state:{data:temp, type:'changed'}})
-            }
-        })
-    }
-
-    // 리스트 상단의 목록 이름에 대한 설명을 처리한다
-    tooltip = (e, action) => {
-        e.preventDefault();
-        const tooltip = e.target.querySelector('span');
-        if(tooltip) {
-            console.log(action, tooltip);
-            tooltip.classList.toggle("visible")
-        }
     }
 
     getData = () => {
