@@ -94,7 +94,13 @@ class Metalist extends Component {
                 ...this.state,
                 list:'list',
                 data: tempObj,
-                userReady:true
+                userReady:true,
+                select:{
+                    idx:'',
+                    topic_name:"",
+                    subject:"",
+                    schema: false
+                  }
               })
 
             })
@@ -180,9 +186,11 @@ class Metalist extends Component {
 
     getData = () => {
         // const { idx, topic_name, changed } = this.state.select;
+
         const currentPage = this.state.data.current;
         console.log("currentPage",currentPage);
         this.fetchData(currentPage);
+
     };
 
     // changed = (meta_join, schema) => {
