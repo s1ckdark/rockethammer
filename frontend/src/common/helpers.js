@@ -135,7 +135,12 @@ const helpers = {
             "reg":"등록",
             "change":"변경 등록",
             "":"홈",
-            "userhistory":"사용자 이력"
+            "userhistory":"사용자 이력",
+            "support":"지원",
+            "incident":"장애",
+            "document":"문서",
+            "diag":"점검",
+            "etc":"기타"
         }
         return  defineName[name] ? defineName[name]:name;
     },

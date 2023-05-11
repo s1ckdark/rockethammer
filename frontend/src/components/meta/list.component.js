@@ -65,12 +65,14 @@ class Metalist extends Component {
 
     componentDidMount(){
         // console.log("metaview",this.props);
+        this.forceUpdate();
         const currentPage = this.props.router.params.currentPage || 1
         this.fetchData(currentPage-1);
     }
 
     // meta data를 가져온다
     fetchData = async(page = 0, type = 'list') => {
+        if(type === "search" && this.state.search.keyword.length === 0) {alert("검색어가 없습니다");return false;}
         const url = type === 'list' ? "/schema/getallschema" : "/schema/search"
         const param = type === 'list' ? {"page":page}:this.state.search
         await axios.post(process.env.REACT_APP_API+url, param)
@@ -224,7 +226,7 @@ class Metalist extends Component {
                                     <input className="input-search" name="keyword" value={this.state.search.keyword} onChange = {this.onChangeSearch} placeholder="검색 할 토픽명을 입력하세요"/>
                                 </div>
                                 <div className="btn-group">
-                                    <button type="button" className="btn btn-search" onClick={e=>this.fetchData(0, 'search')}><span className="questionIcon"></span>토픽 검색</button>
+                                    <button type="button" className="btn btn-search" onClick={e=>this.fetchData(0, 'search')} disabled={this.state.search.keyword.length > 0 ? false:true}><span className="questionIcon"></span>토픽 검색</button>
                                     <button type="button" className="btn btn-advanced" onClick={this.advanced}>상세 검색</button>
                                 </div>
                             </div>
@@ -236,7 +238,7 @@ class Metalist extends Component {
                                     <input className="input-last_mod_id" type="text" name="last_mod_id" value={this.state.search.last_mod_id} onChange = {this.onChangeSearch} placeholder="등록자 id"/>
                                 </div>
                                 <div className="btn-group">
-                                    <button type="button" className="btn btn-advanced open" onClick={e=>this.fetchData(0, 'search')}><span className="questionIcon"></span>상세 검색</button>
+                                    <button type="button" className="btn btn-advanced open" onClick={e=>this.fetchData(0, 'search')} disabled={this.state.search.keyword.length > 0 ? false:true}><span className="questionIcon"></span>상세 검색</button>
                                     <button type="button" className="btn btn-cancel" onClick={this.advanced}>일반 검색</button>
                                 </div>
                             </div>

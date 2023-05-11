@@ -83,6 +83,7 @@ class Metawrite extends Component {
                                 let tmpJson = JSON.parse(data[kind][0].schema);
                                 let json = []
                                 tmpJson.fields.forEach(item => {
+                                    console.log(item);
                                     let temp = {};
                                     temp['p_name'] = item.name;
                                     temp['p_type'] = item.type;

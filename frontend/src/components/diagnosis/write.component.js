@@ -5,23 +5,40 @@ import helpers from "../../common/helpers";
 import { withRouter } from "../../common/withRouter";
 import Breadcrumb from "../breadcrumb.component";
 import Dialog from "../dialog.component";
+import Upload from "./upload.component";
+import { Editor, Viewer } from '@toast-ui/react-editor';
+import '@toast-ui/editor/dist/toastui-editor.css';
 
 class Diagwrite extends Component {
+    editorRef = React.createRef();
     constructor(props) {
         super(props);
         this.state = {
             userReady: false,
             data:{
-                subject:'',
-                content:'',
-                file:{}
+                title:'',
+                contents:'',
+                fileinfo:[],
+                username:'',
+                type:'',
+                tag:{
+                    "support":false,
+                    "incident":false,
+                    "document":false,
+                    "diag":false,
+                    "etc":false
+                },
+                last_mod_dt:''
             },
             type:'',
-            preview: false,
             errors:{
-                subject:'',
-                content:'',
-                file:{}
+                title:'',
+                contents:'',
+                fileinfo:[],
+                username:'',
+                type:'',
+                tag:[],
+                last_mod_dt:''
             },
             message:'',
             messageType:'',
@@ -30,231 +47,68 @@ class Diagwrite extends Component {
     }
 
     componentDidMount(){
-        const {schema, meta_join, type, topic_name} = this.props.router.location.state;
-        let meta ={}
-        // console.log(schema, meta_join)
-        switch(type) {
-            case 'reg':
-                axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:topic_name}).then( res => {
-                    const {data, status } = res;
-                    // console.log(data)
-                    if(status === 200) {
-                        const sch = Object.keys(data)
-                                    .sort()
-                                    .reduce(
-                                        (newObj,key) => {
-                                            newObj[key] = res.data[key];
-                                            return newObj;
-                                        },{}
-                                    )
-                        Object.keys(sch).forEach( kind => {
-                            if(sch[kind].length > 0) {
-                                let tmpJson = JSON.parse(data[kind][0].schema);
-                                let json = []
-                                tmpJson.fields.forEach(item => {
-                                    let temp = {};
-                                    temp['p_name'] = item.name;
-                                    temp['p_type'] = item.type;
-                                    if(kind === 'value') temp['l_name'] = '';
-                                    if(kind === 'value') temp['l_def'] = '';
-                                    temp['is_null'] = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'Y': 'N'
-                                    temp['default'] = item.default ? item.default : '-'
-                                    if(kind === 'value') temp['pii'] = '';
-
-                                    json.push(temp)
-                                })
-                                meta[kind] = json
-                            }
-                        })
-                            meta['topic_name'] = topic_name
-                            meta['subject'] = schema.subject
-                            meta['schema_id'] = schema.id
-                            meta['schema_version'] = schema.version
-                            meta['meta_version'] = 1
-                            meta['revision'] = 1
-                            meta['last_mod_id']=''
-                            meta['last_mod_dt']=''
-                            meta['is_used'] = true
-                            meta['op_name'] = ''
-                            meta['service'] = ''
-                            meta['related_topics'] = ''
-                            meta['retension'] = ''
-                            meta['topic_desc'] = ''
-                        }
-                        this.setState({
-                            ...this.state,
-                            data: meta,
-                            userReady:true,
-                            type: type
-                        })
-                    }
-                )
-
-            break;
-
-            case 'changed':
-                axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:topic_name}).then( res => {
-                    const {data, status } = res;
-                    if(status === 200) {
-                        const sch = Object.keys(data)
-                                    .sort()
-                                    .reduce(
-                                        (newObj,key) => {
-                                            newObj[key] = res.data[key];
-                                            return newObj;
-                                        },{}
-                                    )
-
-                        Object.keys(sch).forEach(kind => {
-                            if(sch[kind].length > 0) {
-                                console.log(kind, data[kind][0])
-                                let tmpJson = JSON.parse(data[kind][0].schema);
-                                let json = []
-                                tmpJson.fields.forEach(item => {
-                                    let temp = {};
-                                    temp['p_name'] = item.name;
-                                    temp['p_type'] = item.type;
-                                    if(kind === 'value') temp['l_name'] = '';
-                                    if(kind === 'value') temp['l_def'] = '';
-                                    temp['is_null'] = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'Y': 'N'
-                                    temp['default'] = item.default ? item.default : '-'
-                                    if(kind === 'value') temp['pii'] = '';
-
-                                    json.push(temp)
-                                })
-
-                                meta[kind] = json
-                            }
-                        })
-
-                            meta['topic_name'] = topic_name
-                            meta['subject'] = schema.subject
-                            meta['schema_id'] = schema.id
-                            meta['schema_version'] = schema.version
-                            meta['meta_version'] = 1
-                            meta['revision'] = 1
-                            meta['last_mod_id']=''
-                            meta['last_mod_dt']=''
-                            meta['is_used'] = true
-                            meta['op_name'] = ''
-                            meta['service'] = ''
-                            meta['related_topics'] = ''
-                            meta['retension'] = ''
-                            meta['topic_desc'] = ''
-                        }
-                        this.setState({
-                            ...this.state,
-                            data: meta,
-                            userReady:true,
-                            type: type
-                        })
-
-                    }
-                )
-
-            break;
-
-            case 'update':
-                this.setState({
-                    ...this.state,
-                    data: meta_join,
-                    prev: meta_join,
-                    userReady:true,
-                    type: type
-                })
-
-            break;
-            default:
-
-        }
-}
-
-    onChangeValue = (e, field) =>{
-        e.preventDefault();
-        this.setState({
-            ...this.state,
-            data: {
-                ...this.state.data,
-                [e.target.name]:e.target.value
-            },
-             error:{
-                ...this.state.error,
-                [e.target.name]:''
-             }
-        })
-      }
-
-    preview = async(e, type) => {
-        e.preventDefault();
-        // console.log(type+" preview")
-        const { data, prev } = this.state;
-        let temp = {...data}, history={}
-
-        switch(type){
-            case 'reg':
-                history.before = JSON.stringify({})
-                break;
-
-            case 'changed':
-                temp.schema_id = data.schema_id;
-                temp.meta_version = data.meta_version+1;
-
-            break;
-
-            case 'update':
-                if(JSON.stringify(prev) === JSON.stringify(temp)){
-                    this.setState({
-                        ...this.state,
-                        message:"변경된 내역이 없습니다",
-                        messageType:'alert',
-                        successful:false
-                    })
-                return false
-            }
-                temp.revision = data.revision + 1;
-                history.before = JSON.stringify(this.state.prev);
-
-            break;
-            default:
-                console.log("type "+type)
-            }
-
-            temp.last_mod_dt = new Date().toISOString();
-            temp.last_mod_id = AuthService.getCurrentUser().userid;
-            history.last_mod_dt = new Date().toISOString();
-            history.last_mod_id = AuthService.getCurrentUser().userid;
-            history.topic_name = temp.topic_name;
-            history.after = JSON.stringify(temp);
-
-
-        if(this.onValidation(temp, ["topic_name","subject","schema_id","schema_version","meta_version","op_name","service","revision","topic_desc","last_mod_dt","last_mod_id","is_used"])) {
+        const _id = this.props.router.params.index ? this.props.router.params.index : null;
+        const  post  = this.props.router.location.state !== null ? this.props.router.location.state.post:null;
+        _id ?
             this.setState({
                 ...this.state,
-                data: temp,
-                history:history,
-                preview:true,
-                errors:{
-                    ...this.state,
-                    topic_name:'',
-                    subject:'',
-                    schema_id:'',
-                    schema_version:'',
-                    meta_version:'',
-                    revision:'',
-                    last_mod_id:'',
-                    last_mod_dt:'',
-                    is_used: '',
-                    op_name:'',
-                    service:'',
-                    retension:'',
-                    topic_desc:''
-                },
-                successful:false,
-                message:''
+                data: post,
+                userReady: true,
+                type:"update"
             })
-            return false
+        :this.setState({
+                ...this.state,
+                data:{
+                    ...this.state.data,
+                    type:'manual',
+                    username: AuthService.getCurrentUser().userid,
+                    last_mod_dt:new Date().toISOString()
+                },
+                userReady: true,
+                type:"reg"
+            })
+    }
+
+    onChangeValue = (e) =>{
+        e.preventDefault();
+            this.setState({
+                ...this.state,
+                data: {
+                    ...this.state.data,
+                    [e.target.name]:e.target.value
+                },
+                errors:{
+                    ...this.state.errors,
+                    [e.target.name]:''
+                }
+            })
         }
 
+    onChangeCheckbox = (e, checked) => {
+        e.preventDefault()
+        console.log(checked, typeof(checked))
+            this.setState({
+                ...this.state,
+                data: {
+                    ...this.state.data,
+                    tag:{
+                        ...this.state.data.tag,
+                        [e.target.name]: !checked
+                    }
+                }
+            })
+
+        }
+
+     onChangeToast = () => {
+        const editorHtml = this.editorRef.current?.getInstance().getHTML();
+        this.setState({
+            ...this.state,
+            data:{
+                ...this.state.data,
+                contents: editorHtml
+            }
+        })
     }
 
     dialogReset = ()=>{
@@ -262,62 +116,34 @@ class Diagwrite extends Component {
           ...this.state,
           message: ""
         })
-        if(this.state.successful === true) this.props.router.navigate(this.state.type === 'changed' ? -2:-1)
+        if(this.state.successful === true) this.props.router.navigate(-1)
       }
 
     onSubmit = async(e, type) => {
         e.preventDefault();
-        const { data, history } = this.state
-        // console.log(data, prev, history)
-        // console.log(type)
-        // console.log(data.is_used)
-
+        const { data } = this.state
         switch(type){
             case 'reg':
-                await axios.post(process.env.REACT_APP_API+"/meta/insert/", data).then( res => {
-                    axios.post(process.env.REACT_APP_API+"/history/inserthistory/", history).then(res =>{
-                        if(res.status===200) {
-                            this.setState({
-                            ...this.state,
-                            message:"등록이 완료되었습니다",
-                            messageType:'alert',
-                            successful:true
-                        })
-                }
-                    })
-                })
-            break;
-
-            case 'changed':
-                await axios.post(process.env.REACT_APP_API+"/meta/insert/", data).then( res => {
-                    axios.post(process.env.REACT_APP_API+"/history/inserthistory/", history).then(res =>{
+                await axios.post(process.env.REACT_APP_API+"/diag/insert/", data).then( res => {
                     if(res.status===200) {
                         this.setState({
                         ...this.state,
-                        message:"변경 등록이 완료되었습니다",
+                        message:"등록이 완료되었습니다",
                         messageType:'alert',
                         successful:true
                     })
                 }
-                    })
-                })
-
+            })
             break;
 
             case 'update':
-                    await axios.post(process.env.REACT_APP_API+"/meta/delete/",{keyword:data.topic_name}).then( res => {
+                    await axios.post(process.env.REACT_APP_API+"/diag/update/"+encodeURIComponent(data._id), this.state.data).then( res => {
                         if(res.status ===200) {
-                            axios.post(process.env.REACT_APP_API+"/meta/insert/", data).then( res => {
-                                axios.post(process.env.REACT_APP_API+"/history/inserthistory/", history).then(res =>{
-                                    if(res.status===200) {
-                                        this.setState({
-                                            ...this.state,
-                                            message:"수정이 완료되었습니다",
-                                            messageType:'alert',
-                                            successful:true
-                                        })
-                                    }
-                                })
+                            this.setState({
+                                ...this.state,
+                                message:"수정이 완료되었습니다",
+                                messageType:'alert',
+                                successful:true
                             })
                         }
                     })
@@ -330,18 +156,12 @@ class Diagwrite extends Component {
 
     onValidation = (obj, fields) => {
         const errors = {
-            topic_name:'',
-            subject:'',
-            schema_id:'',
-            schema_version:'',
-            meta_version:'',
-            revision:'',
-            last_mod_id:'',
-            last_mod_dt:'',
-            is_used: true,
-            op_name:'',
-            service:'',
-            topic_desc:''
+            title:'',
+            contents:'',
+            fileinfo:{},
+            username:'',
+            type:'',
+            last_mod_dt:''
         }
         let formIsValid = true;
 
@@ -375,14 +195,17 @@ class Diagwrite extends Component {
         return formIsValid;
     }
 
-    previewCancel = (e) =>{
-        e.preventDefault()
+    handleCallback = (childData) => {
+        console.log(childData);
         this.setState({
             ...this.state,
-            preview: false
+            data:{
+                ...this.state.data,
+                fileinfo:childData
+            }
         })
-    }
 
+    }
     onCancel = (e) => {
         e.preventDefault();
         this.setState({
@@ -398,28 +221,63 @@ class Diagwrite extends Component {
 
     render()
     {
-        const {userReady, data} = this.state;
-        let schema = Object.keys(data).map(field => {
-            if(typeof(data[field]) === 'object' && data[field].length > 0) return field
-        }).filter(ele => ele)
+        const { data, userReady } = this.state;
         if(userReady){
             return (
-                <div className="meta">
+                <div className="diag">
                     <div className="page-header write">
                         <Breadcrumb/>
                     </div>
-                    <div className={ this.state.preview ? "writing preview":"writing"}>
+                    <div className="writing">
                         <div className="inner">
-                            <input className="subject" name="subject" type="text" onChange={onChnageValue} placeholder="제목을 입력해주세요" />
-                            <textarea className="content" name="content" onChange={onChangeValue} placeholder="내용을 입력해주세요"/>
-                            <input type="file" name="upload" multiple="multiple" accept=".json,application/json" />
-                        </div>
-                        <div className="btn-group text-center">
-                        { this.state.preview === false ?
-                        <>
-                            <button type="button" className="btn btn-write" onClick={e=>this.preview(e, this.state.type)}>저장 전 미리 보기</button><button type="button" className="btn btn-back" onClick={this.goBack}>뒤로가기</button></>
-                            :<><button type="button" className="btn btn-write" onClick={e=>this.onSubmit(e, this.state.type)}>{ this.state.type === 'reg' ? "등록":"저장"}</button><button type="button" className="btn btn-back" onClick={e=>this.previewCancel(e)}>뒤로가기</button></>}
-
+                                <div className="input-group title">
+                                    <input name="title" type="text" onChange={this.onChangeValue} value={data.title} placeholder="제목을 입력해주세요" />
+                                </div>
+                                <div className="input-group username">
+                                    <input name="username" type="text" onChange={this.onChangeValue} readOnly value={data.username}/>
+                                </div>
+                                <div className="input-group tag">
+                                    {Object.keys(this.state.data.tag).map((item, index) => {
+                                        return (
+                                            <>
+                                                <label key={this.state.data.tag[item]} htmlFor={item} className="checkbox-field-label"><input style ={{defaultChecked:this.state.data.tag[item]}} id={item} name={item} type="checkbox" checked={this.state.data.tag[item]} onChange={(e)=>this.onChangeCheckbox(e,this.state.data.tag[item])} /> {helpers.translate(item)}</label>
+                                            </>
+                                        )
+                                    })}
+                                </div>
+                                <div className="input-group last_mod_dt">
+                                    <input name="last_mod_dt" type="text" onChange={this.onChangeValue} readOnly value={helpers.krDateTime(data.last_mod_dt)}/>
+                                </div>
+                                <div className="input-group type">
+                                    <input name="type" type="text" onChange={this.onChangeValue} readOnly value={data.type} />
+                                </div>
+                                <div className="input-group contents">
+                                    {/* <textarea name="contents" onChange={this.onChangeValue} placeholder="내용을 입력해주세요" value={data.contents} /> */}
+                                    <Editor
+                                        initialValue={data.contents}
+                                        placeholder="내용을 입력해주세요."
+                                        previewStyle="vertical"
+                                        height="300px"
+                                        initialEditType="wysiwyg"
+                                        ref={this.editorRef}
+                                        onChange={this.onChangeToast}
+                                        language="ko-KR"
+                                        toolbarItems={[
+                                            ['heading', 'bold', 'italic', 'strike'],
+                                            ['hr', 'quote'],
+                                            ['ul', 'ol', 'task', 'indent', 'outdent'],
+                                            ['table', 'image', 'link'],
+                                            ['code', 'codeblock']
+                                        ]}
+                                    />
+                                </div>
+                                <div className="input-group uploader">
+                                    <Upload handleCallback={this.handleCallback} list={this.state.data.fileinfo} type="write"/>
+                                </div>
+                            <div className="btn-group text-center">
+                                <button type="button" className="btn btn-write" onClick={e=>this.onSubmit(e, this.state.type)}>{ this.state.type === 'reg' ? "등록":"수장"}</button>
+                                <button type="button" className="btn btn-back" onClick={this.onCancel}>뒤로가기</button>
+                            </div>
                         </div>
                     </div>
                     {this.state.message && (

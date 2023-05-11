@@ -48,7 +48,7 @@ class Diaglist extends Component {
     // pagination
     handlePageChange(pageNumber) {
         // console.log(`active page is ${pageNumber}`);
-        this.props.router.navigate('/meta/'+pageNumber)
+        this.props.router.navigate('/diag/'+pageNumber)
         this.fetchData(pageNumber-1)
         this.setState({
             ...this.state,
@@ -64,31 +64,20 @@ class Diaglist extends Component {
     componentDidMount(){
         // console.log("metaview",this.props);
         const currentPage = this.props.router.params.currentPage || 1
+        console.log(currentPage);
         this.fetchData(currentPage-1);
     }
 
     // meta data를 가져온다
     fetchData = async(page = 0, type = 'list') => {
-        const url = type === 'list' ? "/schema/getallschema" : "/schema/search"
+        const url = type === 'list' ? "/diag/list" : "/diag/search"
         const param = type === 'list' ? {"page":page}:this.state.search
         await axios.post(process.env.REACT_APP_API+url, param)
             .then(res => {
-                let tempObj;
-                if(res.data.list.length > 0 ) {
-                // if(res.data.length);
-            tempObj = JSON.parse(JSON.stringify(res.data));
-              const {topic} = tempObj
-              tempObj.list.forEach( (item, index) => {
-                tempObj['list'][index]['schema']['wipeout'] =  topic.find( x => x === item.schema.subject.replace(/(-value|-key)/g, "")) ? true : false
-              })
-            } else {
-            tempObj = []
-            }
-            console.log(tempObj)
               this.setState({
                 ...this.state,
                 list:'list',
-                data: tempObj,
+                data: res.data,
                 userReady:true
               })
 
@@ -112,10 +101,6 @@ class Diaglist extends Component {
         this.fetchData(currentPage);
     };
 
-    // changed = (meta_join, schema) => {
-    //     return meta_join && meta_join.is_used ==='true' && schema.version > meta_join.schema_version ? true : false
-    // }
-
     advanced = (e) => {
         e.preventDefault()
         this.setState({
@@ -128,13 +113,17 @@ class Diaglist extends Component {
 
     }
 
+    view = (e, _id, item) => {
+        e.preventDefault();
+        this.props.router.navigate("/diag/view/"+encodeURIComponent(_id),  {state:{data:item, _id:_id}})
+    }
     render(){
         const { data, userReady } = this.state;
-        const { topic_name, idx } = this.state.select;
+        const { idx } = this.state.select;
         if(userReady){
         return (
             <>
-                <div className="meta" key={this.state.time}>
+                <div className="diag" key={this.state.time}>
                     <div className="page-header list">
                         <Breadcrumb/>
                         <div className="search-bar">
@@ -168,44 +157,43 @@ class Diaglist extends Component {
                                 <thead className="thead-light">
                                     <tr className="text-center p-3">
                                         <th scope="col" className="col-md-1">번호</th>
-                                        <th scope="col" className="col-md-4">토픽명</th>
-                                        <th scope="col" className="col-md-1">등록자</th>
-                                        <th scope="col" className="col-md-2">물리등록일시</th>
-                                        <th scope="col" className="col-md-1" data-tooltip="물리 스키마 변경 여부입니다. 값이 Y 이면 등록되어 있는 물리 스키마 버전이 최신이 아니므로 변경 등록 해주세요!">물리변경<span className="info-icon">&#x24D8;</span></th>
-                                        <th scope="col" className="col-md-1" data-tooltip="물리 스키마 삭제 여부입니다. 값이 Y 이면 물리 스키마 삭제된 상태이므로 논리 메타를 삭제해주세요!">물리삭제<span className="info-icon">&#x24D8;</span></th>
-                                        <th scope="col" className="col-md-1" data-tooltip="논리 스키마 삭제 여부입니다. 값이 Y 이면 논리 스키마 삭제된 상태이므로 논리 메타를 삭제해주세요!">토픽삭제<span className="info-icon">&#x24D8;</span></th>
+                                        <th scope="col" className="col-md-1">유형</th>
+                                        <th scope="col" className="col-md-4">제목</th>
+                                        <th scope="col" className="col-md-2">태그</th>
+                                        <th scope="col" className="col-md-2">등록자</th>
+                                        <th scope="col" className="col-md-2">등록일시</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                             {data && data.list && data.list.length > 0 ? data.list.map((item,index) => {
-                                var {schema, meta_join, changed } = item;
-                                // var meta_join = item.meta_join !=='undefined' ? item.meta_join:{}
+                                let tmp = Object.keys(item.tag).filter(ele => item.tag[ele] === true).map(ele=>helpers.translate(ele))
                                 return(
-                                        <tr data-index={index} className={idx === index ? "table-active":"text-center"} key={schema._id.$oid}>
+                                        <tr data-index={index} className={idx === index ? "table-active":"text-center"} key={item._id} onClick={(e)=>this.view(e, item._id, item)}>
                                             <th scope="row">{data.count - (data.size * data.current) - index}</th>
-                                            <td className="value-subject value form-group clickable" onClick={(e)=>this.detailView(index, schema.subject, changed)}>
-                                                {schema.subject.replace(/(-value|-key)/g, "")}
+                                            <td className="value-type value form-group">
+                                                {item.type}
                                             </td>
-                                            <td className="value-id value form-group">
-                                                {helpers.isEmptyObj(meta_join) === false && JSON.parse(meta_join.is_used) ? meta_join.last_mod_id : "-"}
+                                            <td className="value-title value form-group">
+                                                {item.title}
                                             </td>
-                                            <td className="value-id value form-group">
-                                                {helpers.schemaTime(schema.reg_dt)}
+                                            <td className="value-tag value form-group">
+                                                {tmp.toString()}
                                             </td>
-                                            {/* <td className="modified value">{this.changed(meta_join, schema) ? <span className="clickable" onClick={(e)=> this.changing(e, index, schema.subject,item, schema, meta_join)}>Y</span> : <span>N</span>}</td> */}
-                                            <td className="modified value">{changed ? <span className="clickable" onClick={(e)=> this.changing(e, index, schema.subject,item, schema, meta_join)}>Y</span> : <span>N</span>}</td>
-                                            <td className="value-id value form-group">
-                                                {schema.schema ? <span>N</span>:<span className="clickable">Y</span> }
+                                            <td className="value-username value form-group">
+                                                {item.username}
                                             </td>
-                                            <td className="value-id value form-group">
-                                                {schema.wipeout ? <span>N</span>:<span className="clickable">Y</span> }
+                                            <td className="value-last_mod_dt value form-group">
+                                               {helpers.krDateTime(item.last_mod_dt)}
                                             </td>
                                         </tr>
                                     );
-                                }): <tr><td colSpan="5"><h3 className="emptyData">검색된 meta data가 없습니다</h3></td></tr>
+                                }): <tr><td colSpan="5"><h3 className="emptyData">검색된 data가 없습니다</h3></td></tr>
                                 }
                                 </tbody>
                             </table>
+                            <div className="btn-group">
+                                <button className="btn btn-write" onClick={()=>this.props.router.navigate("/diag/write", {state:{type:"write"}})}>쓰기</button>
+                            </div>
                             <div className="paging">
                                 <Pagination
                                     activePage={data.current+1}
@@ -219,9 +207,6 @@ class Diaglist extends Component {
                                     innerClass="pagination"
                             />
                             </div>
-                        </div>
-                        <div className="detailview">
-                            <Detail getData={this.getData} key={this.state.time} topic={topic_name} data={typeof(idx) === 'number' ? data['list'][idx]: null}></Detail>
                         </div>
                     </div>
                 </div>
