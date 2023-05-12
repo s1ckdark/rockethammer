@@ -122,38 +122,37 @@ class Diagwrite extends Component {
     onSubmit = async(e, type) => {
         e.preventDefault();
         const { data } = this.state
-        this.onValidation(data)
-        console.log(this.onValidation(data))
-        // switch(type){
-        //     case 'reg':
-        //         await axios.post(process.env.REACT_APP_API+"/diag/insert/", data).then( res => {
-        //             if(res.status===200) {
-        //                 this.setState({
-        //                 ...this.state,
-        //                 message:"등록이 완료되었습니다",
-        //                 messageType:'alert',
-        //                 successful:true
-        //             })
-        //         }
-        //     })
-        //     break;
+        if(!this.onValidation(data)) return false;
+        switch(type){
+            case 'reg':
+                await axios.post(process.env.REACT_APP_API+"/diag/insert/", data).then( res => {
+                    if(res.status===200) {
+                        this.setState({
+                        ...this.state,
+                        message:"등록이 완료되었습니다",
+                        messageType:'alert',
+                        successful:true
+                    })
+                }
+            })
+            break;
 
-        //     case 'update':
-        //             await axios.post(process.env.REACT_APP_API+"/diag/update/"+encodeURIComponent(data._id), this.state.data).then( res => {
-        //                 if(res.status ===200) {
-        //                     this.setState({
-        //                         ...this.state,
-        //                         message:"수정이 완료되었습니다",
-        //                         messageType:'alert',
-        //                         successful:true
-        //                     })
-        //                 }
-        //             })
+            case 'update':
+                    await axios.post(process.env.REACT_APP_API+"/diag/update/"+encodeURIComponent(data._id), this.state.data).then( res => {
+                        if(res.status ===200) {
+                            this.setState({
+                                ...this.state,
+                                message:"수정이 완료되었습니다",
+                                messageType:'alert',
+                                successful:true
+                            })
+                        }
+                    })
 
-        //     break;
-        //     default:
-        //         console.log("submit")
-        // }
+            break;
+            default:
+                console.log("submit")
+        }
     }
 
     onValidation = (obj) => {
@@ -199,16 +198,21 @@ class Diagwrite extends Component {
             tag.push(obj.tag[item] === false ? false : true)
             console.log(item, obj.tag[item])
         })
+
         if(!tag.includes(true)){
             tmp.push('tag')
             errors['tag'] = helpers.translate('tag' ,"entokr")+ ' 값은 필수입력 항목 입니다';
+            formIsValid = false;
         }
+
+        if(tmp.length > 0){
         this.setState({
             ...this.state,
             errors:errors,
             successful:false,
             message: tmp.toString()+"에 잘못된 입력이 있으니 안내에 맞춰 입력해주세요"
         })
+    }
         return formIsValid;
     }
 
