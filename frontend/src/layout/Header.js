@@ -206,7 +206,7 @@ class Header extends Component {
               {this.navItem('monitor',mode,"카프카 모니터링")}
               {this.navItem('collector',mode,"로그 수집기")}
               {this.navItem('terminal',mode,"웹터미널")}
-              {this.navItem('diag',mode,"지원 내약")}
+              {this.navItem('diag',mode,"지원 내역")}
             </ul>
           </div>
           <div className="navbar-nav auth">

@@ -122,39 +122,43 @@ class Diagwrite extends Component {
     onSubmit = async(e, type) => {
         e.preventDefault();
         const { data } = this.state
-        switch(type){
-            case 'reg':
-                await axios.post(process.env.REACT_APP_API+"/diag/insert/", data).then( res => {
-                    if(res.status===200) {
-                        this.setState({
-                        ...this.state,
-                        message:"등록이 완료되었습니다",
-                        messageType:'alert',
-                        successful:true
-                    })
-                }
-            })
-            break;
+        this.onValidation(data)
+        console.log(this.onValidation(data))
+        // switch(type){
+        //     case 'reg':
+        //         await axios.post(process.env.REACT_APP_API+"/diag/insert/", data).then( res => {
+        //             if(res.status===200) {
+        //                 this.setState({
+        //                 ...this.state,
+        //                 message:"등록이 완료되었습니다",
+        //                 messageType:'alert',
+        //                 successful:true
+        //             })
+        //         }
+        //     })
+        //     break;
 
-            case 'update':
-                    await axios.post(process.env.REACT_APP_API+"/diag/update/"+encodeURIComponent(data._id), this.state.data).then( res => {
-                        if(res.status ===200) {
-                            this.setState({
-                                ...this.state,
-                                message:"수정이 완료되었습니다",
-                                messageType:'alert',
-                                successful:true
-                            })
-                        }
-                    })
+        //     case 'update':
+        //             await axios.post(process.env.REACT_APP_API+"/diag/update/"+encodeURIComponent(data._id), this.state.data).then( res => {
+        //                 if(res.status ===200) {
+        //                     this.setState({
+        //                         ...this.state,
+        //                         message:"수정이 완료되었습니다",
+        //                         messageType:'alert',
+        //                         successful:true
+        //                     })
+        //                 }
+        //             })
 
-            break;
-            default:
-                console.log("submit")
-        }
+        //     break;
+        //     default:
+        //         console.log("submit")
+        // }
     }
 
-    onValidation = (obj, fields) => {
+    onValidation = (obj) => {
+        var tmp =[]
+        var tag = []
         const errors = {
             title:'',
             contents:'',
@@ -167,30 +171,43 @@ class Diagwrite extends Component {
 
         if ('object' !== typeof obj || null == obj) formIsValid = false;
 
-        const hasOnlyTheKeys = Array.isArray(fields) ? JSON.stringify(Object.keys(obj).filter(x => fields.includes(x)).sort()) ===  JSON.stringify(fields.sort()) : false
-        if (false === hasOnlyTheKeys) formIsValid = false;
+        // const hasOnlyTheKeys = Array.isArray(fields) ? JSON.stringify(Object.keys(obj).filter(x => fields.includes(x)).sort()) ===  JSON.stringify(fields.sort()) : false
+        // if (false === hasOnlyTheKeys) formIsValid = false;
 
-        fields.forEach( prop => {
+
+
+        Object.keys(obj).forEach( prop => {
             switch(obj[prop]){
               case null:
               case undefined:
                 errors[prop] = helpers.translate(prop ,"entokr")+ ' 값은 필수입력 항목 입니다';
                 formIsValid = false;
+                tmp.push(helpers.translate(prop ,"entokr"))
                 break;
               case '':
                 errors[prop] = helpers.translate(prop ,"entokr")+ ' 값은 필수입력 항목 입니다';
                 formIsValid = false;
+                tmp.push( helpers.translate(prop ,"entokr"))
                 break;
               case 0:
                 break;
               default:
             }
         })
+
+        Object.keys(obj.tag).forEach( item => {
+            tag.push(obj.tag[item] === false ? false : true)
+            console.log(item, obj.tag[item])
+        })
+        if(!tag.includes(true)){
+            tmp.push('tag')
+            errors['tag'] = helpers.translate('tag' ,"entokr")+ ' 값은 필수입력 항목 입니다';
+        }
         this.setState({
             ...this.state,
             errors:errors,
             successful:false,
-            message:"잘못된 입력이 있으니 안내에 맞춰 입력해주세요"
+            message: tmp.toString()+"에 잘못된 입력이 있으니 안내에 맞춰 입력해주세요"
         })
         return formIsValid;
     }
@@ -205,14 +222,6 @@ class Diagwrite extends Component {
             }
         })
 
-    }
-    onCancel = (e) => {
-        e.preventDefault();
-        this.setState({
-            ...this.state,
-            data:this.state.prev
-        })
-        this.goBack()
     }
 
     goBack = () => {
@@ -232,6 +241,7 @@ class Diagwrite extends Component {
                         <div className="inner">
                                 <div className="input-group title">
                                     <input name="title" type="text" onChange={this.onChangeValue} value={data.title} placeholder="제목을 입력해주세요" />
+                                    <span className="input-validator error-msg input-validator-title">{this.state.errors['title']}</span>
                                 </div>
                                 <div className="input-group username">
                                     <input name="username" type="text" onChange={this.onChangeValue} readOnly value={data.username}/>
@@ -244,6 +254,7 @@ class Diagwrite extends Component {
                                             </>
                                         )
                                     })}
+                                     <span className="input-validator error-msg input-validator-tag">{this.state.errors['tag']}</span>
                                 </div>
                                 <div className="input-group last_mod_dt">
                                     <input name="last_mod_dt" type="text" onChange={this.onChangeValue} readOnly value={helpers.krDateTime(data.last_mod_dt)}/>
@@ -270,13 +281,14 @@ class Diagwrite extends Component {
                                             ['code', 'codeblock']
                                         ]}
                                     />
+                                     <span className="input-validator error-msg input-validator-contents">{this.state.errors['contents']}</span>
                                 </div>
                                 <div className="input-group uploader">
                                     <Upload handleCallback={this.handleCallback} list={this.state.data.fileinfo} type="write"/>
                                 </div>
                             <div className="btn-group text-center">
                                 <button type="button" className="btn btn-write" onClick={e=>this.onSubmit(e, this.state.type)}>{ this.state.type === 'reg' ? "등록":"수장"}</button>
-                                <button type="button" className="btn btn-back" onClick={this.onCancel}>뒤로가기</button>
+                                <button type="button" className="btn btn-back" onClick={this.goBack}>뒤로가기</button>
                             </div>
                         </div>
                     </div>

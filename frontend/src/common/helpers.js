@@ -140,7 +140,10 @@ const helpers = {
             "incident":"장애",
             "document":"문서",
             "diag":"점검",
-            "etc":"기타"
+            "etc":"기타",
+            "title":"제목",
+            "contents":"내용",
+            "tag":"태그"
         }
         return  defineName[name] ? defineName[name]:name;
     },

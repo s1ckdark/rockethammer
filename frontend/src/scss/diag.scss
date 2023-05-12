@@ -415,6 +415,11 @@
 						border: 0;
 					}
 				}
+				.error-msg {
+					color: white;
+					// text-decoration: underline;
+					bottom: -20px;
+				}
 				&.title {
 					border-bottom: 1px solid #000;
 				}
@@ -499,19 +504,23 @@
 							overflow-y: scroll;
 							display: flex;
 							justify-content: flex-start;
+							flex-wrap: wrap;
 							.uploaded-file {
-								border: 1px solid #fff;
+								// border: 1px solid #fff;
+								box-shadow: 0 0 0 1px #fff inset;
 								font-size: 22px;
 								color: #fff;
-								margin: 10px 1% 8px;
-								width: 24%;
+								margin: 8px 1% 5px;
+								width: 23%;
 								height: auto;
 								position: relative;
 								&:nth-child(4n + 1) {
 									margin-left: 0;
+									margin-right: 2%;
 								}
 								&:nth-child(4n) {
 									margin-right: 0;
+									margin-left: 2%;
 								}
 								.fileName {
 									width: calc(100% - 20px);
