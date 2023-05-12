@@ -8,6 +8,33 @@ import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
 
 class Diagview extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+          data:{},
+          userReady:false,
+        };
+    }
+
+    componentDidMount(){
+        const {_id} = this.props.router.location.state;
+        this.fetchData(_id);
+    }
+
+    // meta data를 가져온다
+    fetchData = async(_id) => {
+        console.log(_id)
+        await axios.get(process.env.REACT_APP_API+"/diag/get/"+_id)
+            .then(res => {
+                console.log(res.data);
+              this.setState({
+                ...this.state,
+                data: res.data,
+                userReady:true
+              })
+
+            })
+        }
     view = ( item ) => {
         return (
             <>
@@ -41,7 +68,9 @@ class Diagview extends Component {
         )
     }
     render(){
-        const {_id, data} = this.props.router.location.state
+        const { userReady, data} = this.state;
+        console.log(data)
+        if(userReady){
         return (
                 <>
                 <div className="diag">
@@ -57,6 +86,7 @@ class Diagview extends Component {
                 </>
             )
         }
+    }
     }
 
 export default withRouter(Diagview)
