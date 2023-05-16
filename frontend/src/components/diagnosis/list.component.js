@@ -61,13 +61,6 @@ class Diaglist extends Component {
         })
     }
 
-    componentDidUpdate(prevProps){
-        if(this.props.router.location.key !== prevProps.router.location.key) {
-            // console.log(this.props.router.location.key , prevProps.router.location.key)
-            window.location.reload()
-        }
-    }
-
     componentDidMount(){
         // console.log("metaview",this.props);
         const currentPage = this.props.router.params.currentPage || 1

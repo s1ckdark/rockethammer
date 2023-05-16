@@ -148,6 +148,11 @@ class Header extends Component {
     window.open('http://'+url, '_blank', 'noopener, noreferrer');
   };
 
+  changeLocation = (placeToGo)=>{
+    this.props.router.navigate(placeToGo, { replace: true });
+    window.location.reload();
+}
+
   navItem = (uri, mode, serviceName) => {
     let ext, classDef;
     const {terminal, selected} = this.state
@@ -160,7 +165,7 @@ class Header extends Component {
     if(uri !== 'terminal') {
       return (
         <li className={classDef} onMouseEnter={(e)=>this.onMouseEnter(e,mode)} onMouseLeave={(e)=>this.onMouseLeave(e,mode)}>
-        <Link to={"/"+uri} className="nav-link" role={ext}>
+        <Link to={"/"+uri} className="nav-link" role={ext} onClick={()=>this.changeLocation(uri)}>
           <img className={ext} src={this.navImg(ext)}></img>
           <p>{serviceName}</p>
         </Link>
