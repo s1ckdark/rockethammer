@@ -13,6 +13,13 @@ export default class Kafkaadmin extends Component {
     };
   }
 
+  componentDidUpdate(prevProps){
+    if(this.props.router.location.key !== prevProps.router.location.key) {
+        // console.log(this.props.router.location.key , prevProps.router.location.key)
+        window.location.reload()
+    }
+}
+
   componentDidMount(){
     const user = AuthService.getCurrentUser();
     if (user !== null ) {
@@ -25,7 +32,7 @@ export default class Kafkaadmin extends Component {
         ...this.state,
         redirect: true
       })
-    } 
+    }
   }
 
   runAfterRender = () => {

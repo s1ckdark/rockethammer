@@ -14,6 +14,12 @@ export default class Metric extends Component {
       redirect:''
     };
   }
+  componentDidUpdate(prevProps){
+    if(this.props.router.location.key !== prevProps.router.location.key) {
+        // console.log(this.props.router.location.key , prevProps.router.location.key)
+        window.location.reload()
+    }
+}
 
   componentDidMount(){
     const user = AuthService.getCurrentUser();
@@ -27,7 +33,7 @@ export default class Metric extends Component {
         ...this.state,
         redirect: true
       })
-    } 
+    }
   }
 
 
