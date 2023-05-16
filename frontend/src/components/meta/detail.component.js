@@ -191,12 +191,12 @@ class Metadetail extends Component {
       }
 
     render(){
+        console.log(this.props.data)
         if(this.props.data === null) return false;
         const { schema, changed } = this.props.data
         const meta_join = this.props.data.meta_join && this.props.data.meta_join.is_used === 'true' ? this.props.data.meta_join : {}
         const meta_history = this.props.data.meta_history ? this.props.data.meta_history : []
         const topic_name = schema.subject.replace(/(-value|-key)/g, "")
-        // console.log("schema ->",helpers.isEmptyObj(sch.schema), "meta ->",helpers.isEmptyObj(meta), "is_used ->", meta.is_used)
         return (
             <>
             <div className="detail-info">

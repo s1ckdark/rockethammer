@@ -272,7 +272,7 @@ class Diagwrite extends Component {
                                         initialValue={data.contents}
                                         placeholder="내용을 입력해주세요."
                                         previewStyle="vertical"
-                                        height="300px"
+                                        height="600px"
                                         initialEditType="wysiwyg"
                                         ref={this.editorRef}
                                         onChange={this.onChangeToast}
@@ -291,7 +291,7 @@ class Diagwrite extends Component {
                                     <Upload handleCallback={this.handleCallback} list={this.state.data.fileinfo} type="write"/>
                                 </div>
                             <div className="btn-group text-center">
-                                <button type="button" className="btn btn-write" onClick={e=>this.onSubmit(e, this.state.type)}>{ this.state.type === 'reg' ? "등록":"수장"}</button>
+                                <button type="button" className="btn btn-write" onClick={e=>this.onSubmit(e, this.state.type)}>{ this.state.type === 'reg' ? "등록":"수정"}</button>
                                 <button type="button" className="btn btn-back" onClick={this.goBack}>뒤로가기</button>
                             </div>
                         </div>

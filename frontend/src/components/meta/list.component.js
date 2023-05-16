@@ -5,6 +5,7 @@ import helpers from "../../common/helpers";
 import { withRouter } from "../../common/withRouter";
 import Detail from "./detail.component";
 import Breadcrumb from "../breadcrumb.component";
+import { useActionData } from "react-router-dom";
 
 class Metalist extends Component {
     constructor(props) {
@@ -40,7 +41,7 @@ class Metalist extends Component {
           },
           delete:{},
           userReady:false,
-          time:''
+          key:''
         };
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchData = this.fetchData.bind(this);
@@ -62,12 +63,22 @@ class Metalist extends Component {
             }
         })
     }
+    componentDidUpdate(prevProps){
+        if(this.props.router.location.key !== prevProps.router.location.key) {
+            // console.log(this.props.router.location.key , prevProps.router.location.key)
+            window.location.reload()
+        }
+    }
 
     componentDidMount(){
-        // console.log("metaview",this.props);
-        this.forceUpdate();
+        this.setState({
+            ...this.state,
+            key: this.props.router.location.key
+        },()=>{
         const currentPage = this.props.router.params.currentPage || 1
         this.fetchData(currentPage-1);
+        }
+        )
     }
 
     // meta data를 가져온다
@@ -217,7 +228,7 @@ class Metalist extends Component {
         if(userReady){
         return (
             <>
-                <div className="meta" key={this.state.time}>
+                <div className="meta" key={this.state.key}>
                     <div className="page-header list">
                         <Breadcrumb/>
                         <div className="search-bar">
@@ -226,7 +237,7 @@ class Metalist extends Component {
                                     <input className="input-search" name="keyword" value={this.state.search.keyword} onChange = {this.onChangeSearch} placeholder="검색 할 토픽명을 입력하세요"/>
                                 </div>
                                 <div className="btn-group">
-                                    <button type="button" className="btn btn-search" onClick={e=>this.fetchData(0, 'search')} disabled={this.state.search.keyword.length > 0 ? false:true}><span className="questionIcon"></span>토픽 검색</button>
+                                    <button type="button" className="btn btn-search" onClick={e=>this.fetchData(0, 'search')} disabled={(this.state.search.keyword.trim()).length > 0 ? false:true}><span className="questionIcon"></span>토픽 검색</button>
                                     <button type="button" className="btn btn-advanced" onClick={this.advanced}>상세 검색</button>
                                 </div>
                             </div>
@@ -262,7 +273,6 @@ class Metalist extends Component {
                                 <tbody>
                             {data && data.list && data.list.length > 0 ? data.list.map((item,index) => {
                                 var {schema, meta_join, changed } = item;
-                                // var meta_join = item.meta_join !=='undefined' ? item.meta_join:{}
                                 return(
                                         <tr data-index={index} className={idx === index ? "table-active":"text-center"} key={schema._id}>
                                             <th scope="row">{data.count - (data.size * data.current) - index}</th>
@@ -304,7 +314,11 @@ class Metalist extends Component {
                             </div>
                         </div>
                         <div className="detailview">
-                            <Detail getData={this.getData} key={this.state.time} topic={topic_name} data={typeof(idx) === 'number' ? data['list'][idx]: null}></Detail>
+                            {typeof(this.state.select.idx) === 'number' ?
+                                <Detail getData={this.getData} topic={topic_name} data={typeof(idx) === 'number' ? data['list'][idx]: null}></Detail>
+                            :<></>
+                        }
+
                         </div>
                     </div>
                 </div>

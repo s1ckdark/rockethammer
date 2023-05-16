@@ -79,10 +79,10 @@ class Header extends Component {
       var img = thisNodeImg.className.replace(/(White|Blue)/gi, '')+'Color'
       gsap.to(thisNode, {autoAlpha:1,x:2})
       gsap.set(thisNodeImg, {attr:{src:this.navImg(img) }});
-      gsap.to(thisNodeImg, {duration:1}, 0);
-    } else {
-      gsap.set(thisNode, {display:"block"});
-    }
+      gsap.to(thisNodeImg, {duration:1}, 0);}
+    //   else {
+    //   gsap.set(thisNode, {display:"block"});
+    // }
   };
 
   onMouseLeave = (e, mode) => {
