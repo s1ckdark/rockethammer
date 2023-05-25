@@ -5,6 +5,11 @@ import helpers from "../../common/helpers";
 import { withRouter } from "../../common/withRouter";
 import Breadcrumb from "../breadcrumb.component";
 import Dialog from "../dialog.component";
+import AceEditor from "react-ace";
+import "ace-builds/src-noconflict/mode-json";
+import "ace-builds/src-noconflict/theme-github";
+import "ace-builds/src-noconflict/theme-tomorrow";
+import "ace-builds/src-noconflict/ext-language_tools"
 
 class Metawrite extends Component {
     constructor(props) {
@@ -83,7 +88,7 @@ class Metawrite extends Component {
                                 let tmpJson = JSON.parse(data[kind][0].schema);
                                 let json = []
                                 tmpJson.fields.forEach(item => {
-                                    console.log(item);
+                                    // console.log(item);
                                     let temp = {};
                                     temp['p_name'] = item.name;
                                     temp['p_type'] = item.type;
@@ -434,11 +439,10 @@ class Metawrite extends Component {
         })
     }
 
-    onChangeValueJSON = (e, index, whatisit) =>{
-        e.preventDefault();
+    onChangeValueJSON = (value) =>{
         this.setState({
             ...this.state,
-            json:e.target.value
+            data:JSON.parse(value)
         })
     }
 
@@ -465,6 +469,12 @@ class Metawrite extends Component {
         this.props.router.navigate(-1)
     }
 
+    depth = (o) => {
+        var values;
+        if (Array.isArray(o)) values = o;
+        else if (typeof o === "object") values = Object.keys(o).map(k=>o[k]);
+        return values ? Math.max.apply(0, values.map(this.depth))+1 : 1;
+    }
     inputfield = ( field_name, field_type = 'input') => {
         const data = this.state.data;
         return (
@@ -481,74 +491,90 @@ class Metawrite extends Component {
     render()
     {
         const {userReady, data} = this.state;
-        let schema = Object.keys(data).map(field => {
-            if(typeof(data[field]) === 'object' && data[field].length > 0) return field
-        }).filter(ele => ele)
+
         if(userReady){
+            let schema = Object.keys(data).map(field => {
+                if(typeof(data[field]) === 'object' && data[field].length > 0) return field
+            }).filter(ele => ele)
             return (
                 <div className="meta">
                     <div className="page-header write">
                         <Breadcrumb/>
                     </div>
                     <div className={ this.state.preview ? "writing preview":"writing"}>
-                        <div className="default-group">
-                            <div className="inner">
-                                {this.inputfield("topic_name")}
-                                {this.inputfield("schema_id")}
-                                {this.inputfield("schema_version")}
-                                {this.inputfield("op_name")}
-                                {this.inputfield("service")}
-                                {this.inputfield("related_topics")}
-                                {this.inputfield("retension")}
-                                {this.inputfield("topic_desc", 'textarea')}
-                            </div>
-                        </div>
-                        <div className="schema-group">
-                            {schema.map(ele => {
-                                return (
-                                    <div className={ele+"-schema"}>
-                                        <h3 className={ele+"-schema-header"}>{ele} Schema</h3>
-                                        <table className={ele+"-schema-table"}>
-                                            {data[ele].map((field, index) => {
-                                                return (
-                                                    <>
-                                                    {index === 0 ?
-                                                        <thead>
-                                                            <tr>
-                                                                <th scope="col" className="col-1">번호</th>
-                                                                    {Object.keys(field).map((field2, index) => {
-                                                                        return (
-                                                                            <th scope="col">{helpers.translate(field2,"entokr")}</th>
-                                                                        );
-                                                                    })
-                                                                }
-                                                            </tr>
-                                                        </thead>
-                                                    :<></>}
-                                                    <tr>
-                                                        <th scope="row">{index+1}</th>
-                                                            {Object.keys(field).map((field2) => {
-                                                                return (
-                                                                    <td><input type="text" name={field2} className={"field-input "+field2} value={field[field2]} onChange={(e)=>this.onChangeValueTemp(e, index, ele)} readOnly={this.readonly(field2, field)} placeholder="-"/></td>
-                                                                );
-                                                            })}
-                                                    </tr>
-                                                    </>
-                                                )
-                                            })}
-                                        </table>
-                                    </div>
-                                    )
-                                })
-                            }
-
-                            <div className="btn-group text-center">
-                            { this.state.preview === false ?
+                            {this.depth(data) <=4 ?
                             <>
-                                <button type="button" className="btn btn-write" onClick={e=>this.preview(e, this.state.type)}>저장 전 미리 보기</button><button type="button" className="btn btn-back" onClick={this.goBack}>뒤로가기</button></>
-                                :<><button type="button" className="btn btn-write" onClick={e=>this.onSubmit(e, this.state.type)}>{ this.state.type === 'reg' ? "등록":"저장"}</button><button type="button" className="btn btn-back" onClick={e=>this.previewCancel(e)}>뒤로가기</button></>}
-
+                            <div className="default-group">
+                                <div className="inner">
+                                    {this.inputfield("topic_name")}
+                                    {this.inputfield("schema_id")}
+                                    {this.inputfield("schema_version")}
+                                    {this.inputfield("op_name")}
+                                    {this.inputfield("service")}
+                                    {this.inputfield("related_topics")}
+                                    {this.inputfield("retension")}
+                                    {this.inputfield("topic_desc", 'textarea')}
+                                </div>
                             </div>
+                            <div className="schema-group">
+                                {schema.map(ele => {
+                                    return (
+                                        <div className={ele+"-schema"}>
+                                            <h3 className={ele+"-schema-header"}>{ele} Schema</h3>
+                                            <table className={ele+"-schema-table"}>
+                                                {data[ele].map((field, index) => {
+                                                    return (
+                                                        <>
+                                                        {index === 0 ?
+                                                            <thead>
+                                                                <tr>
+                                                                    <th scope="col" className="col-1">번호</th>
+                                                                        {Object.keys(field).map((field2, index) => {
+                                                                            return (
+                                                                                <th scope="col">{helpers.translate(field2,"entokr")}</th>
+                                                                            );
+                                                                        })
+                                                                    }
+                                                                </tr>
+                                                            </thead>
+                                                        :<></>}
+                                                        <tr>
+                                                            <th scope="row">{index+1}</th>
+                                                                {Object.keys(field).map((field2) => {
+                                                                    return (
+                                                                        <td><input type="text" name={field2} className={"field-input "+field2} value={field[field2]} onChange={(e)=>this.onChangeValueTemp(e, index, ele)} readOnly={this.readonly(field2, field)} placeholder="-"/></td>
+                                                                    );
+                                                                })}
+                                                        </tr>
+                                                        </>
+                                                    )
+                                                })}
+                                            </table>
+                                        </div>
+                                        )
+                                    })}
+                            </div>
+                            </>
+                        :
+                        <AceEditor
+                            mode="json"
+                            theme="tomorrow"
+                            name={schema._id}
+                            value = {JSON.stringify(this.state.data, null, 4)}
+                            // editorProps={{ $blockScrolling: true }}
+                            onChange={this.onChangeValueJSON}
+                            fontSize= {14}
+                            width= "100%"
+                            height="500px"
+                            />
+                    }
+
+                        <div className="btn-group text-center">
+                        { this.state.preview === false ?
+                        <>
+                            <button type="button" className="btn btn-write" onClick={e=>this.preview(e, this.state.type)}>저장 전 미리 보기</button><button type="button" className="btn btn-back" onClick={this.goBack}>뒤로가기</button></>
+                            :<><button type="button" className="btn btn-write" onClick={e=>this.onSubmit(e, this.state.type)}>{ this.state.type === 'reg' ? "등록":"저장"}</button><button type="button" className="btn btn-back" onClick={e=>this.previewCancel(e)}>뒤로가기</button></>}
+
                         </div>
                     </div>
                     {this.state.message && (

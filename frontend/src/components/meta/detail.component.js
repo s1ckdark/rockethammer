@@ -70,15 +70,7 @@ class Metadetail extends Component {
             message:"삭제가 완료되었습니다",
             messageType:"alert"
         })
-        // axios.post(process.env.REACT_APP_API+"/history/history_del", {topic_name:topic_name.replace(/(-value|-key)/g, ""), type:type, reg_dt:(new Date()).toISOString(),user_id:AuthService.getCurrentUser().userid,op:"delete"})
-        // this.setState({
-        //     ...this.state,
-        //     message:"삭제가 완료되었습니다",
-        //     messageType:"alert"
-        // })
-        // setTimeout(() => {
         this.props.getData()
-        // }, 1000)
     }
 
     // 스키마의 버전이 다른 새로운 스키마가 들어와서 새로 등록한 메타가 있음을 알려준다

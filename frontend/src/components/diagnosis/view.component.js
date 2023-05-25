@@ -6,6 +6,7 @@ import { withRouter } from "../../common/withRouter";
 import Breadcrumb from "../breadcrumb.component";
 import { Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
+import Dialog from "../dialog.component";
 
 class Diagview extends Component {
     constructor(props) {
@@ -13,6 +14,9 @@ class Diagview extends Component {
         this.state = {
           data:{},
           userReady:false,
+          message:'',
+          messageType:'',
+          successful:false
         };
     }
 
@@ -26,7 +30,6 @@ class Diagview extends Component {
         console.log(_id)
         await axios.get(process.env.REACT_APP_API+"/diag/get/"+_id)
             .then(res => {
-                console.log(res.data);
               this.setState({
                 ...this.state,
                 data: res.data,
@@ -35,6 +38,51 @@ class Diagview extends Component {
 
             })
         }
+
+    delete = async (_id) => {
+        await axios.get(process.env.REACT_APP_API+"/diag/delete/"+_id).then( res => {
+            if(res.status === 200) {
+                this.setState({
+                    ...this.state,
+                    message:"삭제가 완료되었습니다",
+                    messageType:"alert"
+                })
+            }
+        })
+    }
+
+    callAction = (e, type, msg) => {
+        e.preventDefault()
+        this.setState({
+            ...this.state,
+            messageType:type,
+            message:msg
+        })
+    }
+
+    dialogCallback = (act) => {
+        // console.log(typeofapi, subject)
+        switch (act){
+          case 'yes':
+            this.delete(this.state.data._id)
+                    // this.props.getData()
+            this.setState({...this.state,message:''})
+          break;
+
+          case 'no':
+            this.setState({...this.state,message:''})
+          break;
+
+          case 'close':
+            this.setState({
+              ...this.state,
+              message: ""
+            })
+          break;
+          default:
+            console.log("dialogCallback")
+        }
+      }
     view = ( item ) => {
         return (
             <>
@@ -62,6 +110,7 @@ class Diagview extends Component {
                 </div>
                 <div className="btn-group">
                     <button type="button" onClick={()=>this.props.router.navigate("/diag/write/"+ encodeURIComponent(item._id), {state:{post:item}})} className="btn btn-back">수정하기</button>
+                    <button type="button" onClick={(e)=>this.callAction(e, "confirm", "정말 삭제하시겠습니까")} className="btn btn-back">삭제</button>
                     <button type="button" onClick={()=>this.props.router.navigate(-1)} className="btn btn-back">뒤로가기</button>
                 </div>
             </>
@@ -83,6 +132,9 @@ class Diagview extends Component {
                         </div>
                     </div>
                 </div>
+                {this.state.message && (
+                    <Dialog type={this.state.messageType} callback={this.dialogCallback} message={this.state.message}/>
+                )}
                 </>
             )
         }

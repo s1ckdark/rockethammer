@@ -932,25 +932,25 @@
 					}
 				}
 			}
+		}
 
-			.btn-group {
-				margin: 75px auto;
-				display: flex;
-				justify-content: center;
-				flex: 1 auto;
-				.btn {
-					width: 200px;
-					height: 42px;
-					color: $white;
-					flex: unset;
-					border-radius: 6px;
-					&.btn-write {
-						margin-right: 20px;
-						background-color: $btn-blue;
-					}
-					&.btn-back {
-						background-color: $btn-dark-blue;
-					}
+		.btn-group {
+			margin: 75px auto;
+			display: flex;
+			justify-content: center;
+			flex: 1 auto;
+			.btn {
+				width: 200px;
+				height: 42px;
+				color: $white;
+				flex: unset;
+				border-radius: 6px;
+				&.btn-write {
+					margin-right: 20px;
+					background-color: $btn-blue;
+				}
+				&.btn-back {
+					background-color: $btn-dark-blue;
 				}
 			}
 		}
