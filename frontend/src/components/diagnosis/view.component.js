@@ -46,7 +46,7 @@ class Diagview extends Component {
                     ...this.state,
                     message:"삭제가 완료되었습니다",
                     messageType:"alert"
-                })
+                },()=> this.props.router.navigate("/diag"))
             }
         })
     }
