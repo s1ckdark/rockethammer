@@ -220,18 +220,15 @@
 							width: 100px;
 						}
 						&:nth-child(2) {
-							width: 100px;
-						}
-						&:nth-child(3) {
 							width: 630px;
 						}
-						&:nth-child(4) {
-							width: 300px;
+						&:nth-child(3) {
+							width: 400px;
 						}
-						&:nth-child(5) {
+						&:nth-child(4) {
 							width: 200px;
 						}
-						&:nth-child(6) {
+						&:nth-child(5) {
 							width: 200px;
 						}
 					}
@@ -241,12 +238,12 @@
 						margin: 10px auto;
 						color: $meta-text;
 						text-align: center;
-						&:nth-child(3) {
+						&:nth-child(2) {
 							font-weight: 700;
 							text-align: left;
 							padding: 0 20px;
 						}
-						&:nth-child(5) {
+						&:nth-child(4) {
 							width: 160px;
 						}
 						&.value {

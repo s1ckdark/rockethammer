@@ -23,7 +23,8 @@ class Diaglist extends Component {
             endData: '',
             last_mod_id:'',
             deleted: false,
-            changed: false
+            changed: false,
+            filter:''
           },
           select:{
             idx:'',
@@ -38,7 +39,14 @@ class Diaglist extends Component {
           },
           delete:{},
           userReady:false,
-          time:''
+          time:'',
+          filter:{
+            "support":false,
+            "incident":false,
+            "document":false,
+            "diag":false,
+            "etc":false
+          }
         };
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchData = this.fetchData.bind(this);
@@ -73,15 +81,14 @@ class Diaglist extends Component {
         const url = type === 'list' ? "/diag/list" : "/diag/search"
         const param = type === 'list' ? {"page":page}:this.state.search
         await axios.post(process.env.REACT_APP_API+url, param)
-            .then(res => {
-              this.setState({
-                ...this.state,
-                list:'list',
-                data: res.data,
-                userReady:true
-              })
-
+        .then(res => {
+            this.setState({
+            ...this.state,
+            list:'list',
+            data: res.data,
+            userReady:true
             })
+        })
     }
 
     onChangeSearch = (e,index) =>{
@@ -91,6 +98,8 @@ class Diaglist extends Component {
                 ...this.state.search,
                 [e.target.name]: e.target.value
             }
+            },()=>{
+                if(e.target.name === 'tag') this.fetchData(0,"search")
             })
     }
 
@@ -118,7 +127,7 @@ class Diaglist extends Component {
         this.props.router.navigate("/diag/view/"+encodeURIComponent(_id),  {state:{data:item, _id:_id}})
     }
     render(){
-        const { data, userReady } = this.state;
+        const { data, userReady, filter } = this.state;
         const { idx } = this.state.select;
         if(userReady){
         return (
@@ -129,16 +138,16 @@ class Diaglist extends Component {
                         <div className="search-bar">
                             <div className={!this.state.search.status ? "normal-search-bar":"normal-search-bar d-none"}>
                                 <div className="input-group">
-                                    <input className="input-search" name="keyword" value={this.state.search.keyword} onChange = {this.onChangeSearch} placeholder="검색 할 토픽명을 입력하세요"/>
+                                    <input className="input-search" name="keyword" value={this.state.search.keyword} onChange = {this.onChangeSearch} placeholder="검색 할 제목을 입력하세요"/>
                                 </div>
                                 <div className="btn-group">
-                                    <button type="button" className="btn btn-search" onClick={e=>this.fetchData(0, 'search')}><span className="questionIcon"></span>토픽 검색</button>
+                                    <button type="button" className="btn btn-search" onClick={e=>this.fetchData(0, 'search')}><span className="questionIcon"></span>제목 검색</button>
                                     <button type="button" className="btn btn-advanced" onClick={this.advanced}>상세 검색</button>
                                 </div>
                             </div>
                             <div className={this.state.search.status ? "advanced-search-bar":"advanced-search-bar d-none"}>
                                 <div className="input-group">
-                                    <input className="input-keyword" type="text" name="keyword" value={this.state.search.keyword} onChange = {this.onChangeSearch} placeholder="검색 할 토픽명을 입력하세요"/>
+                                    <input className="input-keyword" type="text" name="keyword" value={this.state.search.keyword} onChange = {this.onChangeSearch} placeholder="검색 할 제목을 입력하세요"/>
                                     <input className="input-startdate" type="date" name="startDate" value={this.state.search.startDate} onChange = {this.onChangeSearch} placeholder="등록일자 시작 날짜"/>
                                     <input className="input-enddate" type="date" name="endDate" value={this.state.search.endDate} onChange = {this.onChangeSearch} placeholder="등록일자 끝 날짜"/>
                                     <input className="input-last_mod_id" type="text" name="last_mod_id" value={this.state.search.last_mod_id} onChange = {this.onChangeSearch} placeholder="등록자 id"/>
@@ -157,9 +166,18 @@ class Diaglist extends Component {
                                 <thead className="thead-light">
                                     <tr className="text-center p-3">
                                         <th scope="col" className="col-md-1">번호</th>
-                                        <th scope="col" className="col-md-1">유형</th>
-                                        <th scope="col" className="col-md-4">제목</th>
-                                        <th scope="col" className="col-md-2">태그</th>
+                                        <th scope="col" className="col-md-4">제목
+                                        </th>
+                                        <th scope="col" className="col-md-2">
+                                            <select name="tag" onChange={this.onChangeSearch} value={this.state.search.tag} defaultValue={"none"}>
+                                                <option value="none" disabled>태그</option>
+                                                {Object.keys(filter).map(ele=> {
+                                                    return (
+                                                        <option value={ele}>{helpers.translate(ele)}</option>
+                                                    )
+                                                })}
+                                            </select>
+                                        </th>
                                         <th scope="col" className="col-md-2">등록자</th>
                                         <th scope="col" className="col-md-2">등록일시</th>
                                     </tr>
@@ -170,14 +188,19 @@ class Diaglist extends Component {
                                 return(
                                         <tr data-index={index} className={idx === index ? "table-active":"text-center"} key={item._id} onClick={(e)=>this.view(e, item._id, item)}>
                                             <th scope="row">{data.count - (data.size * data.current) - index}</th>
-                                            <td className="value-type value form-group">
-                                                {item.type}
-                                            </td>
                                             <td className="value-title value form-group">
                                                 {item.title}
                                             </td>
                                             <td className="value-tag value form-group">
                                                 {tmp.toString()}
+                                                {/* {Object.keys(item.tag).map(ele=> {
+                                                    return(
+                                                        <>
+                                                        <input type="checkbox" checked={item.tag[ele]}/><label>{helpers.translate(ele)}</label>
+                                                        </>
+                                                    )
+                                                    })
+                                                } */}
                                             </td>
                                             <td className="value-username value form-group">
                                                 {item.username}

@@ -59,6 +59,7 @@ class Metawrite extends Component {
                 rentesion:'',
                 topic_desc:''
             },
+            prevJsonKey:[],
             message:'',
             messageType:'',
             successful:false
@@ -69,11 +70,14 @@ class Metawrite extends Component {
         const {schema, meta_join, type, topic_name} = this.props.router.location.state;
         let meta ={}
         // console.log(schema, meta_join)
+
         switch(type) {
             case 'reg':
                 axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:topic_name}).then( res => {
                     const {data, status } = res;
                     // console.log(data)
+
+                    console.log(data)
                     if(status === 200) {
                         const sch = Object.keys(data)
                                     .sort()
@@ -83,12 +87,13 @@ class Metawrite extends Component {
                                             return newObj;
                                         },{}
                                     )
+
                         Object.keys(sch).forEach( kind => {
                             if(sch[kind].length > 0) {
                                 let tmpJson = JSON.parse(data[kind][0].schema);
                                 let json = []
                                 tmpJson.fields.forEach(item => {
-                                    // console.log(item);
+                                    console.log(item);
                                     let temp = {};
                                     temp['p_name'] = item.name;
                                     temp['p_type'] = item.type;
@@ -122,7 +127,8 @@ class Metawrite extends Component {
                             ...this.state,
                             data: meta,
                             userReady:true,
-                            type: type
+                            type: type,
+                            prevJsonKey: this.getKeys(meta)
                         })
                     }
                 )
@@ -439,11 +445,53 @@ class Metawrite extends Component {
         })
     }
 
+    compareArray = (prev, current) => {
+        return prev.every((element, index) => element === current[index])
+    }
+
+    getAllKeys = (json_object, ret_array=[]) => {
+        for (var json_key in json_object) {
+            if (typeof(json_object[json_key]) === 'object' && !Array.isArray(json_object[json_key])) {
+                ret_array.push(json_key);
+                this.getAllKeys(json_object[json_key], ret_array);
+            } else if (Array.isArray(json_object[json_key])) {
+                ret_array.push(json_key);
+                var first_element = json_object[json_key][0];
+                if (typeof(first_element) === 'object') {
+                    this.getAllKeys(first_element, ret_array);
+                }
+            } else {
+                ret_array.push(json_key);
+            }
+        }
+        return ret_array
+    }
+
+    getKeys = object => (keys => [
+        ...keys.flatMap(key => object[key] && typeof object[key] === 'object'
+            ? [key, ...this.getKeys(object[key])]
+            : [key]
+        )
+    ])(Object.keys(object))
+
     onChangeValueJSON = (value) =>{
-        this.setState({
-            ...this.state,
-            data:JSON.parse(value)
-        })
+
+        console.log(this.state.prevJsonKey)
+        console.log(this.getKeys(JSON.parse(value)))
+        console.log(this.getAllKeys(JSON.parse(value)))
+        console.log(this.compareArray(this.state.prevJsonKey, this.getAllKeys(JSON.parse(value))))
+        if(this.state.prevJsonKey.length > 0 && this.compareArray(this.state.prevJsonKey, this.getKeys(JSON.parse(value)))) {
+            this.setState({
+                ...this.state,
+                data:JSON.parse(value),
+            })
+            console.log(true)
+        } else {
+            alert("key가 변경되었습니다")
+        }
+
+
+
     }
 
     onCancel = (e) => {
@@ -562,7 +610,31 @@ class Metawrite extends Component {
                             name={schema._id}
                             value = {JSON.stringify(this.state.data, null, 4)}
                             // editorProps={{ $blockScrolling: true }}
+                            onLoad={editor => {
+                                const session = editor.getSession();
+                                const undoManager = session.getUndoManager();
+                                undoManager.reset();
+                                session.setUndoManager(undoManager);
+                                // session.$worker.call("")
+
+
+                                session.selection.on('changeCursor', function(e) {
+                                    // delta.start, delta.end, delta.lines, delta.action
+                                    // console.log(this.state.prevJsonKey)
+                                    // console.log(this.compareArray(this.state.prevJsonKey, this.getAllKeys(this.state.data)))
+                                    console.log(session.selection.cursor)
+                                });
+                              }}
                             onChange={this.onChangeValueJSON}
+                            // commands={[{
+                            //     exec: (editor,e) => {
+                            //     var rowCol = editor.selection.getCursor();
+                            //     console.log(rowCol)
+                            //     if ((rowCol.row === 0) || ((rowCol.row + 1) === editor.session.getLength())) {
+                            //       e.preventDefault();
+                            //       e.stopPropagation();
+                            //     }
+                            // }}]}
                             fontSize= {14}
                             width= "100%"
                             height="500px"
