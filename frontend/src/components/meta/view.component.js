@@ -12,6 +12,19 @@ import { withRouter } from "../../common/withRouter";
 import Breadcrumb from "../breadcrumb.component";
 
 class Metaview extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            theme:'monokai'
+        }
+    }
+
+onChangeTheme = async (e) => {
+    this.setState({
+        ...this.state,
+        theme: e.target.value
+    })
+}
 
     write = (e, type, topic_name, data)=> {
         e.preventDefault();
@@ -49,6 +62,7 @@ class Metaview extends Component {
                     <div className="viewer json">
                         <AceEditor
                             mode="json"
+                            theme={this.state.theme}
                             name={meta._id.$oid}
                             value = {helpers.replaceKey(meta,"entokr")}
                             onChange={this.onChangeJSON}
@@ -138,7 +152,7 @@ class Metaview extends Component {
             return (
                 <div className="viewer changed">
                     <div className="diff">
-                        <ReactDiffViewer leftTitle="변경 전" rightTitle="변경 후" oldValue={JSON.stringify(props.data[1], null, 4)} newValue={JSON.stringify(props.data[0], null, 4)} splitView={true} />
+                        <ReactDiffViewer theme={this.state.theme} leftTitle="변경 전" rightTitle="변경 후" oldValue={JSON.stringify(props.data[1], null, 4)} newValue={JSON.stringify(props.data[0], null, 4)} splitView={true} />
                     </div>
                     <div className="btn-group">
                         <button type="button" className="btn btn-write btn-changed" onClick={(e)=>this.write(e,"changed", this.props.router.params.topic_name,props.data[0])}>등록</button>
@@ -159,10 +173,32 @@ class Metaview extends Component {
                     </div>
                     <div className="viewing">
                         <div className="inner">
+
                             {type !== 'changed' ?
                                 <div className="btn-group type-view">
+                                    {type === 'json' ?
+                                    <div class="field">
+                                        <p class="control">
+                                            <span class="select">
+                                                <select name="Theme" onChange={this.onChangeTheme}>
+                                                    <option value="monokai">monokai</option>
+                                                    <option value="github">github</option>
+                                                    <option value="tomorrow">tomorrow</option>
+                                                    <option value="kuroir">kuroir</option>
+                                                    <option value="twilight">twilight</option>
+                                                    <option value="xcode">xcode</option>
+                                                    <option value="textmate">textmate</option>
+                                                    <option value="solarized_dark">solarized_dark</option>
+                                                    <option value="solarized_light">solarized_light</option>
+                                                    <option value="terminal">terminal</option>
+                                                </select>
+                                            </span>
+                                        </p>
+                                    </div>
+                                    :<></>}
                                     <button className={type === 'json' ? "btn btn-json active":"btn btn-json"} onClick={(e)=>this.viewer(e,'json',topic_name, data)}>JSON</button>
                                     <button className={type === 'table' ? "btn btn-table active":"btn btn-table"} onClick={(e)=>this.viewer(e,'table',topic_name, data)}>TABLE</button>
+
                                 </div>:<></>}
                             {this.view(type, data)}
                         </div>

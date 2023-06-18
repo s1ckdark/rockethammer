@@ -86,6 +86,13 @@ const helpers = {
     isEmpty : ( str ) => {
         return (str === '' || str === undefined || str === null || str === 'null' );
     },
+    isNull : (value) => {
+        if (value.includes('null')) {
+            return 'Y';
+        } else {
+            return 'N';
+        }
+    },
     // obj가 빈값인지 아닌지 구분한다
     isNotEmpty : (str) => {
         return !this.isEmpty(str);
@@ -187,6 +194,14 @@ const helpers = {
             } catch (exc) {
                 return str
             }
+    },
+    alertbox : (message) => {
+        this.setState({
+            ...this.state,
+            message: message,
+            messageType:'alert',
+            successful:false
+        },()=>document.querySelector(".dialog .btn-close").focus())
     },
     // javascript의 confirm을 구현
     useConfirm : (e, message, onConfirm, onCancel) => {

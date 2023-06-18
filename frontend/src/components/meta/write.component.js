@@ -7,9 +7,8 @@ import Breadcrumb from "../breadcrumb.component";
 import Dialog from "../dialog.component";
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-json";
-import "ace-builds/src-noconflict/theme-github";
-import "ace-builds/src-noconflict/theme-tomorrow";
 import "ace-builds/src-noconflict/ext-language_tools"
+import "ace-builds/webpack-resolver";
 
 class Metawrite extends Component {
     constructor(props) {
@@ -59,25 +58,34 @@ class Metawrite extends Component {
                 rentesion:'',
                 topic_desc:''
             },
-            prevJsonKey:[],
+            prevJson:{
+                key:[],
+                value:[]
+            },
+            chklist:[],
+            tmpJson:'',
+            invalids:[],
             message:'',
             messageType:'',
-            successful:false
+            successful:false,
+            theme:'monokai'
         };
+        this.onChangeValue = this.onChangeValue.bind(this);
+        this.onChangeValueJSON = this.onChangeValueJSON.bind(this);
+        this.onChangeValueTemp = this.onChangeValueTemp.bind(this);
     }
 
     componentDidMount(){
         const {schema, meta_join, type, topic_name} = this.props.router.location.state;
         let meta ={}
-        // console.log(schema, meta_join)
-
+        var chklist = ["topic_name","subject","schema_id","meta_version","revision","is_used","p_name","p_type","default","is_null"]
+        console.log(schema, meta_join)
         switch(type) {
             case 'reg':
                 axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:topic_name}).then( res => {
                     const {data, status } = res;
                     // console.log(data)
 
-                    console.log(data)
                     if(status === 200) {
                         const sch = Object.keys(data)
                                     .sort()
@@ -92,19 +100,20 @@ class Metawrite extends Component {
                             if(sch[kind].length > 0) {
                                 let tmpJson = JSON.parse(data[kind][0].schema);
                                 let json = []
-                                tmpJson.fields.forEach(item => {
-                                    console.log(item);
-                                    let temp = {};
-                                    temp['p_name'] = item.name;
-                                    temp['p_type'] = item.type;
-                                    if(kind === 'value') temp['l_name'] = '';
-                                    if(kind === 'value') temp['l_def'] = '';
-                                    temp['is_null'] = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'Y': 'N'
-                                    temp['default'] = item.default ? item.default : '-'
-                                    if(kind === 'value') temp['pii'] = '';
+                                // tmpJson.fields.forEach(item => {
+                                //     console.log(item);
+                                //     let temp = {};
+                                //     temp['p_name'] = item.name;
+                                //     temp['p_type'] = item.type;
+                                //     if(kind === 'value') temp['l_name'] = '';
+                                //     if(kind === 'value') temp['l_def'] = '';
+                                //     // temp['is_null'] = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'Y': 'N'
+                                //     temp['default'] = item.default ? item.default : '-'
+                                //     if(kind === 'value') temp['pii'] = '';
 
-                                    json.push(temp)
-                                })
+                                //     json.push(temp)
+                                // })
+                                json=this.transformFields(tmpJson.fields)
                                 meta[kind] = json
                             }
                         })
@@ -128,7 +137,13 @@ class Metawrite extends Component {
                             data: meta,
                             userReady:true,
                             type: type,
-                            prevJsonKey: this.getKeys(meta)
+                            prevJson:{
+                                ...this.state.prevJson,
+                                key: this.getKeys(meta),
+                                value: this.findValues(meta, chklist)
+                            },
+                            chklist: chklist,
+                            tmpJson:JSON.stringify(meta,null,4)
                         })
                     }
                 )
@@ -153,19 +168,19 @@ class Metawrite extends Component {
                                 console.log(kind, data[kind][0])
                                 let tmpJson = JSON.parse(data[kind][0].schema);
                                 let json = []
-                                tmpJson.fields.forEach(item => {
-                                    let temp = {};
-                                    temp['p_name'] = item.name;
-                                    temp['p_type'] = item.type;
-                                    if(kind === 'value') temp['l_name'] = '';
-                                    if(kind === 'value') temp['l_def'] = '';
-                                    temp['is_null'] = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'Y': 'N'
-                                    temp['default'] = item.default ? item.default : '-'
-                                    if(kind === 'value') temp['pii'] = '';
+                                // tmpJson.fields.forEach(item => {
+                                //     let temp = {};
+                                //     temp['p_name'] = item.name;
+                                //     temp['p_type'] = item.type;
+                                //     if(kind === 'value') temp['l_name'] = '';
+                                //     if(kind === 'value') temp['l_def'] = '';
+                                //     temp['is_null'] = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'Y': 'N'
+                                //     temp['default'] = item.default ? item.default : '-'
+                                //     if(kind === 'value') temp['pii'] = '';
 
-                                    json.push(temp)
-                                })
-
+                                //     json.push(temp)
+                                // })
+                                json=this.transformFields(tmpJson.fields)
                                 meta[kind] = json
                             }
                         })
@@ -189,7 +204,8 @@ class Metawrite extends Component {
                             ...this.state,
                             data: meta,
                             userReady:true,
-                            type: type
+                            type: type,
+                            tmpJson: meta_join
                         })
 
                     }
@@ -203,7 +219,8 @@ class Metawrite extends Component {
                     data: meta_join,
                     prev: meta_join,
                     userReady:true,
-                    type: type
+                    type: type,
+                    tmpJson: meta_join
                 })
 
             break;
@@ -211,6 +228,42 @@ class Metawrite extends Component {
 
         }
 }
+    setDefaultValue = (field) => {
+    if ('default' in field) {
+        let defaultValue = field['default'];
+        delete field['default'];
+        return defaultValue;
+    } else {
+        return "";
+    }
+}
+
+    transformFields= (fields)=>{
+        for (let field of fields) {
+            if ('name' in field) {
+                field['p_name'] = field['name'];
+                delete field['name'];
+            }
+            if ('type' in field) {
+                if (typeof field['type'] === 'object') {
+                    this.transformFields(field['type']['fields']);
+                    field['type']['p_name'] = field['type']['name'];
+                    delete field['type']['name'];
+                    field['p_type'] = field['type']['type'];
+                    delete field['type']['type'];
+                } else {
+                    field['p_type'] = field['type'];
+                    delete field['type'];
+                }
+            }
+            field["l_name"] = "";
+            field["l_def"] = "";
+            field["is_null"] = helpers.isNull(field['p_type']);
+            field["default"] = this.setDefaultValue(field);
+            field["pii"] = "";
+        }
+        return fields;
+    }
 
     onChangeValue = (e, field) =>{
         e.preventDefault();
@@ -249,8 +302,11 @@ class Metawrite extends Component {
     preview = async(e, type) => {
         e.preventDefault();
         // console.log(type+" preview")
+
         const { data, prev } = this.state;
         let temp = {...data}, history={}
+
+        console.log(temp)
 
         switch(type){
             case 'reg':
@@ -386,7 +442,7 @@ class Metawrite extends Component {
 
             break;
             default:
-                console.log("submit")
+                // console.log("submit")
         }
     }
 
@@ -445,11 +501,69 @@ class Metawrite extends Component {
         })
     }
 
-    compareArray = (prev, current) => {
-        return prev.every((element, index) => element === current[index])
-    }
+    areArraysEqual = (a, b) => {
+        // Check if the arrays have the same length
+        if (a.length !== b.length) {
+          return false;
+        }
+
+        // Recursive function to compare arrays
+        const compareArrays = (arr1, arr2) => {
+          // Base case: check if the arrays are equal
+          if (arr1.length !== arr2.length) {
+            return false;
+          }
+
+          // Recursive case: compare each element in the arrays
+          return arr1.every((element, index) => {
+            // Check if the elements are arrays
+            if (Array.isArray(element) && Array.isArray(arr2[index])) {
+              // Recursively compare nested arrays
+              return compareArrays(element, arr2[index]);
+            }
+
+            // Check if the elements have the same content
+            return element === arr2[index];
+          });
+        };
+
+        // Start the recursive comparison
+        // console.log(a,b,compareArrays(a,b))
+        return compareArrays(a, b);
+      };
+
+    compareValueArray = (a, b) => {
+        // Check if the arrays have the same length
+        if (a.length !== b.length) {
+          return false;
+        }
+
+        // Iterate over each element in the arrays
+        return a.every((arr, index) => {
+          // Check if the elements are arrays and have the same content
+          return Array.isArray(arr) && Array.isArray(b[index]) && JSON.stringify(arr) === JSON.stringify(b[index]);
+        });
+      };
+
+
+    renderAnnotations = (annotations) => {
+        return annotations.map((annotation, index) => {
+            const { row, column, text, type } = annotation;
+            const position = { row, column };
+
+            return {
+            type: type || 'error',
+            text: text || 'Annotation',
+            row,
+            column,
+            position,
+            key: index
+            };
+        });
+     };
 
     getAllKeys = (json_object, ret_array=[]) => {
+        if(typeof(json_object) !=='object') return false
         for (var json_key in json_object) {
             if (typeof(json_object[json_key]) === 'object' && !Array.isArray(json_object[json_key])) {
                 ret_array.push(json_key);
@@ -467,6 +581,7 @@ class Metawrite extends Component {
         return ret_array
     }
 
+
     getKeys = object => (keys => [
         ...keys.flatMap(key => object[key] && typeof object[key] === 'object'
             ? [key, ...this.getKeys(object[key])]
@@ -474,24 +589,93 @@ class Metawrite extends Component {
         )
     ])(Object.keys(object))
 
-    onChangeValueJSON = (value) =>{
 
-        console.log(this.state.prevJsonKey)
-        console.log(this.getKeys(JSON.parse(value)))
-        console.log(this.getAllKeys(JSON.parse(value)))
-        console.log(this.compareArray(this.state.prevJsonKey, this.getAllKeys(JSON.parse(value))))
-        if(this.state.prevJsonKey.length > 0 && this.compareArray(this.state.prevJsonKey, this.getKeys(JSON.parse(value)))) {
+    findValues = (obj, key)=>{
+        if(typeof key !=='object') return this.findValueHelpers(obj, key, []);
+        return key.map( k => this.findValueHelpers(obj, k))
+    }
+
+    findValueHelpers = (obj, key, list=[]) => {
+      if (!obj) return list;
+      if (obj instanceof Array) {
+        for (var i in obj) {
+            list = list.concat(this.findValueHelpers(obj[i], key, []));
+        }
+        return list;
+      }
+      if (obj[key]) list.push(obj[key]);
+
+      if ((typeof obj == "object") && (obj !== null) ){
+          var children = Object.keys(obj);
+          if (children.length > 0){
+              for (i = 0; i < children.length; i++ ){
+                list = list.concat(this.findValueHelpers(obj[children[i]], key, []));
+              }
+          }
+      }
+      return list;
+    }
+
+    areObjectsEqual = (obj1, obj2) => {
+        // Check if the objects have the same number of keys
+        const keys1 = Object.keys(obj1);
+        const keys2 = Object.keys(obj2);
+
+        if (keys1.length !== keys2.length) {
+          return false;
+        }
+
+        // Check if the values of each key are equal
+        for (let key of keys1) {
+          const value1 = obj1[key];
+          const value2 = obj2[key];
+
+          if (typeof value1 !== typeof value2) {
+            return false;
+          }
+
+          if (typeof value1 === 'object' && typeof value2 === 'object') {
+            // Recursively compare nested objects
+            if (!this.areObjectsEqual(value1, value2)) {
+              return false;
+            }
+          } else {
+            // Compare primitive values
+            if (value1 !== value2) {
+              return false;
+            }
+          }
+        }
+
+        return true;
+      };
+    onChangeValueJSON = async (value, e) =>{
+        var tmp = JSON.parse(value);
+        var valueCompare = await this.areObjectsEqual(this.state.prevJson.value, this.findValues(tmp, this.state.chklist))
+        var keyCompare = await this.areArraysEqual(this.state.prevJson.key, this.getKeys(tmp))
+        // console.log(keyCompare, valueCompare)
+        // console.log(this.getAllKeys(tmp))
+        if(keyCompare && valueCompare) {
             this.setState({
                 ...this.state,
                 data:JSON.parse(value),
+                tmpJson:value,
             })
-            console.log(true)
         } else {
-            alert("key가 변경되었습니다")
+              this.setState({
+                ...this.state,
+                message: keyCompare ? "value는 변경될 수 없습니다":"key는 변경될 수 없습니다",
+                messageType:'alert',
+                successful:false
+            },()=>document.querySelector(".dialog .btn-close").focus())
         }
+    }
 
-
-
+    onChangeTheme = async (e) => {
+        this.setState({
+            ...this.state,
+            theme: e.target.value
+        })
     }
 
     onCancel = (e) => {
@@ -538,7 +722,7 @@ class Metawrite extends Component {
 
     render()
     {
-        const {userReady, data} = this.state;
+        const {userReady, data, type, tmpJson} = this.state;
 
         if(userReady){
             let schema = Object.keys(data).map(field => {
@@ -550,7 +734,7 @@ class Metawrite extends Component {
                         <Breadcrumb/>
                     </div>
                     <div className={ this.state.preview ? "writing preview":"writing"}>
-                            {this.depth(data) <=4 ?
+                            {this.depth(data) <= 4 ?
                             <>
                             <div className="default-group">
                                 <div className="inner">
@@ -604,41 +788,119 @@ class Metawrite extends Component {
                             </div>
                             </>
                         :
+                        <>
+                        <div class="theme-selector">
+                            <p class="control">
+                                <span class="select">
+                                    <select name="Theme" onChange={this.onChangeTheme}>
+                                        <option value="monokai">monokai</option>
+                                        <option value="github">github</option>
+                                        <option value="tomorrow">tomorrow</option>
+                                        <option value="kuroir">kuroir</option>
+                                        <option value="twilight">twilight</option>
+                                        <option value="xcode">xcode</option>
+                                        <option value="textmate">textmate</option>
+                                        <option value="solarized_dark">solarized_dark</option>
+                                        <option value="solarized_light">solarized_light</option>
+                                        <option value="terminal">terminal</option>
+                                    </select>
+                                </span>
+                            </p>
+                        </div>
                         <AceEditor
                             mode="json"
-                            theme="tomorrow"
+                            theme={this.state.theme}
                             name={schema._id}
-                            value = {JSON.stringify(this.state.data, null, 4)}
-                            // editorProps={{ $blockScrolling: true }}
+                            // value = {JSON.stringify(this.state.data, null, 4)}
+                            value = {typeof tmpJson === 'object' ? JSON.stringify(tmpJson, null, 4):tmpJson}
                             onLoad={editor => {
                                 const session = editor.getSession();
                                 const undoManager = session.getUndoManager();
                                 undoManager.reset();
                                 session.setUndoManager(undoManager);
-                                // session.$worker.call("")
+                                const {key, value} = this.state.prevJson
+                                const {chklist}=this.state
+                                editor.commands.on("exec", function(e) {
+                                    var rowCol = editor.selection.getCursor();
+                                    var currline = editor.getSelectionRange().start.row;
+                                    var wholelinetxt = session.getLine(currline);
+                                    var regexRules = /(\[|]|\{|}|},|],)/g, ex='', checkKey = true
+                                    if(!regexRules.test(wholelinetxt)) {
+                                        ex = wholelinetxt.replaceAll(regexRules, "").trim().slice(-1) === ',' ? JSON.parse("{"+wholelinetxt.trim().slice(0,-1)+"}"):JSON.parse("{"+wholelinetxt.trim()+"}")
+                                        checkKey = Array.isArray(Object.keys(ex)) && chklist.includes(Object.keys(ex)[0]) ? true : false
+                                    } else {
+                                        checkKey = true
+                                    }
 
-
+                                    if(checkKey && rowCol.row === currline) {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                    }
+                                  });
                                 session.selection.on('changeCursor', function(e) {
                                     // delta.start, delta.end, delta.lines, delta.action
-                                    // console.log(this.state.prevJsonKey)
-                                    // console.log(this.compareArray(this.state.prevJsonKey, this.getAllKeys(this.state.data)))
-                                    console.log(session.selection.cursor)
+                                    var rowCol = editor.selection.getCursor();
+                                    var currline = editor.getSelectionRange().start.row;
+                                    var wholelinetxt = session.getLine(currline);
+                                    console.log(rowCol, currline, wholelinetxt)
+                                    // const ex = wholelinetxt.trim().slice(-1) === ',' ? JSON.parse("{"+wholelinetxt.trim().slice(0,-1)+"}"):JSON.parse("{"+wholelinetxt.trim()+"}")
+                                    // console.log(key)
+                                    // if(!key.includes(Object.keys(ex)[0]))
+                                })
+
+
+                                if(type === 'preview') session.setReadOnly(true)
+                                session.setMode(`ace/mode/json`, () => {
+                                    const rules = session.$mode.$highlightRules.getRules();
+                                    if (Object.prototype.hasOwnProperty.call(rules, 'start')) {
+                                        rules.start = [
+                                        {
+                                            token: 'variable',
+                                            regex: '"(value|p_name|p_type|l_name|l_def|is_null|default|pii|op_name|topic_name|subject|schema_id|schema_version|meta_version|revision|last_mod_id|last_mod_dt|is_used|service|related_topics|retension|topic_desc)"',
+                                        },
+                                        {
+                                            token: 'separator',
+                                            regex: '(\{|\}|\[|\]|\,\|\:\s)'
+                                        },
+                                        {
+                                            token: 'value',
+                                            regex: '"[0-9A-Za-z]*"'
+                                        }
+                                        ];
+                                    }
+                                    // force recreation of tokenizer
+                                    session.$mode.$tokenizer = null;
+                                    session.bgTokenizer.setTokenizer(session.$mode.getTokenizer());
+                                    // force re-highlight whole document
+                                    session.bgTokenizer.start(0);
                                 });
-                              }}
+                                // editor.commands.on('afterExec', eventData => {
+                                //     console.log(eventData)
+                                //     if (eventData.command.name === 'backspace' && eventData.args === '"') {
+                                //         console.log(eventData.args)
+                                //     }
+                                // });
+                            }}
+                            editorProps={{$blockScrolling: true}}
+                            setOptions={{
+                                // enableBasicAutocompletion: true,
+                                // enableLiveAutocompletion: true,
+                                // enableSnippets: true,
+                                showLineNumbers: true,
+                                tabSize: 2,
+                                useWorker: false
+
+                            }}
+                            readOnly={this.state.preview ? true:false}
+                            showPrintMargin={true}
+                            showGutter={true}
+                            highlightActiveLine={true}
                             onChange={this.onChangeValueJSON}
-                            // commands={[{
-                            //     exec: (editor,e) => {
-                            //     var rowCol = editor.selection.getCursor();
-                            //     console.log(rowCol)
-                            //     if ((rowCol.row === 0) || ((rowCol.row + 1) === editor.session.getLength())) {
-                            //       e.preventDefault();
-                            //       e.stopPropagation();
-                            //     }
-                            // }}]}
                             fontSize= {14}
                             width= "100%"
                             height="500px"
                             />
+                            </>
                     }
 
                         <div className="btn-group text-center">
