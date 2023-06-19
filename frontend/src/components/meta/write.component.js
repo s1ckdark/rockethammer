@@ -79,7 +79,7 @@ class Metawrite extends Component {
         const {schema, meta_join, type, topic_name} = this.props.router.location.state;
         let meta ={}
         var chklist = ["topic_name","subject","schema_id","meta_version","revision","is_used","p_name","p_type","default","is_null"]
-        console.log(schema, meta_join)
+        // console.log(schema, meta_join)
         switch(type) {
             case 'reg':
                 axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:topic_name}).then( res => {
@@ -650,11 +650,12 @@ class Metawrite extends Component {
         return true;
       };
     onChangeValueJSON = async (value, e) =>{
+        const {chklist}=this.state
         var tmp = JSON.parse(value);
-        var valueCompare = await this.areObjectsEqual(this.state.prevJson.value, this.findValues(tmp, this.state.chklist))
+        var valueCompare = await this.areObjectsEqual(this.state.prevJson.value, this.findValues(tmp, chklist))
         var keyCompare = await this.areArraysEqual(this.state.prevJson.key, this.getKeys(tmp))
-        // console.log(keyCompare, valueCompare)
-        // console.log(this.getAllKeys(tmp))
+        console.log(keyCompare, valueCompare)
+        // // console.log(this.getAllKeys(tmp))
         if(keyCompare && valueCompare) {
             this.setState({
                 ...this.state,
@@ -789,9 +790,9 @@ class Metawrite extends Component {
                             </>
                         :
                         <>
-                        <div class="theme-selector">
-                            <p class="control">
-                                <span class="select">
+                        <div className="theme-selector">
+                            <p className="control">
+                                <span className="select">
                                     <select name="Theme" onChange={this.onChangeTheme}>
                                         <option value="monokai">monokai</option>
                                         <option value="github">github</option>
@@ -807,11 +808,12 @@ class Metawrite extends Component {
                                 </span>
                             </p>
                         </div>
+
                         <AceEditor
                             mode="json"
                             theme={this.state.theme}
                             name={schema._id}
-                            // value = {JSON.stringify(this.state.data, null, 4)}
+                            // value = {"test"}
                             value = {typeof tmpJson === 'object' ? JSON.stringify(tmpJson, null, 4):tmpJson}
                             onLoad={editor => {
                                 const session = editor.getSession();
@@ -824,29 +826,32 @@ class Metawrite extends Component {
                                     var rowCol = editor.selection.getCursor();
                                     var currline = editor.getSelectionRange().start.row;
                                     var wholelinetxt = session.getLine(currline);
-                                    var regexRules = /(\[|]|\{|}|},|],)/g, ex='', checkKey = true
+                                    var regexRules = /(\[|]|\{|}|},|],)/g, ex='', checkKey = false
                                     if(!regexRules.test(wholelinetxt)) {
                                         ex = wholelinetxt.replaceAll(regexRules, "").trim().slice(-1) === ',' ? JSON.parse("{"+wholelinetxt.trim().slice(0,-1)+"}"):JSON.parse("{"+wholelinetxt.trim()+"}")
                                         checkKey = Array.isArray(Object.keys(ex)) && chklist.includes(Object.keys(ex)[0]) ? true : false
                                     } else {
                                         checkKey = true
                                     }
-
+                                    console.log(ex, checkKey)
                                     if(checkKey && rowCol.row === currline) {
-                                            e.preventDefault();
-                                            e.stopPropagation();
+                                            // e.preventDefault();
+                                            // e.stopPropagation();
                                     }
                                   });
-                                session.selection.on('changeCursor', function(e) {
-                                    // delta.start, delta.end, delta.lines, delta.action
-                                    var rowCol = editor.selection.getCursor();
-                                    var currline = editor.getSelectionRange().start.row;
-                                    var wholelinetxt = session.getLine(currline);
-                                    console.log(rowCol, currline, wholelinetxt)
-                                    // const ex = wholelinetxt.trim().slice(-1) === ',' ? JSON.parse("{"+wholelinetxt.trim().slice(0,-1)+"}"):JSON.parse("{"+wholelinetxt.trim()+"}")
-                                    // console.log(key)
-                                    // if(!key.includes(Object.keys(ex)[0]))
-                                })
+                                // session.selection.on('changeCursor', function(e) {
+                                //     var rowCol = editor.selection.getCursor();
+                                //     var currline = editor.getSelectionRange().start.row;
+                                //     var wholelinetxt = session.getLine(currline);
+                                //     var regexRules = /(\[|]|\{|}|},|],)/g, ex='', checkKey = false
+                                //     if(!regexRules.test(wholelinetxt)) {
+                                //         ex = wholelinetxt.replaceAll(regexRules, "").trim().slice(-1) === ',' ? JSON.parse("{"+wholelinetxt.trim().slice(0,-1)+"}"):JSON.parse("{"+wholelinetxt.trim()+"}")
+                                //         checkKey = Array.isArray(Object.keys(ex)) && chklist.includes(Object.keys(ex)[0]) ? true : false
+                                //     } else {
+                                //         checkKey = true
+                                //     }
+                                //     console.log(ex, checkKey)
+                                // })
 
 
                                 if(type === 'preview') session.setReadOnly(true)
@@ -874,12 +879,6 @@ class Metawrite extends Component {
                                     // force re-highlight whole document
                                     session.bgTokenizer.start(0);
                                 });
-                                // editor.commands.on('afterExec', eventData => {
-                                //     console.log(eventData)
-                                //     if (eventData.command.name === 'backspace' && eventData.args === '"') {
-                                //         console.log(eventData.args)
-                                //     }
-                                // });
                             }}
                             editorProps={{$blockScrolling: true}}
                             setOptions={{
@@ -888,7 +887,7 @@ class Metawrite extends Component {
                                 // enableSnippets: true,
                                 showLineNumbers: true,
                                 tabSize: 2,
-                                useWorker: false
+                                useWorker: true
 
                             }}
                             readOnly={this.state.preview ? true:false}
