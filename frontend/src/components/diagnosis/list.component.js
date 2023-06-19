@@ -92,15 +92,17 @@ class Diaglist extends Component {
     }
 
     onChangeSearch = (e,index) =>{
-        this.setState({
-            ...this.state,
-            search:{
-                ...this.state.search,
-                [e.target.name]: e.target.value
-            }
+        e.target.value !== '' ?
+            this.setState({
+                ...this.state,
+                search:{
+                    ...this.state.search,
+                    [e.target.name]: e.target.value
+                }
             },()=>{
                 if(e.target.name === 'tag') this.fetchData(0,"search")
             })
+        :this.fetchData();
     }
 
     getData = () => {
@@ -168,9 +170,9 @@ class Diaglist extends Component {
                                         <th scope="col" className="col-md-1">번호</th>
                                         <th scope="col" className="col-md-4">제목
                                         </th>
-                                        <th scope="col" className="col-md-2">
+                                        <th scope="col" className="col-md-2 clickable">
                                             <select name="tag" onChange={this.onChangeSearch} value={this.state.search.tag} defaultValue={"none"}>
-                                                <option value="none" disabled>태그</option>
+                                                <option value="">태그</option>
                                                 {Object.keys(filter).map(ele=> {
                                                     return (
                                                         <option value={ele}>{helpers.translate(ele)}</option>
@@ -188,10 +190,10 @@ class Diaglist extends Component {
                                 return(
                                         <tr data-index={index} className={idx === index ? "table-active":"text-center"} key={item._id} onClick={(e)=>this.view(e, item._id, item)}>
                                             <th scope="row">{data.count - (data.size * data.current) - index}</th>
-                                            <td className="value-title value form-group">
+                                            <td className="value-title value form-group clickable">
                                                 {item.title}
                                             </td>
-                                            <td className="value-tag value form-group">
+                                            <td className="value-tag value form-group clickable">
                                                 {tmp.toString()}
                                                 {/* {Object.keys(item.tag).map(ele=> {
                                                     return(
