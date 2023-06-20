@@ -1021,9 +1021,9 @@ class Metawrite extends Component {
                                     console.log(e, delta)
                                     const ex = ['"','[',':',']','{','}',',']
                                     if(delta.action === 'remove' && ex.includes(delta.lines[0])) {
-                                        // editor.session.insert(delta.start, delta.lines[0])
-                                           e.preventDefault();
-                                            e.stopPropagation();
+                                        editor.session.insert(delta.start, delta.lines[0])
+                                        //    e.preventDefault();
+                                        //     e.stopPropagation();
                                     }
                                });
 
