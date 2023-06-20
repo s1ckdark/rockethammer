@@ -76,62 +76,190 @@ class Metawrite extends Component {
     }
 
     componentDidMount(){
-        const {schema, meta_join, type, topic_name} = this.props.router.location.state;
-        let meta ={}
+        // const {schema, meta_join, type, topic_name} = this.props.router.location.state;
+        const type = "reg"
+        // let meta ={}
         var chklist = ["topic_name","subject","schema_id","meta_version","revision","is_used","p_name","p_type","default","is_null"]
         // console.log(schema, meta_join)
+        const meta = {
+            "value": [
+                {
+                    "p_name": "cardHolderName",
+                    "p_type": "string",
+                    "l_name": "",
+                    "l_def": "",
+                    "is_null": "N",
+                    "default": "",
+                    "pii": ""
+                },
+                {
+                    "p_name": "cardNumber",
+                    "p_type": "string",
+                    "l_name": "",
+                    "l_def": "",
+                    "is_null": "N",
+                    "default": "",
+                    "pii": ""
+                },
+                {
+                    "p_name": "expirationDate",
+                    "p_type": "string",
+                    "l_name": "",
+                    "l_def": "",
+                    "is_null": "N",
+                    "default": "",
+                    "pii": ""
+                },
+                {
+                    "p_name": "cvv",
+                    "p_type": "string",
+                    "l_name": "",
+                    "l_def": "",
+                    "is_null": "N",
+                    "default": "",
+                    "pii": ""
+                },
+                {
+                    "type": {
+                        "fields": [
+                            {
+                                "p_name": "street",
+                                "p_type": "string",
+                                "l_name": "",
+                                "l_def": "",
+                                "is_null": "N",
+                                "default": "",
+                                "pii": ""
+                            },
+                            {
+                                "p_name": "city",
+                                "p_type": "string",
+                                "l_name": "",
+                                "l_def": "",
+                                "is_null": "N",
+                                "default": "",
+                                "pii": ""
+                            },
+                            {
+                                "p_name": "country",
+                                "p_type": "string",
+                                "l_name": "",
+                                "l_def": "",
+                                "is_null": "N",
+                                "default": "",
+                                "pii": ""
+                            },
+                            {
+                                "type": {
+                                    "fields": [
+                                        {
+                                            "p_name": "email",
+                                            "p_type": "string",
+                                            "l_name": "",
+                                            "l_def": "",
+                                            "is_null": "N",
+                                            "default": "",
+                                            "pii": ""
+                                        },
+                                        {
+                                            "p_name": "phone",
+                                            "p_type": "string",
+                                            "l_name": "",
+                                            "l_def": "",
+                                            "is_null": "N",
+                                            "default": "",
+                                            "pii": ""
+                                        }
+                                    ],
+                                    "p_name": "Contact"
+                                },
+                                "p_name": "contact",
+                                "p_type": "record",
+                                "l_name": "",
+                                "l_def": "",
+                                "is_null": "N",
+                                "default": "",
+                                "pii": ""
+                            }
+                        ],
+                        "p_name": "Address"
+                    },
+                    "p_name": "billingAddress",
+                    "p_type": "record",
+                    "l_name": "",
+                    "l_def": "",
+                    "is_null": "N",
+                    "default": "",
+                    "pii": ""
+                }
+            ],
+            "topic_name": "payment-topic",
+            "subject": "payment-topic-value",
+            "schema_id": 4,
+            "schema_version": 1,
+            "meta_version": 1,
+            "revision": 1,
+            "last_mod_id": "",
+            "last_mod_dt": "",
+            "is_used": true,
+            "op_name": "",
+            "service": "",
+            "related_topics": "",
+            "retension": "",
+            "topic_desc": ""
+        }
         switch(type) {
             case 'reg':
-                axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:topic_name}).then( res => {
-                    const {data, status } = res;
-                    // console.log(data)
+                // axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:topic_name}).then( res => {
+                //     const {data, status } = res;
+                //     // console.log(data)
 
-                    if(status === 200) {
-                        const sch = Object.keys(data)
-                                    .sort()
-                                    .reduce(
-                                        (newObj,key) => {
-                                            newObj[key] = res.data[key];
-                                            return newObj;
-                                        },{}
-                                    )
+                //     if(status === 200) {
+                //         const sch = Object.keys(data)
+                //                     .sort()
+                //                     .reduce(
+                //                         (newObj,key) => {
+                //                             newObj[key] = res.data[key];
+                //                             return newObj;
+                //                         },{}
+                //                     )
 
-                        Object.keys(sch).forEach( kind => {
-                            if(sch[kind].length > 0) {
-                                let tmpJson = JSON.parse(data[kind][0].schema);
-                                let json = []
-                                // tmpJson.fields.forEach(item => {
-                                //     console.log(item);
-                                //     let temp = {};
-                                //     temp['p_name'] = item.name;
-                                //     temp['p_type'] = item.type;
-                                //     if(kind === 'value') temp['l_name'] = '';
-                                //     if(kind === 'value') temp['l_def'] = '';
-                                //     // temp['is_null'] = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'Y': 'N'
-                                //     temp['default'] = item.default ? item.default : '-'
-                                //     if(kind === 'value') temp['pii'] = '';
+                //         Object.keys(sch).forEach( kind => {
+                //             if(sch[kind].length > 0) {
+                //                 let tmpJson = JSON.parse(data[kind][0].schema);
+                //                 let json = []
+                //                 // tmpJson.fields.forEach(item => {
+                //                 //     console.log(item);
+                //                 //     let temp = {};
+                //                 //     temp['p_name'] = item.name;
+                //                 //     temp['p_type'] = item.type;
+                //                 //     if(kind === 'value') temp['l_name'] = '';
+                //                 //     if(kind === 'value') temp['l_def'] = '';
+                //                 //     // temp['is_null'] = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'Y': 'N'
+                //                 //     temp['default'] = item.default ? item.default : '-'
+                //                 //     if(kind === 'value') temp['pii'] = '';
 
-                                //     json.push(temp)
-                                // })
-                                json=this.transformFields(tmpJson.fields)
-                                meta[kind] = json
-                            }
-                        })
-                            meta['topic_name'] = topic_name
-                            meta['subject'] = schema.subject
-                            meta['schema_id'] = schema.id
-                            meta['schema_version'] = schema.version
-                            meta['meta_version'] = 1
-                            meta['revision'] = 1
-                            meta['last_mod_id']=''
-                            meta['last_mod_dt']=''
-                            meta['is_used'] = true
-                            meta['op_name'] = ''
-                            meta['service'] = ''
-                            meta['related_topics'] = ''
-                            meta['retension'] = ''
-                            meta['topic_desc'] = ''
-                        }
+                //                 //     json.push(temp)
+                //                 // })
+                //                 json=this.transformFields(tmpJson.fields)
+                //                 meta[kind] = json
+                //             }
+                //         })
+                //             meta['topic_name'] = topic_name
+                //             meta['subject'] = schema.subject
+                //             meta['schema_id'] = schema.id
+                //             meta['schema_version'] = schema.version
+                //             meta['meta_version'] = 1
+                //             meta['revision'] = 1
+                //             meta['last_mod_id']=''
+                //             meta['last_mod_dt']=''
+                //             meta['is_used'] = true
+                //             meta['op_name'] = ''
+                //             meta['service'] = ''
+                //             meta['related_topics'] = ''
+                //             meta['retension'] = ''
+                //             meta['topic_desc'] = ''
+                //         }
                         this.setState({
                             ...this.state,
                             data: meta,
@@ -145,8 +273,8 @@ class Metawrite extends Component {
                             chklist: chklist,
                             tmpJson:JSON.stringify(meta,null,4)
                         })
-                    }
-                )
+                    // }
+                // )
 
             break;
 
@@ -651,10 +779,12 @@ class Metawrite extends Component {
       };
     onChangeValueJSON = async (value, e) =>{
         const {chklist}=this.state
+        var data = JSON.stringify(this.state.data, null, 4)
         var tmp = JSON.parse(value);
         var valueCompare = await this.areObjectsEqual(this.state.prevJson.value, this.findValues(tmp, chklist))
         var keyCompare = await this.areArraysEqual(this.state.prevJson.key, this.getKeys(tmp))
         console.log(keyCompare, valueCompare)
+        console.log(this.findTheDifference(data, value))
         // // console.log(this.getAllKeys(tmp))
         if(keyCompare && valueCompare) {
             this.setState({
@@ -671,6 +801,27 @@ class Metawrite extends Component {
             },()=>document.querySelector(".dialog .btn-close").focus())
         }
     }
+
+
+    findTheDifference = (s, t) => {
+        function sortString(str) {
+          return str.split('').sort()
+        }
+
+        var str1 = sortString(s)
+        var str2 = sortString(t)
+
+
+        var longestStrArr = str1.length > str2.length ? str1 : str2
+
+        for (var i = 0; i < str1.length; i++) {
+          if(str1[i] !== str2[i]){
+            return longestStrArr[i]
+          }
+        }
+
+        return longestStrArr[longestStrArr.length - 1]
+      };
 
     onChangeTheme = async (e) => {
         this.setState({
@@ -823,6 +974,7 @@ class Metawrite extends Component {
                                 const {key, value} = this.state.prevJson
                                 const {chklist}=this.state
                                 editor.commands.on("exec", function(e) {
+                                    console.log(e)
                                     var rowCol = editor.selection.getCursor();
                                     var currline = editor.getSelectionRange().start.row;
                                     var wholelinetxt = session.getLine(currline);
@@ -834,25 +986,46 @@ class Metawrite extends Component {
                                         checkKey = true
                                     }
                                     console.log(ex, checkKey)
+
                                     if(checkKey && rowCol.row === currline) {
                                             // e.preventDefault();
                                             // e.stopPropagation();
                                     }
                                   });
-                                // session.selection.on('changeCursor', function(e) {
-                                //     var rowCol = editor.selection.getCursor();
-                                //     var currline = editor.getSelectionRange().start.row;
-                                //     var wholelinetxt = session.getLine(currline);
-                                //     var regexRules = /(\[|]|\{|}|},|],)/g, ex='', checkKey = false
-                                //     if(!regexRules.test(wholelinetxt)) {
-                                //         ex = wholelinetxt.replaceAll(regexRules, "").trim().slice(-1) === ',' ? JSON.parse("{"+wholelinetxt.trim().slice(0,-1)+"}"):JSON.parse("{"+wholelinetxt.trim()+"}")
-                                //         checkKey = Array.isArray(Object.keys(ex)) && chklist.includes(Object.keys(ex)[0]) ? true : false
-                                //     } else {
-                                //         checkKey = true
-                                //     }
-                                //     console.log(ex, checkKey)
-                                // })
 
+                                  editor.getSession().on("changeAnnotation", function () {
+                                    var annot = editor.getSession().getAnnotations();
+
+                                    for (var key in annot) {
+                                      if (annot.hasOwnProperty(key))
+                                        console.log(annot[key].text + "on line " + " " + annot[key].row);
+                                    }
+                                  });
+
+                                session.selection.on('changeCursor', function(e) {
+                                    console.log(e)
+                                    // var rowCol = editor.selection.getCursor();
+                                    // var currline = editor.getSelectionRange().start.row;
+                                    // var wholelinetxt = session.getLine(currline);
+                                    // var regexRules = /(\[|]|\{|}|},|],)/g, ex='', checkKey = false
+                                    // if(!regexRules.test(wholelinetxt)) {
+                                    //     ex = wholelinetxt.replaceAll(regexRules, "").trim().slice(-1) === ',' ? JSON.parse("{"+wholelinetxt.trim().slice(0,-1)+"}"):JSON.parse("{"+wholelinetxt.trim()+"}")
+                                    //     checkKey = Array.isArray(Object.keys(ex)) && chklist.includes(Object.keys(ex)[0]) ? true : false
+                                    // } else {
+                                    //     checkKey = true
+                                    // }
+                                    // console.log(ex, checkKey)
+                                })
+
+                                editor.session.on('change', function(delta,e) {
+                                    console.log(e, delta)
+                                    const ex = ['"','[',':',']','{','}',',']
+                                    if(delta.action === 'remove' && ex.includes(delta.lines[0])) {
+                                        // editor.session.insert(delta.start, delta.lines[0])
+                                           e.preventDefault();
+                                            e.stopPropagation();
+                                    }
+                               });
 
                                 if(type === 'preview') session.setReadOnly(true)
                                 session.setMode(`ace/mode/json`, () => {
@@ -882,7 +1055,7 @@ class Metawrite extends Component {
                             }}
                             editorProps={{$blockScrolling: true}}
                             setOptions={{
-                                // enableBasicAutocompletion: true,
+                                enableBasicAutocompletion: true,
                                 // enableLiveAutocompletion: true,
                                 // enableSnippets: true,
                                 showLineNumbers: true,
