@@ -651,12 +651,11 @@ class Metawrite extends Component {
       };
     onChangeValueJSON = async (value, e) =>{
         const {chklist}=this.state
-        var data = JSON.stringify(this.state.data, null, 4)
         var tmp = JSON.parse(value);
         var valueCompare = await this.areObjectsEqual(this.state.prevJson.value, this.findValues(tmp, chklist))
         var keyCompare = await this.areArraysEqual(this.state.prevJson.key, this.getKeys(tmp))
         console.log(keyCompare, valueCompare)
-        console.log(this.findTheDifference(data, value))
+        // console.log(this.findTheDifference(data, value))
         // // console.log(this.getAllKeys(tmp))
         if(keyCompare && valueCompare) {
             this.setState({
@@ -675,25 +674,25 @@ class Metawrite extends Component {
     }
 
 
-    findTheDifference = (s, t) => {
-        function sortString(str) {
-          return str.split('').sort()
-        }
+    // findTheDifference = (s, t) => {
+    //     function sortString(str) {
+    //       return str.split('').sort()
+    //     }
 
-        var str1 = sortString(s)
-        var str2 = sortString(t)
+    //     var str1 = sortString(s)
+    //     var str2 = sortString(t)
 
 
-        var longestStrArr = str1.length > str2.length ? str1 : str2
+    //     var longestStrArr = str1.length > str2.length ? str1 : str2
 
-        for (var i = 0; i < str1.length; i++) {
-          if(str1[i] !== str2[i]){
-            return longestStrArr[i]
-          }
-        }
+    //     for (var i = 0; i < str1.length; i++) {
+    //       if(str1[i] !== str2[i]){
+    //         return longestStrArr[i]
+    //       }
+    //     }
 
-        return longestStrArr[longestStrArr.length - 1]
-      };
+    //     return longestStrArr[longestStrArr.length - 1]
+    //   };
 
     onChangeTheme = async (e) => {
         this.setState({
@@ -836,17 +835,15 @@ class Metawrite extends Component {
                             mode="json"
                             theme={this.state.theme}
                             name={schema._id}
-                            // value = {"test"}
                             value = {typeof tmpJson === 'object' ? JSON.stringify(tmpJson, null, 4):tmpJson}
                             onLoad={editor => {
                                 const session = editor.getSession();
                                 const undoManager = session.getUndoManager();
-                                undoManager.reset();
+
                                 session.setUndoManager(undoManager);
                                 const {key, value} = this.state.prevJson
                                 const {chklist}=this.state
                                 // editor.commands.on("exec", function(e) {
-                                //     console.log(e)
                                 //     var rowCol = editor.selection.getCursor();
                                 //     var currline = editor.getSelectionRange().start.row;
                                 //     var wholelinetxt = session.getLine(currline);
@@ -860,22 +857,22 @@ class Metawrite extends Component {
                                 //     console.log(ex, checkKey)
 
                                 //     if(checkKey && rowCol.row === currline) {
-                                //             // e.preventDefault();
-                                //             // e.stopPropagation();
+                                //             e.preventDefault();
+                                //             e.stopPropagation();
                                 //     }
                                 //   });
 
-                                  editor.getSession().on("changeAnnotation", function () {
-                                    var annot = editor.getSession().getAnnotations();
+                                //   editor.getSession().on("changeAnnotation", function () {
+                                //     var annot = editor.getSession().getAnnotations();
 
-                                    for (var key in annot) {
-                                      if (annot.hasOwnProperty(key))
-                                        console.log(annot[key].text + "on line " + " " + annot[key].row);
-                                    }
-                                  });
+                                //     for (var key in annot) {
+                                //       if (annot.hasOwnProperty(key))
+                                //         console.log(annot[key].text + "on line " + " " + annot[key].row);
+                                //     }
+                                //   });
 
-                                session.selection.on('changeCursor', function(e) {
-                                    console.log(e)
+                                // session.selection.on('changeCursor', function(e) {
+                                    // console.log(e)
                                     // var rowCol = editor.selection.getCursor();
                                     // var currline = editor.getSelectionRange().start.row;
                                     // var wholelinetxt = session.getLine(currline);
@@ -887,43 +884,44 @@ class Metawrite extends Component {
                                     //     checkKey = true
                                     // }
                                     // console.log(ex, checkKey)
-                                })
+                                // })
 
                                 editor.session.on('change', function(delta,e) {
                                     console.log(e, delta)
                                     const ex = ['"','[',':',']','{','}',',']
                                     if(delta.action === 'remove' && ex.includes(delta.lines[0])) {
-                                        editor.session.insert(delta.start, delta.lines[0])
-                                        //    e.preventDefault();
-                                        //     e.stopPropagation();
+                                        // editor.session.insert(delta.start, delta.lines[0])
+                                        undoManager.undo()
+                                    } else if(delta.action === 'insert' && ex.includes(delta.lines[0])) {
+                                        undoManager.undo()
                                     }
                                });
 
-                                if(type === 'preview') session.setReadOnly(true)
-                                session.setMode(`ace/mode/json`, () => {
-                                    const rules = session.$mode.$highlightRules.getRules();
-                                    if (Object.prototype.hasOwnProperty.call(rules, 'start')) {
-                                        rules.start = [
-                                        {
-                                            token: 'variable',
-                                            regex: '"(value|p_name|p_type|l_name|l_def|is_null|default|pii|op_name|topic_name|subject|schema_id|schema_version|meta_version|revision|last_mod_id|last_mod_dt|is_used|service|related_topics|retension|topic_desc)"',
-                                        },
-                                        {
-                                            token: 'separator',
-                                            regex: '(\{|\}|\[|\]|\,\|\:\s)'
-                                        },
-                                        {
-                                            token: 'value',
-                                            regex: '"[0-9A-Za-z]*"'
-                                        }
-                                        ];
-                                    }
-                                    // force recreation of tokenizer
-                                    session.$mode.$tokenizer = null;
-                                    session.bgTokenizer.setTokenizer(session.$mode.getTokenizer());
-                                    // force re-highlight whole document
-                                    session.bgTokenizer.start(0);
-                                });
+                                // if(type === 'preview') session.setReadOnly(true)
+                                // session.setMode(`ace/mode/json`, () => {
+                                //     const rules = session.$mode.$highlightRules.getRules();
+                                //     if (Object.prototype.hasOwnProperty.call(rules, 'start')) {
+                                //         rules.start = [
+                                //         {
+                                //             token: 'variable',
+                                //             regex: '"(value|p_name|p_type|l_name|l_def|is_null|default|pii|op_name|topic_name|subject|schema_id|schema_version|meta_version|revision|last_mod_id|last_mod_dt|is_used|service|related_topics|retension|topic_desc)"',
+                                //         },
+                                //         {
+                                //             token: 'separator',
+                                //             regex: '(\{|\}|\[|\]|\,\|\:\s)'
+                                //         },
+                                //         {
+                                //             token: 'value',
+                                //             regex: '"[0-9A-Za-z]*"'
+                                //         }
+                                //         ];
+                                //     }
+                                //     // force recreation of tokenizer
+                                //     session.$mode.$tokenizer = null;
+                                //     session.bgTokenizer.setTokenizer(session.$mode.getTokenizer());
+                                //     // force re-highlight whole document
+                                //     session.bgTokenizer.start(0);
+                                // });
                             }}
                             editorProps={{$blockScrolling: true}}
                             setOptions={{
@@ -933,7 +931,6 @@ class Metawrite extends Component {
                                 showLineNumbers: true,
                                 tabSize: 2,
                                 useWorker: true
-
                             }}
                             readOnly={this.state.preview ? true:false}
                             showPrintMargin={true}
