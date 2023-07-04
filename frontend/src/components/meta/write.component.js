@@ -22,13 +22,13 @@ class Metawrite extends Component {
                 schema_version:'',
                 meta_version:'',
                 revision:'',
-                last_mod_id:'',
-                last_mod_dt:'',
+                // last_mod_id:'',
+                // last_mod_dt:'',
                 is_used: true,
                 op_name:'',
                 service:'',
                 related_topics:'',
-                retension:'',
+                // retension:'',
                 topic_desc:'',
                 key:[],
                 value:[]
@@ -50,12 +50,12 @@ class Metawrite extends Component {
                 schema_version:'',
                 meta_version:'',
                 revision:'',
-                last_mod_id:'',
-                last_mod_dt:'',
+                // last_mod_id:'',
+                // last_mod_dt:'',
                 is_used: true,
                 op_name:'',
                 service:'',
-                rentesion:'',
+                // rentesion:'',
                 topic_desc:''
             },
             prevJson:{
@@ -123,13 +123,13 @@ class Metawrite extends Component {
                             meta['schema_version'] = schema.version
                             meta['meta_version'] = 1
                             meta['revision'] = 1
-                            meta['last_mod_id']=''
-                            meta['last_mod_dt']=''
+                            // meta['last_mod_id']=''
+                            // meta['last_mod_dt']=''
                             meta['is_used'] = true
                             meta['op_name'] = ''
                             meta['service'] = ''
                             meta['related_topics'] = ''
-                            meta['retension'] = ''
+                            // meta['retension'] = ''
                             meta['topic_desc'] = ''
                         }
                         this.setState({
@@ -191,13 +191,13 @@ class Metawrite extends Component {
                             meta['schema_version'] = schema.version
                             meta['meta_version'] = 1
                             meta['revision'] = 1
-                            meta['last_mod_id']=''
-                            meta['last_mod_dt']=''
+                            // meta['last_mod_id']=''
+                            // meta['last_mod_dt']=''
                             meta['is_used'] = true
                             meta['op_name'] = ''
                             meta['service'] = ''
                             meta['related_topics'] = ''
-                            meta['retension'] = ''
+                            // meta['retension'] = ''
                             meta['topic_desc'] = ''
                         }
                         this.setState({
@@ -260,7 +260,7 @@ class Metawrite extends Component {
             field["l_def"] = "";
             field["is_null"] = helpers.isNull(field['p_type']);
             field["default"] = this.setDefaultValue(field);
-            field["pii"] = "";
+            // field["pii"] = "";
         }
         return fields;
     }
@@ -656,7 +656,8 @@ class Metawrite extends Component {
         var keyCompare = await this.areArraysEqual(this.state.prevJson.key, this.getKeys(tmp))
         console.log(keyCompare, valueCompare)
         // console.log(this.findTheDifference(data, value))
-        // // console.log(this.getAllKeys(tmp))
+        console.log(this.getAllKeys(tmp))
+        console.log(this.getKeys(tmp))
         if(keyCompare && valueCompare) {
             this.setState({
                 ...this.state,
@@ -674,25 +675,25 @@ class Metawrite extends Component {
     }
 
 
-    // findTheDifference = (s, t) => {
-    //     function sortString(str) {
-    //       return str.split('').sort()
-    //     }
+    findTheDifference = (s, t) => {
+        function sortString(str) {
+          return str.split('').sort()
+        }
 
-    //     var str1 = sortString(s)
-    //     var str2 = sortString(t)
+        var str1 = sortString(s)
+        var str2 = sortString(t)
 
 
-    //     var longestStrArr = str1.length > str2.length ? str1 : str2
+        var longestStrArr = str1.length > str2.length ? str1 : str2
 
-    //     for (var i = 0; i < str1.length; i++) {
-    //       if(str1[i] !== str2[i]){
-    //         return longestStrArr[i]
-    //       }
-    //     }
+        for (var i = 0; i < str1.length; i++) {
+          if(str1[i] !== str2[i]){
+            return longestStrArr[i]
+          }
+        }
 
-    //     return longestStrArr[longestStrArr.length - 1]
-    //   };
+        return longestStrArr[longestStrArr.length - 1]
+      };
 
     onChangeTheme = async (e) => {
         this.setState({
@@ -767,7 +768,7 @@ class Metawrite extends Component {
                                     {this.inputfield("op_name")}
                                     {this.inputfield("service")}
                                     {this.inputfield("related_topics")}
-                                    {this.inputfield("retension")}
+                                    {/* {this.inputfield("retension")} */}
                                     {this.inputfield("topic_desc", 'textarea')}
                                 </div>
                             </div>
@@ -893,6 +894,7 @@ class Metawrite extends Component {
                                         // editor.session.insert(delta.start, delta.lines[0])
                                         undoManager.undo()
                                     } else if(delta.action === 'insert' && ex.includes(delta.lines[0])) {
+                                        // editor.session.insert(delta.start, delta.lines[0])
                                         undoManager.undo()
                                     }
                                });

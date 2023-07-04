@@ -32,7 +32,7 @@ import logoutServiceColor from "../img/logout-gray.svg";
 import AuthService from "../services/auth.service";
 import EventBus from "../common/EventBus";
 import { withRouter } from "../common/withRouter";
-
+import helpers from "../common/helpers";
 
 class Header extends Component {
   constructor(props) {
@@ -47,10 +47,11 @@ class Header extends Component {
   }
   componentDidMount() {
     const user = AuthService.getCurrentUser();
+    const terminal = JSON.parse(process.env.REACT_APP_TERMINAL) || {}
     if (user) {
       this.setState({
         currentUser: user,
-        terminal:JSON.parse(process.env.REACT_APP_TERMINAL)
+        terminal: terminal
       });
     }
     EventBus.on("logout", () => {
@@ -210,7 +211,7 @@ class Header extends Component {
               {this.navItem('manager',mode,"카프카 어드민")}
               {this.navItem('monitor',mode,"카프카 모니터링")}
               {this.navItem('collector',mode,"로그 수집기")}
-              {this.navItem('terminal',mode,"웹터미널")}
+              {!helpers.isEmptyObj(terminal) ? this.navItem('terminal',mode,"웹터미널") :<></>}
               {this.navItem('diag',mode,"지원 내역")}
             </ul>
           </div>
