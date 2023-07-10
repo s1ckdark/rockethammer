@@ -22,13 +22,13 @@ class Metawrite extends Component {
                 schema_version:'',
                 meta_version:'',
                 revision:'',
-                last_mod_id:'',
-                last_mod_dt:'',
+                // last_mod_id:'',
+                // last_mod_dt:'',
                 is_used: true,
                 op_name:'',
                 service:'',
                 related_topics:'',
-                retension:'',
+                // retension:'',
                 topic_desc:'',
                 key:[],
                 value:[]
@@ -50,12 +50,12 @@ class Metawrite extends Component {
                 schema_version:'',
                 meta_version:'',
                 revision:'',
-                last_mod_id:'',
-                last_mod_dt:'',
+                // last_mod_id:'',
+                // last_mod_dt:'',
                 is_used: true,
                 op_name:'',
                 service:'',
-                rentesion:'',
+                // rentesion:'',
                 topic_desc:''
             },
             prevJson:{
@@ -79,13 +79,10 @@ class Metawrite extends Component {
         const {schema, meta_join, type, topic_name} = this.props.router.location.state;
         let meta ={}
         var chklist = ["topic_name","subject","schema_id","meta_version","revision","is_used","p_name","p_type","default","is_null"]
-
         switch(type) {
             case 'reg':
                 axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:topic_name}).then( res => {
                     const {data, status } = res;
-                    // console.log(data)
-
                     if(status === 200) {
                         const sch = Object.keys(data)
                                     .sort()
@@ -100,19 +97,6 @@ class Metawrite extends Component {
                             if(sch[kind].length > 0) {
                                 let tmpJson = JSON.parse(data[kind][0].schema);
                                 let json = []
-                                // tmpJson.fields.forEach(item => {
-                                //     console.log(item);
-                                //     let temp = {};
-                                //     temp['p_name'] = item.name;
-                                //     temp['p_type'] = item.type;
-                                //     if(kind === 'value') temp['l_name'] = '';
-                                //     if(kind === 'value') temp['l_def'] = '';
-                                //     // temp['is_null'] = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'Y': 'N'
-                                //     temp['default'] = item.default ? item.default : '-'
-                                //     if(kind === 'value') temp['pii'] = '';
-
-                                //     json.push(temp)
-                                // })
                                 json=this.transformFields(tmpJson.fields)
                                 meta[kind] = json
                             }
@@ -123,13 +107,13 @@ class Metawrite extends Component {
                             meta['schema_version'] = schema.version
                             meta['meta_version'] = 1
                             meta['revision'] = 1
-                            meta['last_mod_id']=''
-                            meta['last_mod_dt']=''
+                            // meta['last_mod_id']=''
+                            // meta['last_mod_dt']=''
                             meta['is_used'] = true
                             meta['op_name'] = ''
                             meta['service'] = ''
                             meta['related_topics'] = ''
-                            meta['retension'] = ''
+                            // meta['retension'] = ''
                             meta['topic_desc'] = ''
                         }
                         this.setState({
@@ -142,8 +126,8 @@ class Metawrite extends Component {
                                 key: this.getKeys(meta),
                                 value: this.findValues(meta, chklist)
                             },
-                            chklist: chklist,
-                            tmpJson:JSON.stringify(meta,null,4)
+                            tmpJson:JSON.stringify(meta,null,4),
+                            chklist: chklist
                         })
                     }
                 )
@@ -168,18 +152,6 @@ class Metawrite extends Component {
                                 console.log(kind, data[kind][0])
                                 let tmpJson = JSON.parse(data[kind][0].schema);
                                 let json = []
-                                // tmpJson.fields.forEach(item => {
-                                //     let temp = {};
-                                //     temp['p_name'] = item.name;
-                                //     temp['p_type'] = item.type;
-                                //     if(kind === 'value') temp['l_name'] = '';
-                                //     if(kind === 'value') temp['l_def'] = '';
-                                //     temp['is_null'] = typeof(item['type']) === 'object' && item['type'].filter(function (str) { return str.includes('null')}).length === 1 ? 'Y': 'N'
-                                //     temp['default'] = item.default ? item.default : '-'
-                                //     if(kind === 'value') temp['pii'] = '';
-
-                                //     json.push(temp)
-                                // })
                                 json=this.transformFields(tmpJson.fields)
                                 meta[kind] = json
                             }
@@ -191,13 +163,13 @@ class Metawrite extends Component {
                             meta['schema_version'] = schema.version
                             meta['meta_version'] = 1
                             meta['revision'] = 1
-                            meta['last_mod_id']=''
-                            meta['last_mod_dt']=''
+                            // meta['last_mod_id']=''
+                            // meta['last_mod_dt']=''
                             meta['is_used'] = true
                             meta['op_name'] = ''
                             meta['service'] = ''
                             meta['related_topics'] = ''
-                            meta['retension'] = ''
+                            // meta['retension'] = ''
                             meta['topic_desc'] = ''
                         }
                         this.setState({
@@ -205,7 +177,13 @@ class Metawrite extends Component {
                             data: meta,
                             userReady:true,
                             type: type,
-                            tmpJson: meta_join
+                            tmpJson: meta_join,
+                            prevJson:{
+                                ...this.state.prevJson,
+                                key: this.getKeys(meta),
+                                value: this.findValues(meta, chklist)
+                            },
+                            chklist: chklist
                         })
 
                     }
@@ -220,7 +198,13 @@ class Metawrite extends Component {
                     prev: meta_join,
                     userReady:true,
                     type: type,
-                    tmpJson: meta_join
+                    tmpJson: meta_join,
+                    prevJson:{
+                        ...this.state.prevJson,
+                        key: this.getKeys(meta_join),
+                        value: this.findValues(meta_join, chklist)
+                    },
+                    chklist: chklist
                 })
 
             break;
@@ -260,7 +244,7 @@ class Metawrite extends Component {
             field["l_def"] = "";
             field["is_null"] = helpers.isNull(field['p_type']);
             field["default"] = this.setDefaultValue(field);
-            field["pii"] = "";
+            // field["pii"] = "";
         }
         return fields;
     }
@@ -364,7 +348,6 @@ class Metawrite extends Component {
                     is_used: '',
                     op_name:'',
                     service:'',
-                    retension:'',
                     topic_desc:''
                 },
                 successful:false,
@@ -649,14 +632,15 @@ class Metawrite extends Component {
 
         return true;
       };
+
     onChangeValueJSON = async (value, e) =>{
+
+
         const {chklist}=this.state
         var tmp = JSON.parse(value);
+
         var valueCompare = await this.areObjectsEqual(this.state.prevJson.value, this.findValues(tmp, chklist))
         var keyCompare = await this.areArraysEqual(this.state.prevJson.key, this.getKeys(tmp))
-        console.log(keyCompare, valueCompare)
-        // console.log(this.findTheDifference(data, value))
-        // // console.log(this.getAllKeys(tmp))
         if(keyCompare && valueCompare) {
             this.setState({
                 ...this.state,
@@ -664,9 +648,10 @@ class Metawrite extends Component {
                 tmpJson:value,
             })
         } else {
+                console.log(e)
               this.setState({
                 ...this.state,
-                message: keyCompare ? "value는 변경될 수 없습니다":"key는 변경될 수 없습니다",
+                message: keyCompare && !valueCompare ? "value는 변경될 수 없습니다":"key는 변경될 수 없습니다",
                 messageType:'alert',
                 successful:false
             },()=>document.querySelector(".dialog .btn-close").focus())
@@ -674,25 +659,25 @@ class Metawrite extends Component {
     }
 
 
-    // findTheDifference = (s, t) => {
-    //     function sortString(str) {
-    //       return str.split('').sort()
-    //     }
+    findTheDifference = (s, t) => {
+        function sortString(str) {
+          return str.split('').sort()
+        }
 
-    //     var str1 = sortString(s)
-    //     var str2 = sortString(t)
+        var str1 = sortString(s)
+        var str2 = sortString(t)
 
 
-    //     var longestStrArr = str1.length > str2.length ? str1 : str2
+        var longestStrArr = str1.length > str2.length ? str1 : str2
 
-    //     for (var i = 0; i < str1.length; i++) {
-    //       if(str1[i] !== str2[i]){
-    //         return longestStrArr[i]
-    //       }
-    //     }
+        for (var i = 0; i < str1.length; i++) {
+          if(str1[i] !== str2[i]){
+            return longestStrArr[i]
+          }
+        }
 
-    //     return longestStrArr[longestStrArr.length - 1]
-    //   };
+        return longestStrArr[longestStrArr.length - 1]
+      };
 
     onChangeTheme = async (e) => {
         this.setState({
@@ -713,7 +698,7 @@ class Metawrite extends Component {
     readonly = (name, schema=null) => {
         if(!this.state.preview) {
             if(schema !== 'key') {
-                var tmp = ["p_name","p_type","topic_name","schema_id","schema_version","_id","is_null","default","revision","schema_id","meta_version","last_mod_id","last_mod_dt","subject","retnesion"];
+                var tmp = ["p_name","p_type","topic_name","schema_id","schema_version","_id","is_null","default","revision","schema_id","meta_version","last_mod_id","last_mod_dt","subject"];
                 let result = tmp.filter(ele => ele === name)
                 return result.length > 0 ? true : false
             } else { return true; }
@@ -724,12 +709,7 @@ class Metawrite extends Component {
         this.props.router.navigate(-1)
     }
 
-    depth = (o) => {
-        var values;
-        if (Array.isArray(o)) values = o;
-        else if (typeof o === "object") values = Object.keys(o).map(k=>o[k]);
-        return values ? Math.max.apply(0, values.map(this.depth))+1 : 1;
-    }
+
     inputfield = ( field_name, field_type = 'input') => {
         const data = this.state.data;
         return (
@@ -745,7 +725,7 @@ class Metawrite extends Component {
 
     render()
     {
-        const {userReady, data, type, tmpJson} = this.state;
+        const {userReady, data, type, tmpJson, successful} = this.state;
 
         if(userReady){
             let schema = Object.keys(data).map(field => {
@@ -757,7 +737,7 @@ class Metawrite extends Component {
                         <Breadcrumb/>
                     </div>
                     <div className={ this.state.preview ? "writing preview":"writing"}>
-                            {this.depth(data) <= 4 ?
+                            {helpers.depth(data) <= 4 ?
                             <>
                             <div className="default-group">
                                 <div className="inner">
@@ -767,7 +747,7 @@ class Metawrite extends Component {
                                     {this.inputfield("op_name")}
                                     {this.inputfield("service")}
                                     {this.inputfield("related_topics")}
-                                    {this.inputfield("retension")}
+                                    {/* {this.inputfield("retension")} */}
                                     {this.inputfield("topic_desc", 'textarea')}
                                 </div>
                             </div>
@@ -887,12 +867,29 @@ class Metawrite extends Component {
                                 // })
 
                                 editor.session.on('change', function(delta,e) {
-                                    console.log(e, delta)
+                                    // console.log(e, delta)
+                                    function getByteB(str){
+
+                                        var byte = 0;
+
+                                        for (var i=0; i<str.length; ++i) {
+
+                                        // 기본 한글 2바이트 처리
+
+                                        (str.charCodeAt(i) > 127) ? byte += 2 : byte++ ;
+
+                                        }
+
+                                        return byte;
+
+                                       }
+                                       console.log(getByteB(delta.lines[0]))
                                     const ex = ['"','[',':',']','{','}',',']
-                                    if(delta.action === 'remove' && ex.includes(delta.lines[0])) {
+                                    if(delta.action === 'remove' && ex.includes(delta.lines[0]) && getByteB(delta.lines[0] === 1)) {
                                         // editor.session.insert(delta.start, delta.lines[0])
                                         undoManager.undo()
-                                    } else if(delta.action === 'insert' && ex.includes(delta.lines[0])) {
+                                    } else if(delta.action === 'insert' && ex.includes(delta.lines[0]) && getByteB(delta.lines[0] === 1)) {
+                                        // editor.session.insert(delta.start, delta.lines[0])
                                         undoManager.undo()
                                     }
                                });
@@ -904,7 +901,7 @@ class Metawrite extends Component {
                                 //         rules.start = [
                                 //         {
                                 //             token: 'variable',
-                                //             regex: '"(value|p_name|p_type|l_name|l_def|is_null|default|pii|op_name|topic_name|subject|schema_id|schema_version|meta_version|revision|last_mod_id|last_mod_dt|is_used|service|related_topics|retension|topic_desc)"',
+                                //             regex: '"(value|p_name|p_type|l_name|l_def|is_null|default|pii|op_name|topic_name|subject|schema_id|schema_version|meta_version|revision|last_mod_id|last_mod_dt|is_used|service|related_topics|topic_desc)"',
                                 //         },
                                 //         {
                                 //             token: 'separator',
@@ -941,6 +938,10 @@ class Metawrite extends Component {
                             width= "100%"
                             height="500px"
                             />
+                            {/* {successful ? <></>:
+                            <div className={"input-validator error-msg"}>{Object.keys(this.state.errors).map(item => {
+                                return this.state.errors[item]})}</div>
+                            } */}
                             </>
                     }
 
