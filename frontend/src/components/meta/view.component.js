@@ -19,12 +19,12 @@ class Metaview extends Component {
         }
     }
 
-onChangeTheme = async (e) => {
-    this.setState({
-        ...this.state,
-        theme: e.target.value
-    })
-}
+    onChangeTheme = async (e) => {
+        this.setState({
+            ...this.state,
+            theme: e.target.value
+        })
+    }
 
     write = (e, type, topic_name, data)=> {
         e.preventDefault();
@@ -57,6 +57,7 @@ onChangeTheme = async (e) => {
         if(type === 'json') {
             console.log(props)
             const meta = props.meta_join
+            console.log(this.depth(meta))
             return (
                 <>
                     <div className="viewer json">
@@ -162,9 +163,18 @@ onChangeTheme = async (e) => {
             )
         }
     }
+
+    depth = (o) => {
+        var values;
+        if (Array.isArray(o)) values = o;
+        else if (typeof o === "object") values = Object.keys(o).map(k=>o[k]);
+        return values ? Math.max.apply(0, values.map(this.depth))+1 : 1;
+    }
+
     render(){
         const data  = this.props.router.location.state
         const {type, topic_name} = this.props.router.params
+        const depth = helpers.depth(data.meta_join) > 4 ? true:false
             return (
                 <>
                 <div className="meta">
@@ -177,9 +187,9 @@ onChangeTheme = async (e) => {
                             {type !== 'changed' ?
                                 <div className="btn-group type-view">
                                     {type === 'json' ?
-                                    <div class="field">
-                                        <p class="control">
-                                            <span class="select">
+                                    <div className="field">
+                                        <p className="control">
+                                            <span className="select">
                                                 <select name="Theme" onChange={this.onChangeTheme}>
                                                     <option value="monokai">monokai</option>
                                                     <option value="github">github</option>
@@ -197,7 +207,7 @@ onChangeTheme = async (e) => {
                                     </div>
                                     :<></>}
                                     <button className={type === 'json' ? "btn btn-json active":"btn btn-json"} onClick={(e)=>this.viewer(e,'json',topic_name, data)}>JSON</button>
-                                    <button className={type === 'table' ? "btn btn-table active":"btn btn-table"} onClick={(e)=>this.viewer(e,'table',topic_name, data)}>TABLE</button>
+                                    <button className={type === 'table' ? "btn btn-table active":"btn btn-table"} onClick={(e)=>this.viewer(e,'table',topic_name, data)} disabled={depth}>TABLE</button>
 
                                 </div>:<></>}
                             {this.view(type, data)}

@@ -225,6 +225,12 @@ const helpers = {
         },
         {}
      )
+    },
+    depth : (o) => {
+        var values;
+        if (Array.isArray(o)) values = o;
+        else if (typeof o === "object") values = Object.keys(o).map(k=>o[k]);
+        return values ? Math.max.apply(0, values.map(helpers.depth))+1 : 1;
     }
 }
 
