@@ -67,7 +67,7 @@ class Metawrite extends Component {
             invalids:[],
             message:'',
             messageType:'',
-            successful:false,
+            successful:true,
             theme:'monokai'
         };
         this.onChangeValue = this.onChangeValue.bind(this);
@@ -84,6 +84,20 @@ class Metawrite extends Component {
                 axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:topic_name}).then( res => {
                     const {data, status } = res;
                     if(status === 200) {
+                        meta['topic_name'] = topic_name
+                        meta['subject'] = schema.subject
+                        meta['schema_id'] = schema.id
+                        meta['schema_version'] = schema.version
+                        meta['meta_version'] = 1
+                        meta['revision'] = 1
+                        // meta['last_mod_id']=''
+                        // meta['last_mod_dt']=''
+                        meta['is_used'] = true
+                        meta['op_name'] = ''
+                        meta['service'] = ''
+                        meta['related_topics'] = ''
+                        // meta['retension'] = ''
+                        meta['topic_desc'] = ''
                         const sch = Object.keys(data)
                                     .sort()
                                     .reduce(
@@ -101,20 +115,7 @@ class Metawrite extends Component {
                                 meta[kind] = json
                             }
                         })
-                            meta['topic_name'] = topic_name
-                            meta['subject'] = schema.subject
-                            meta['schema_id'] = schema.id
-                            meta['schema_version'] = schema.version
-                            meta['meta_version'] = 1
-                            meta['revision'] = 1
-                            // meta['last_mod_id']=''
-                            // meta['last_mod_dt']=''
-                            meta['is_used'] = true
-                            meta['op_name'] = ''
-                            meta['service'] = ''
-                            meta['related_topics'] = ''
-                            // meta['retension'] = ''
-                            meta['topic_desc'] = ''
+
                         }
                         this.setState({
                             ...this.state,
@@ -126,7 +127,7 @@ class Metawrite extends Component {
                                 key: this.getKeys(meta),
                                 value: this.findValues(meta, chklist)
                             },
-                            tmpJson:JSON.stringify(meta,null,4),
+                            tmpJson:meta,
                             chklist: chklist
                         })
                     }
@@ -138,6 +139,20 @@ class Metawrite extends Component {
                 axios.post(process.env.REACT_APP_API+"/schema/getschema",{keyword:topic_name}).then( res => {
                     const {data, status } = res;
                     if(status === 200) {
+                        meta['topic_name'] = topic_name
+                        meta['subject'] = schema.subject
+                        meta['schema_id'] = schema.id
+                        meta['schema_version'] = schema.version
+                        meta['meta_version'] = 1
+                        meta['revision'] = 1
+                        // meta['last_mod_id']=''
+                        // meta['last_mod_dt']=''
+                        meta['is_used'] = true
+                        meta['op_name'] = ''
+                        meta['service'] = ''
+                        meta['related_topics'] = ''
+                        // meta['retension'] = ''
+                        meta['topic_desc'] = ''
                         const sch = Object.keys(data)
                                     .sort()
                                     .reduce(
@@ -156,21 +171,6 @@ class Metawrite extends Component {
                                 meta[kind] = json
                             }
                         })
-
-                            meta['topic_name'] = topic_name
-                            meta['subject'] = schema.subject
-                            meta['schema_id'] = schema.id
-                            meta['schema_version'] = schema.version
-                            meta['meta_version'] = 1
-                            meta['revision'] = 1
-                            // meta['last_mod_id']=''
-                            // meta['last_mod_dt']=''
-                            meta['is_used'] = true
-                            meta['op_name'] = ''
-                            meta['service'] = ''
-                            meta['related_topics'] = ''
-                            // meta['retension'] = ''
-                            meta['topic_desc'] = ''
                         }
                         this.setState({
                             ...this.state,
@@ -286,7 +286,6 @@ class Metawrite extends Component {
     preview = async(e, type) => {
         e.preventDefault();
         // console.log(type+" preview")
-
         const { data, prev } = this.state;
         let temp = {...data}, history={}
 
@@ -634,21 +633,18 @@ class Metawrite extends Component {
       };
 
     onChangeValueJSON = async (value, e) =>{
-
-
         const {chklist}=this.state
-        var tmp = JSON.parse(value);
-
+        var tmp = JSON.parse(helpers.replaceKey(value, "krtoen"))
+        console.log(this.getKeys(tmp), this.findValues(tmp, chklist))
         var valueCompare = await this.areObjectsEqual(this.state.prevJson.value, this.findValues(tmp, chklist))
         var keyCompare = await this.areArraysEqual(this.state.prevJson.key, this.getKeys(tmp))
         if(keyCompare && valueCompare) {
             this.setState({
                 ...this.state,
-                data:JSON.parse(value),
-                tmpJson:value,
+                data:JSON.parse(helpers.replaceKey(tmp, "krtoen")),
+                tmpJson:tmp
             })
         } else {
-                console.log(e)
               this.setState({
                 ...this.state,
                 message: keyCompare && !valueCompare ? "value는 변경될 수 없습니다":"key는 변경될 수 없습니다",
@@ -658,6 +654,27 @@ class Metawrite extends Component {
         }
     }
 
+    closeErr = () => {
+        this.setState({
+            ...this.state,
+            successful: true,
+            errors:{
+                topic_name:'',
+                subject:'',
+                schema_id:'',
+                schema_version:'',
+                meta_version:'',
+                revision:'',
+                // last_mod_id:'',
+                // last_mod_dt:'',
+                is_used: true,
+                op_name:'',
+                service:'',
+                // rentesion:'',
+                topic_desc:''
+            },
+        })
+    }
 
     findTheDifference = (s, t) => {
         function sortString(str) {
@@ -667,17 +684,14 @@ class Metawrite extends Component {
         var str1 = sortString(s)
         var str2 = sortString(t)
 
-
         var longestStrArr = str1.length > str2.length ? str1 : str2
-
         for (var i = 0; i < str1.length; i++) {
           if(str1[i] !== str2[i]){
             return longestStrArr[i]
           }
         }
-
         return longestStrArr[longestStrArr.length - 1]
-      };
+    };
 
     onChangeTheme = async (e) => {
         this.setState({
@@ -709,7 +723,6 @@ class Metawrite extends Component {
         this.props.router.navigate(-1)
     }
 
-
     inputfield = ( field_name, field_type = 'input') => {
         const data = this.state.data;
         return (
@@ -726,7 +739,6 @@ class Metawrite extends Component {
     render()
     {
         const {userReady, data, type, tmpJson, successful} = this.state;
-
         if(userReady){
             let schema = Object.keys(data).map(field => {
                 if(typeof(data[field]) === 'object' && data[field].length > 0) return field
@@ -815,7 +827,7 @@ class Metawrite extends Component {
                             mode="json"
                             theme={this.state.theme}
                             name={schema._id}
-                            value = {typeof tmpJson === 'object' ? JSON.stringify(tmpJson, null, 4):tmpJson}
+                            value = {typeof tmpJson === 'object' ? helpers.replaceKey(tmpJson,"entokr"):tmpJson}
                             onLoad={editor => {
                                 const session = editor.getSession();
                                 const undoManager = session.getUndoManager();
@@ -869,21 +881,12 @@ class Metawrite extends Component {
                                 editor.session.on('change', function(delta,e) {
                                     // console.log(e, delta)
                                     function getByteB(str){
-
                                         var byte = 0;
-
                                         for (var i=0; i<str.length; ++i) {
-
-                                        // 기본 한글 2바이트 처리
-
-                                        (str.charCodeAt(i) > 127) ? byte += 2 : byte++ ;
-
+                                            (str.charCodeAt(i) > 127) ? byte += 2 : byte++ ;
                                         }
-
                                         return byte;
-
-                                       }
-                                       console.log(getByteB(delta.lines[0]))
+                                    }
                                     const ex = ['"','[',':',']','{','}',',']
                                     if(delta.action === 'remove' && ex.includes(delta.lines[0]) && getByteB(delta.lines[0] === 1)) {
                                         // editor.session.insert(delta.start, delta.lines[0])
@@ -894,31 +897,31 @@ class Metawrite extends Component {
                                     }
                                });
 
-                                // if(type === 'preview') session.setReadOnly(true)
-                                // session.setMode(`ace/mode/json`, () => {
-                                //     const rules = session.$mode.$highlightRules.getRules();
-                                //     if (Object.prototype.hasOwnProperty.call(rules, 'start')) {
-                                //         rules.start = [
-                                //         {
-                                //             token: 'variable',
-                                //             regex: '"(value|p_name|p_type|l_name|l_def|is_null|default|pii|op_name|topic_name|subject|schema_id|schema_version|meta_version|revision|last_mod_id|last_mod_dt|is_used|service|related_topics|topic_desc)"',
-                                //         },
-                                //         {
-                                //             token: 'separator',
-                                //             regex: '(\{|\}|\[|\]|\,\|\:\s)'
-                                //         },
-                                //         {
-                                //             token: 'value',
-                                //             regex: '"[0-9A-Za-z]*"'
-                                //         }
-                                //         ];
-                                //     }
-                                //     // force recreation of tokenizer
-                                //     session.$mode.$tokenizer = null;
-                                //     session.bgTokenizer.setTokenizer(session.$mode.getTokenizer());
-                                //     // force re-highlight whole document
-                                //     session.bgTokenizer.start(0);
-                                // });
+                                if(type === 'preview') session.setReadOnly(true)
+                                session.setMode(`ace/mode/json`, () => {
+                                    const rules = session.$mode.$highlightRules.getRules();
+                                    if (Object.prototype.hasOwnProperty.call(rules, 'start')) {
+                                        rules.start = [
+                                        {
+                                            token: 'variable',
+                                            regex: '"(토픽명|스키마ID|물리스키마버전|메타버전|관리부서|업무시스템|논리스키마버전|연관토픽|토픽설명|최종수정시간|최종수정자|물리명|데이터 타입|논리명|설명|널 여부|기본값|key|_id|value|p_name|p_type|l_name|l_def|is_null|default|pii|op_name|topic_name|subject|schema_id|schema_version|meta_version|revision|last_mod_id|last_mod_dt|is_used|service|related_topics|topic_desc)"',
+                                        },
+                                        {
+                                            token: 'separator',
+                                            regex: '(\{|\}|\[|\]|\,\|\:\s)'
+                                        },
+                                        {
+                                            token: 'value',
+                                            regex: '"[0-9A-Za-z]*"'
+                                        }
+                                        ];
+                                    }
+                                    // force recreation of tokenizer
+                                    session.$mode.$tokenizer = null;
+                                    session.bgTokenizer.setTokenizer(session.$mode.getTokenizer());
+                                    // force re-highlight whole document
+                                    session.bgTokenizer.start(0);
+                                });
                             }}
                             editorProps={{$blockScrolling: true}}
                             setOptions={{
@@ -938,10 +941,10 @@ class Metawrite extends Component {
                             width= "100%"
                             height="500px"
                             />
-                            {/* {successful ? <></>:
-                            <div className={"input-validator error-msg"}>{Object.keys(this.state.errors).map(item => {
-                                return this.state.errors[item]})}</div>
-                            } */}
+                            {successful ? <></>:
+                            <div className={"input-validator-json error-msg"}><span className="close-btn close" onClick={this.closeErr}>&times;</span>{Object.keys(this.state.errors).map(item => {
+                                return <p>{this.state.errors[item]}</p>})}</div>
+                            }
                             </>
                     }
 

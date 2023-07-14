@@ -57,7 +57,9 @@ const helpers = {
                     "스키마ID":"schema_id",
                     "스키마버전":"schema_version",
                     "메타버전":"meta_version",
+                    "물리스키마버전":"schema_version",
                     "데이터삭제주기":"recycle_pol",
+                    "논리스키마버전":"revision",
                     "관리부서":"op_name",
                     "업무시스템":"service",
                     "연관토픽":"related_topics",
@@ -79,7 +81,7 @@ const helpers = {
             const pattern = new RegExp(
                 Object.keys(swaps).map(e => `(?:"(${e})":)`).join("|"), "g"
             );
-            const result = JSON.stringify(data, null, 8).replace(pattern, m => `"${swaps[m.slice(1,-2)]}":`)
+            const result = typeof(data) === 'object' ? JSON.stringify(data, null, 8).replace(pattern, m => `"${swaps[m.slice(1,-2)]}":`):data.replace(pattern, m => `"${swaps[m.slice(1,-2)]}":`)
             return result;
     },
         // obj가 빈값인지 아닌지 구분한다
