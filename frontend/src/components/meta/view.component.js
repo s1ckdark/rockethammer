@@ -189,8 +189,8 @@ class Metaview extends Component {
                                     {type === 'json' ?
                                     <div className="field">
                                         <p className="control">
-                                            <span className="select">
-                                                <select name="Theme" onChange={this.onChangeTheme}>
+                                            <span className="select theme-selector">
+                                                <select onChange={this.onChangeTheme}>
                                                     <option value="monokai">monokai</option>
                                                     <option value="github">github</option>
                                                     <option value="tomorrow">tomorrow</option>
