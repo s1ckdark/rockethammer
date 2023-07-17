@@ -67,7 +67,7 @@ class Metawrite extends Component {
             invalids:[],
             message:'',
             messageType:'',
-            successful:true,
+            successful:false,
             theme:'monokai'
         };
         this.onChangeValue = this.onChangeValue.bind(this);
@@ -649,7 +649,7 @@ class Metawrite extends Component {
                 ...this.state,
                 message: keyCompare && !valueCompare ? "value는 변경될 수 없습니다":"key는 변경될 수 없습니다",
                 messageType:'alert',
-                successful:true
+                successful:false
             },()=>document.querySelector(".dialog .btn-close").focus())
         }
     }
@@ -657,7 +657,7 @@ class Metawrite extends Component {
     closeErr = () => {
         this.setState({
             ...this.state,
-            successful: true,
+            successful: false,
             errors:{
                 topic_name:'',
                 subject:'',
@@ -941,7 +941,7 @@ class Metawrite extends Component {
                             width= "100%"
                             height="500px"
                             />
-                            {successful ? <></>:
+                            {!successful ? <></>:
                             <div className={"input-validator-json error-msg"}><span className="close-btn close" onClick={this.closeErr}>&times;</span>{Object.keys(this.state.errors).map(item => {
                                 return <p>{this.state.errors[item]}</p>})}</div>
                             }
