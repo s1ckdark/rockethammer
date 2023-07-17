@@ -649,7 +649,7 @@ class Metawrite extends Component {
                 ...this.state,
                 message: keyCompare && !valueCompare ? "value는 변경될 수 없습니다":"key는 변경될 수 없습니다",
                 messageType:'alert',
-                successful:false
+                successful:true
             },()=>document.querySelector(".dialog .btn-close").focus())
         }
     }
