@@ -43,21 +43,7 @@ class Metawrite extends Component {
             prev:{},
             type:'',
             preview: false,
-            errors:{
-                topic_name:'',
-                subject:'',
-                schema_id:'',
-                schema_version:'',
-                meta_version:'',
-                revision:'',
-                // last_mod_id:'',
-                // last_mod_dt:'',
-                is_used: true,
-                op_name:'',
-                service:'',
-                // rentesion:'',
-                topic_desc:''
-            },
+            errors:{},
             prevJson:{
                 key:[],
                 value:[]
@@ -334,21 +320,7 @@ class Metawrite extends Component {
                 data: temp,
                 history:history,
                 preview:true,
-                errors:{
-                    ...this.state,
-                    topic_name:'',
-                    subject:'',
-                    schema_id:'',
-                    schema_version:'',
-                    meta_version:'',
-                    revision:'',
-                    last_mod_id:'',
-                    last_mod_dt:'',
-                    is_used: '',
-                    op_name:'',
-                    service:'',
-                    topic_desc:''
-                },
+                errors:{},
                 successful:false,
                 message:''
             })
@@ -429,20 +401,7 @@ class Metawrite extends Component {
     }
 
     onValidation = (obj, fields) => {
-        const errors = {
-            topic_name:'',
-            subject:'',
-            schema_id:'',
-            schema_version:'',
-            meta_version:'',
-            revision:'',
-            last_mod_id:'',
-            last_mod_dt:'',
-            is_used: true,
-            op_name:'',
-            service:'',
-            topic_desc:''
-        }
+        const errors = {}
         let formIsValid = true;
 
         if ('object' !== typeof obj || null == obj) formIsValid = false;
@@ -454,11 +413,11 @@ class Metawrite extends Component {
             switch(obj[prop]){
               case null:
               case undefined:
-                errors[prop] = helpers.translate(prop ,"entokr")+ ' 값은 필수입력 항목 입니다';
+                errors[prop] = false
                 formIsValid = false;
                 break;
               case '':
-                errors[prop] = helpers.translate(prop ,"entokr")+ ' 값은 필수입력 항목 입니다';
+                errors[prop] = false
                 formIsValid = false;
                 break;
               case 0:
@@ -658,21 +617,7 @@ class Metawrite extends Component {
         this.setState({
             ...this.state,
             successful: false,
-            errors:{
-                topic_name:'',
-                subject:'',
-                schema_id:'',
-                schema_version:'',
-                meta_version:'',
-                revision:'',
-                // last_mod_id:'',
-                // last_mod_dt:'',
-                is_used: true,
-                op_name:'',
-                service:'',
-                // rentesion:'',
-                topic_desc:''
-            },
+            errors:{},
         })
     }
 
@@ -738,7 +683,7 @@ class Metawrite extends Component {
 
     render()
     {
-        const {userReady, data, type, tmpJson, successful} = this.state;
+        const {userReady, data, type, tmpJson, successful, errors} = this.state;
         if(userReady){
             let schema = Object.keys(data).map(field => {
                 if(typeof(data[field]) === 'object' && data[field].length > 0) return field
@@ -941,9 +886,9 @@ class Metawrite extends Component {
                             width= "100%"
                             height="500px"
                             />
-                            {!successful ? <></>:
+                            {Object.keys(errors).length === 0 ? <></>:
                             <div className={"input-validator-json error-msg"}><span className="close-btn close" onClick={this.closeErr}>&times;</span>{Object.keys(this.state.errors).map(item => {
-                                return <p>{this.state.errors[item]}</p>})}</div>
+                                return this.state.errors[item] === false ? <p>{helpers.translate(item ,"entokr")} 값은 필수입력 항목 입니다</p>:<></>})}</div>
                             }
                             </>
                     }

@@ -42,7 +42,7 @@ class Metadetail extends Component {
         switch(typeofapi){
             case 'api1':
                 url = process.env.REACT_APP_API+"/meta/delete";
-                axios.post(url, {keyword:topic_name,last_mod_dt:new Date().toISOString()}).then(res => console.log(res))
+                await axios.post(url, {keyword:topic_name,last_mod_dt:new Date().toISOString()}).then(res => console.log(res))
                 break;
             case 'api3':
                 url = [process.env.REACT_APP_API+"/meta/delete", process.env.REACT_APP_API+"/schema/delete"];
@@ -56,7 +56,7 @@ class Metadetail extends Component {
                 break;
             case 'api2':
                 url = process.env.REACT_APP_API+"/schema/delete";
-                axios.post(url, {keyword:topic_name}).then(res => console.log(res))
+                await axios.post(url, {keyword:topic_name}).then(res => console.log(res))
                 break;
             default:
                 console.log("typeofapi",typeofapi);
