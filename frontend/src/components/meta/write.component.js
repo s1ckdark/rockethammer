@@ -150,7 +150,7 @@ class Metawrite extends Component {
 
                         Object.keys(sch).forEach(kind => {
                             if(sch[kind].length > 0) {
-                                console.log(kind, data[kind][0])
+                                // console.log(kind, data[kind][0])
                                 let tmpJson = JSON.parse(data[kind][0].schema);
                                 let json = []
                                 json=this.transformFields(tmpJson.fields)
@@ -275,7 +275,7 @@ class Metawrite extends Component {
         const { data, prev } = this.state;
         let temp = {...data}, history={}
 
-        console.log(temp)
+        // console.log(temp)
 
         switch(type){
             case 'reg':
@@ -303,7 +303,7 @@ class Metawrite extends Component {
 
             break;
             default:
-                console.log("type "+type)
+                // console.log("type "+type)
             }
 
             temp.last_mod_dt = new Date().toISOString();
@@ -594,7 +594,7 @@ class Metawrite extends Component {
     onChangeValueJSON = async (value, e) =>{
         const {chklist}=this.state
         var tmp = JSON.parse(helpers.replaceKey(value, "krtoen"))
-        console.log(this.getKeys(tmp), this.findValues(tmp, chklist))
+        // console.log(this.getKeys(tmp), this.findValues(tmp, chklist))
         var valueCompare = await this.areObjectsEqual(this.state.prevJson.value, this.findValues(tmp, chklist))
         var keyCompare = await this.areArraysEqual(this.state.prevJson.key, this.getKeys(tmp))
         if(keyCompare && valueCompare) {
