@@ -275,6 +275,7 @@
 				// height: 42px;
 				border: 1px solid #ccc;
 				margin: 10px 0 8px;
+				width: calc(100% - 30px);
 			}
 			.title {
 				width: 100%;
@@ -320,6 +321,118 @@
 			}
 			.fileinfo {
 				width: 100%;
+			}
+
+			.comments {
+				width: 100%;
+				.comment {
+					.comment-header {
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+						.comment-username {
+							font-size: 16px;
+						}
+						.comment-btn {
+							.btn {
+								padding: 5px 15px;
+								&:last-child {
+									margin: 0 0 0 5px;
+								}
+								&.btn-modify {
+									background-color: #565b78;
+								}
+								&.btn-delete {
+									background-color: red;
+								}
+							}
+						}
+					}
+					.comment-contents {
+						textarea {
+							height: 50px;
+						}
+						.toastui-editor-contents {
+							font-size: 16px;
+						}
+					}
+					.comment-date {
+						font-size: 11px;
+						color: #ccc;
+					}
+				}
+				.writeComment {
+					.comment-header {
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+						.comment-btn {
+							.btn {
+								padding: 5px 15px;
+								margin: 0;
+								&.btn-write {
+									margin-right: 5px;
+									background-color: #0d6efd;
+								}
+								&.btn-cancel {
+									background-color: #444c65;
+								}
+							}
+						}
+					}
+					.contents {
+						margin: 0 0 10px;
+						padding: 0;
+						textarea {
+							width: calc(100% - 30px);
+							height: 50px;
+							padding: 15px;
+						}
+					}
+					.uploader {
+						.file-selector {
+							.upload-name {
+								display: none;
+							}
+							label {
+								display: none;
+							}
+							input[type='file'] {
+								width: 108px;
+								height: 42px;
+								position: absolute;
+								left: 0;
+								right: 0;
+								opacity: 0;
+								top: 0;
+								bottom: 0;
+								cursor: pointer;
+								z-index: 1;
+							}
+							.btn-upload {
+								background-color: red;
+								padding: 5px 25px;
+							}
+						}
+						.uploaded-file {
+							display: flex;
+							align-items: center;
+							justify-content: space-between;
+							.fileName {
+								width: 50%;
+							}
+							.btn-group {
+								display: inline-block;
+								margin: 0;
+								.btn {
+									width: 30px;
+									height: 30px;
+									background-color: red;
+								}
+							}
+						}
+					}
+				}
 			}
 
 			.btn-group {

@@ -39,38 +39,43 @@ export default class UploadFiles extends Component {
         filesNameArr.push(fileName);
     }
     this.setState({
+      ...this.state,
       progressInfos: [],
       selectedFiles: event.target.files,
       filesName: filesNameArr
-    });
+    },()=> this.uploadFiles())
 
 
   }
 
   upload(idx, file) {
     let _progressInfos = [...this.state.progressInfos];
-
+    console.log(_progressInfos)
     UploadService.upload(file, (event) => {
       _progressInfos[idx].percentage = Math.round((100 * event.loaded) / event.total);
       this.setState({
-        _progressInfos,
+        ...this.state,
+        progressInfos:_progressInfos,
       });
     })
       .then((response) => {
         this.setState((prev) => {
           console.log(prev)
+          const newFilesInfo = response.data.data
           let nextMessage = [...prev.message, "Uploaded the file successfully: " + response.data.data.name];
           let nextFilesInfo = [...prev.filesInfo, response.data.data]
+          console.log(prev.filesInfo, response.data.data)
           return {
             message: nextMessage,
             filesInfo: nextFilesInfo
           };
-                  //     // filesInfo: filesInfo
-        // console.log(response.data.data)
+        // console.log(this.state)
+        // let test = [...this.state.message, response.data.data.name]
+        // console.log(test)
         // this.setState({
-          // ...this.state,
-          // message:[...this.state.message, "Uploaded the file successfully: " + response.data.data.name],
-          // filesInfo:[...this.state.filesInfo, response.data.data]
+        //   ...this.state,
+        //   message:[...this.state.message, "Uploaded the file successfully: " + response.data.data.name],
+        //   filesInfo:[...this.state.filesInfo, response.data.data]
         },()=>{
           this.handleCall(this.state.filesInfo);
         });
@@ -100,8 +105,8 @@ export default class UploadFiles extends Component {
     this.setState(
       {
         progressInfos: _progressInfos,
-        message: [],
-        filseInfo:[]
+        // message: [],
+        // filesInfo:[]
       },
       () => {
         for (let i = 0; i < selectedFiles.length; i++) {
@@ -165,10 +170,10 @@ export default class UploadFiles extends Component {
               <input id="file" type="file" multiple onChange={this.selectFiles} />
               <button
               className="btn btn-upload"
-              disabled={!selectedFiles}
+              // disabled={!selectedFiles}
               onClick={this.uploadFiles}
             >
-              업로드
+              파일 업로드
             </button>
           </div>
 
@@ -177,7 +182,7 @@ export default class UploadFiles extends Component {
           {filesInfo && filesInfo.length > 0 ? filesInfo.map((item, i)=>{
                 return (
                 <div className="uploaded-file" key={i}>
-                  <p className="fileName">{item.name}</p>
+                  <div className="fileName"><p>{item.name}</p></div>
                   <div className="btn-group">
                     {/* <button className="btn btn-download" onClick={(e)=>this.downloadFile(e,item.url, item.name)}>다운로드</button> */}
                     <button className="btn btn-delete" onClick={(e)=>this.deleteFile(e,item.url, item.name)}>&#x2715;</button>
