@@ -28,7 +28,8 @@ class Diagwrite extends Component {
                     "diag":false,
                     "etc":false
                 },
-                last_mod_dt:''
+                last_mod_dt:'',
+                comments:[]
             },
             type:'',
             errors:{
@@ -164,7 +165,8 @@ class Diagwrite extends Component {
             fileinfo:{},
             username:'',
             type:'',
-            last_mod_dt:''
+            last_mod_dt:'',
+            comments:[]
         }
         let formIsValid = true;
 
@@ -224,7 +226,7 @@ class Diagwrite extends Component {
                 ...this.state.data,
                 fileinfo:childData
             }
-        })
+        },()=>console.log(this.state.data))
 
     }
 
@@ -234,7 +236,7 @@ class Diagwrite extends Component {
 
     render()
     {
-        const { data, userReady } = this.state;
+        const { data, userReady, successful } = this.state;
         if(userReady){
             return (
                 <div className="diag">
@@ -288,7 +290,7 @@ class Diagwrite extends Component {
                                      <span className="input-validator error-msg input-validator-contents">{this.state.errors['contents']}</span>
                                 </div>
                                 <div className="input-group uploader">
-                                    <Upload handleCallback={this.handleCallback} list={this.state.data.fileinfo} type="write"/>
+                                    <Upload handleCallback={this.handleCallback} list={this.state.data.fileinfo} mode="board"/>
                                 </div>
                             <div className="btn-group text-center">
                                 <button type="button" className="btn btn-write" onClick={e=>this.onSubmit(e, this.state.type)}>{ this.state.type === 'reg' ? "등록":"수정"}</button>

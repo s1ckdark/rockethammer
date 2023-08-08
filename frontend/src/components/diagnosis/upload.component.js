@@ -13,21 +13,19 @@ export default class UploadFiles extends Component {
       progressInfos: [],
       message: [],
       filesInfo: [],
-      filesName:[]
+      filesName:[],
+      reset: false
     };
   }
 
   componentDidMount() {
     const list = this.props.list || [];
+    console.log(this.props)
     this.setState({
       ...this.state,
-      filesInfo: list
+      filesInfo: list,
+      mode: this.props.mode
     })
-    // UploadService.getFiles().then((response) => {
-    //   this.setState({
-    //     fileInfos: response.data,
-    //   });
-    // });
   }
 
   selectFiles(event) {
@@ -44,13 +42,10 @@ export default class UploadFiles extends Component {
       selectedFiles: event.target.files,
       filesName: filesNameArr
     },()=> this.uploadFiles())
-
-
   }
 
   upload(idx, file) {
     let _progressInfos = [...this.state.progressInfos];
-    console.log(_progressInfos)
     UploadService.upload(file, (event) => {
       _progressInfos[idx].percentage = Math.round((100 * event.loaded) / event.total);
       this.setState({
@@ -61,25 +56,16 @@ export default class UploadFiles extends Component {
       .then((response) => {
         this.setState((prev) => {
           console.log(prev)
-          const newFilesInfo = response.data.data
           let nextMessage = [...prev.message, "Uploaded the file successfully: " + response.data.data.name];
           let nextFilesInfo = [...prev.filesInfo, response.data.data]
-          console.log(prev.filesInfo, response.data.data)
+          console.log(nextMessage, nextFilesInfo)
           return {
             message: nextMessage,
             filesInfo: nextFilesInfo
           };
-        // console.log(this.state)
-        // let test = [...this.state.message, response.data.data.name]
-        // console.log(test)
-        // this.setState({
-        //   ...this.state,
-        //   message:[...this.state.message, "Uploaded the file successfully: " + response.data.data.name],
-        //   filesInfo:[...this.state.filesInfo, response.data.data]
         },()=>{
           this.handleCall(this.state.filesInfo);
         });
-        // return UploadService.getFiles();
       })
       .catch(() => {
         _progressInfos[idx].percentage = 0;
@@ -94,30 +80,32 @@ export default class UploadFiles extends Component {
   }
 
   uploadFiles() {
-    const selectedFiles = this.state.selectedFiles;
-
+    const { selectedFiles }= this.state
     let _progressInfos = [];
-
     for (let i = 0; i < selectedFiles.length; i++) {
       _progressInfos.push({ percentage: 0, fileName: selectedFiles[i].name });
     }
-
-    this.setState(
-      {
-        progressInfos: _progressInfos,
-        // message: [],
-        // filesInfo:[]
-      },
-      () => {
-        for (let i = 0; i < selectedFiles.length; i++) {
-          this.upload(i, selectedFiles[i]);
+      this.setState({
+          progressInfos: _progressInfos,
+        },
+        () => {
+          for (let i = 0; i < selectedFiles.length; i++) {
+            this.upload(i, selectedFiles[i]);
+          }
         }
-      }
-    );
+      )
   }
 
   handleCall = (val) => {
-    this.props.handleCallback(val)
+    this.state.mode === 'comment' ?
+    this.setState({
+      selectedFiles: undefined,
+      progressInfos: [],
+      message: [],
+      filesInfo: [],
+      filesName:[]
+    },()=>this.props.handleCallback(val))
+    : this.props.handleCallback(val)
   }
   downloadFile = (e,url,name) => {
     e.preventDefault();
@@ -141,7 +129,7 @@ export default class UploadFiles extends Component {
     )
   }
   render() {
-    const { selectedFiles, progressInfos, message, filesInfo, filesName } = this.state;
+    const { selectedFiles, progressInfos, message, filesInfo, filesName,reset } = this.state;
     return (
       <>
          {progressInfos &&
@@ -168,11 +156,10 @@ export default class UploadFiles extends Component {
               <input className="upload-name" value={filesName && filesName.length > 0 ? filesName.toString():''} placeholder="첨부파일" />
               <label htmlFor="file">파일찾기</label>
               <input id="file" type="file" multiple onChange={this.selectFiles} />
-              <button
-              className="btn btn-upload"
-              // disabled={!selectedFiles}
-              onClick={this.uploadFiles}
-            >
+              <button className="btn btn-upload"
+                //disabled={!selectedFiles}
+                onClick={this.uploadFiles}
+              >
               파일 업로드
             </button>
           </div>
