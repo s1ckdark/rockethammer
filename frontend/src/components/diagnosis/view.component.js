@@ -9,7 +9,6 @@ import { Editor, Viewer } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
 import Dialog from "../dialog.component";
 import Upload from "./upload.component";
-// import CommentAdd from "./commentAdd.component"
 
 class Diagview extends Component {
     editorRef = React.createRef();
@@ -71,8 +70,6 @@ class Diagview extends Component {
         })
     }
 
-
-
     callAction = (e, type, msg) => {
         e.preventDefault()
         this.setState({
@@ -89,9 +86,7 @@ class Diagview extends Component {
                 ...this.state.comment,
                 fileinfo:childData
             }
-
         })
-
     }
 
     goBack = () => {
@@ -144,23 +139,9 @@ class Diagview extends Component {
                 ...this.state.data,
                 comments:[...comments, comment]
             },
-            status: true
+            reset: true
         }, ()=> this.updateComment(this.state.data))
     }
-
-    // onEdit = async (idx, e) => {
-    //     e.preventDefault();
-    //     const { comment, data } = this.state;
-    //     const updatedComment = { ...comment, last_mod_dt: new Date().toISOString() };
-    //     console.log(updatedComment)
-    //     // Check if data.comment is an array, if not, initialize it as an empty array
-    //     const updatedData = { ...data}
-    //     updatedData.comments[idx] = updatedComment;
-    //     // console.log(updatedData);
-    //     this.updateComment(updatedData);
-    //     this.commentEditMode(idx, e)
-    //   };
-
 
     updateComment = async(data)=>{
             await axios.post(process.env.REACT_APP_API+"/diag/update/"+encodeURIComponent(data._id), data).then( res => {
@@ -187,11 +168,11 @@ class Diagview extends Component {
                 fileinfo:[]
             },
             reset: true
-        })
+        },()=>   this.setState({...this.state,reset:false}))
     }
 
-    commentAdd = (reset) => {
-        const {comment} = this.state
+    CommentAdd = ({comment, reset}) => {
+        // const {comment} = this.state
         return (
             <div className="box writeComment">
                 <div className="comment-header">
@@ -208,31 +189,30 @@ class Diagview extends Component {
                     <textarea className="box" name="contents" onChange={(e) => this.onChangeValue(e)} placeholder="내용을 입력해주세요" value={comment.contents} />
                 </div>
                 <div className="input-group uploader">
-                    <Upload handleCallback={this.handleCallback} mode="comment"/>
+                    <Upload handleCallback={this.handleCallback} reset={reset} />
                 </div>
             </div>
         )
     }
 
-    commentRead = (comment, idx) => {
+    CommentRead = ({comment, idx}) => {
+        const {username, contents, last_mod_dt, fileinfo} = comment
         return (
             <div key={"comment-" + idx} className={"box readComment comment-" + idx}>
                 <div className="comment-header">
-                    <div className="comment-username">{comment.username}</div>
+                    <div className="comment-username">{username}</div>
                     <div className="comment-btn">
-                        {/* <button className="btn-modify btn" onClick={(e)=>this.commentEditMode(idx,e)}>수정</button> */}
-                        <button className="btn-delete btn" onClick={(e)=>this.commentDelete(idx,e)}>삭제</button>
+                        <button className="btn-delete btn" onClick={(e)=>this.commentDelete(idx,e)} disabled={AuthService.getCurrentUser().userid === username || AuthService.getCurrentUser().userid === 'admin' ? false:true }>삭제</button>
                     </div>
                 </div>
-                {/* <div className="comment-contents"><Viewer initialValue={comment.contents} /></div> */}
-                <div className="comment-contents"><textarea name="contents" className="box" value={comment.contents} onChange={(e)=>this.onChangeValue(e)} /></div>
-                <div className="comment-date"><span>{helpers.krDateTime(comment.last_mod_dt)}</span></div>
-                {comment.fileinfo && comment.fileinfo.length > 0 ?
+                <div className="comment-contents"><textarea name="contents" className="box" value={contents} onChange={(e)=>this.onChangeValue(e)} /></div>
+                <div className="comment-date"><span>{helpers.krDateTime(last_mod_dt)}</span></div>
+                {fileinfo && fileinfo.length > 0 ?
                     <div className="box comment-fileinfo">
-                        <label>첨부파일 목록 : 총 {comment.fileinfo.length} 개</label>
+                        <label>첨부파일 목록 : 총 {fileinfo.length} 개</label>
                         <div className="files">
                             <ul>
-                            {comment.fileinfo && comment.fileinfo.map((file, i) => { return <li key={i}>첨부된 업로드 파일 : <a key={file.name} href={"/api/files/get/"+file.url+"/"+file.name} title={file.name +" 다운로드 버튼"}>{file.name}</a></li>})}
+                            {fileinfo && fileinfo.map((file, i) => { return <li key={i}>첨부된 업로드 파일 : <a key={file.name} href={"/api/files/get/"+file.url+"/"+file.name} title={file.name +" 다운로드 버튼"}>{file.name}</a></li>})}
                             </ul>
                         </div>
                     </div>
@@ -241,59 +221,6 @@ class Diagview extends Component {
         )
     }
 
-    commentEdit = (comment, idx) => {
-        // const {comment, type}=this.state
-        return (
-            <div className="box writeComment">
-                <div className="comment-header">
-                    <div className="input-group username">
-                        <input name="username" type="text" readOnly value={comment.username}/>
-                    </div>
-
-                    <div className="comment-btn">
-                        <button type="button" className="btn btn-write" onClick={e=>this.onEdit(idx, e)}>저장</button>
-                        <button type="button" className="btn btn-cancel" onClick={e=>this.cancel(e)}>취소</button>
-                    </div>
-                </div>
-                <div className="input-group contents">
-                    <textarea className="box" name="contents" onChange={(e) => this.onChangeValue(e)} placeholder="내용을 입력해주세요">{comment.contents}</textarea>
-                </div>
-                <div className="input-group uploader">
-                    <Upload handleCallback={this.handleCallback} list={comment.fileinfo} type="write"/>
-                </div>
-            </div>
-        )
-    }
-
-    commentEditMode= (idx, e)=>{
-        e.preventDefault()
-        const {comments}= this.state.data
-        if (!this.state.editMode.status){
-            this.setState({
-                ...this.state,
-                comment:comments[idx],
-                editMode: {
-                    status:true,
-                    idx:idx
-                }
-            });
-        } else {
-            this.setState({
-                ...this.state,
-                comment:{
-                    username: '',
-                    contents: '',
-                    last_mod_dt:'',
-                    fileinfo:[]
-                  },
-                editMode: {
-                    status:false,
-                    idx:''
-                }
-            });
-        }
-
-    }
     commentDelete = (idx,e) => {
         e.preventDefault()
         let {comments} = this.state.data
@@ -306,22 +233,21 @@ class Diagview extends Component {
             }
         },()=>this.updateComment(this.state.data))
     }
-    comments = (comments) => {
+
+    Comments = ({comments}) => {
         return (
-          comments && comments.length > 0 ? (
-            <>
-              {comments.map((item, index) => (
-                this.state.editMode.status && this.state.editMode.idx === index ?
-                    this.commentEdit(item,index)
-                :this.commentRead(item, index)
-              ))}
-              {this.commentAdd(this.state.reset)}
-            </>
-          ) : this.commentAdd(this.state.reset)
-        )
+          <>
+            {comments && comments.length > 0 ? (
+              comments.map((item, index) => (
+                <this.CommentRead comment={item} idx={index} />
+              ))
+            ) : null}
+          </>
+        );
       }
 
-    view = (item) => {
+    View = ({item}) => {
+        const { comment, reset } = this.state
         return (
             <>
                 <div className="title">{item.title}</div>
@@ -352,14 +278,15 @@ class Diagview extends Component {
                     <button type="button" onClick={()=>this.props.router.navigate(-1)} className="btn btn-back">뒤로가기</button>
                 </div>
                 <div className="comments">
-                    {this.comments(item.comments)}
+                    <this.Comments comments={item.comments} />
+                    <this.CommentAdd comment={comment} reset={reset}/>
                 </div>
 
             </>
         )
     }
     render(){
-        const { userReady, data} = this.state;
+        const { userReady, data, comment, reset} = this.state;
         if(userReady){
         return (
                 <>
@@ -369,7 +296,7 @@ class Diagview extends Component {
                     </div>
                     <div className="viewing">
                         <div className="inner">
-                            {this.view(data)}
+                           <this.View item={data} />
                         </div>
                     </div>
                 </div>

@@ -19,14 +19,25 @@ export default class UploadFiles extends Component {
   }
 
   componentDidMount() {
-    const list = this.props.list || [];
     console.log(this.props)
+    const list = this.props.list || [];
     this.setState({
       ...this.state,
       filesInfo: list,
-      mode: this.props.mode
     })
   }
+
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.reset) {
+      this.setState({
+        selectedFiles: undefined,
+        progressInfos: [],
+        message: [],
+        filesInfo: [],
+        filesName:[]
+      })}
+    }
+
 
   selectFiles(event) {
     let filesNameArr = this.state.filesName.length > 0 ? this.state.filesName:[];
@@ -97,24 +108,16 @@ export default class UploadFiles extends Component {
   }
 
   handleCall = (val) => {
-    this.state.mode === 'comment' ?
-    this.setState({
-      selectedFiles: undefined,
-      progressInfos: [],
-      message: [],
-      filesInfo: [],
-      filesName:[]
-    },()=>this.props.handleCallback(val))
-    : this.props.handleCallback(val)
+    this.props.handleCallback(val)
   }
   downloadFile = (e,url,name) => {
     e.preventDefault();
     window.open("/api/files/get/"+ url + "/"+name)
   }
 
-  deleteFile = (e, url, name) => {
+  deleteFile = async(e, url, name) => {
     e.preventDefault();
-    axios.get("/api/files/del/"+ url).then(res => {
+    await axios.get("/api/files/del/"+ url).then(res => {
       if(res.status === 200) {
         var tmpInfo = this.state.filesInfo.filter(item => { return item.url !== url})
         var tmpName = this.state.filesName.filter(item => {return item !== name})
