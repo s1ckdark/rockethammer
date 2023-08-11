@@ -19,7 +19,6 @@ export default class UploadFiles extends Component {
   }
 
   componentDidMount() {
-    console.log(this.props)
     const list = this.props.list || [];
     this.setState({
       ...this.state,
