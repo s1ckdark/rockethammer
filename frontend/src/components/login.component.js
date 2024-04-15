@@ -62,7 +62,7 @@ class Login extends Component {
     }
 
     if (typeof fields["userid"] !== "undefined") {
-      if (!fields["userid"].match(/^[a-zA-Z ]*$/)) {
+      if (!fields["userid"].match(/^[a-z]+[a-z0-9]*$/)) {
         formIsValid = false;
         errors["userid"] = "아이디는 영문만 가능합니다";
       }

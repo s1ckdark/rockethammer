@@ -1,20 +1,11 @@
 import React, { Component} from "react";
-import { Link } from 'react-router-dom';
 import axios from 'axios';
-import AuthService from "../../services/auth.service";
-
-import JSONInput from 'react-json-editor-ajrm';
-import locale from 'react-json-editor-ajrm/locale/en';
-import AceEditor from "react-ace";
-import "ace-builds/src-noconflict/mode-json";
-import "ace-builds/src-noconflict/theme-github";
-import "ace-builds/src-noconflict/theme-tomorrow";
-import "ace-builds/src-noconflict/ext-language_tools";
 import Pagination from "react-js-pagination";
 import helpers from "../../common/helpers";
 import { withRouter } from "../../common/withRouter";
 import Detail from "./detail.component";
 import Breadcrumb from "../breadcrumb.component";
+import { useActionData } from "react-router-dom";
 
 class Metalist extends Component {
     constructor(props) {
@@ -28,7 +19,15 @@ class Metalist extends Component {
               list:[]
           },
           schemas:{},
-          keyword:'',
+          search:{
+            status: false,
+            keyword: '',
+            startDate: '',
+            endData: '',
+            last_mod_id:'',
+            deleted: false,
+            changed: false
+          },
           select:{
             idx:'',
             topic_name:"",
@@ -42,7 +41,7 @@ class Metalist extends Component {
           },
           delete:{},
           userReady:false,
-          time:''
+          key:''
         };
         this.handlePageChange = this.handlePageChange.bind(this);
         this.fetchData = this.fetchData.bind(this);
@@ -64,32 +63,70 @@ class Metalist extends Component {
             }
         })
     }
+    componentDidUpdate(prevProps){
+        if(this.props.router.location.key !== prevProps.router.location.key) {
+            // console.log(this.props.router.location.key , prevProps.router.location.key)
+            window.location.reload()
+        }
+    }
 
     componentDidMount(){
-        // console.log("metaview",this.props);
+        this.setState({
+            ...this.state,
+            key: this.props.router.location.key
+        },()=>{
         const currentPage = this.props.router.params.currentPage || 1
         this.fetchData(currentPage-1);
+        }
+        )
     }
 
     // meta data를 가져온다
     fetchData = async(page = 0, type = 'list') => {
+        if(type === "search" && this.state.search.keyword.length === 0) {alert("검색어가 없습니다");return false;}
         const url = type === 'list' ? "/schema/getallschema" : "/schema/search"
-        await axios.post(process.env.REACT_APP_API+url, {keyword:this.state.keyword,size:10,page:page})
+        const param = type === 'list' ? {"page":page}:this.state.search
+        await axios.post(process.env.REACT_APP_API+url, param)
             .then(res => {
+                let tempObj;
+                console.log(res)
+                if(res.status === 200 && res.data.list && res.data.list.length > 0 ) {
+                // if(res.data.length);
+            tempObj = JSON.parse(JSON.stringify(res.data));
+              const {topic} = tempObj
+              tempObj.list.forEach( (item, index) => {
+                tempObj['list'][index]['schema']['wipeout'] =  topic.find( x => x === item.schema.subject.replace(/(-value|-key)/g, "")) ? true : false
+              })
+            } else {
+                tempObj = {
+                    list:[]
+                }
+            }
+            console.log(tempObj)
               this.setState({
                 ...this.state,
                 list:'list',
-                data: res.data,
-                userReady:true
+                data: tempObj,
+                userReady:true,
+                select:{
+                    idx:'',
+                    topic_name:"",
+                    subject:"",
+                    schema: false
+                  }
               })
+
             })
     }
 
-    onChangeKeyword = (e,index) =>{
+    onChangeSearch = (e,index) =>{
         this.setState({
             ...this.state,
-            keyword:e.target.value
-        })
+            search:{
+                ...this.state.search,
+                [e.target.name]: e.target.value
+            }
+            })
     }
 
     // 리스트상에 row를 눌렀을때 detailview에 나오는 스키마의 데이터를 정의한다
@@ -97,9 +134,8 @@ class Metalist extends Component {
         // e.preventDefault();
         if(topic_name) {
             const tn = topic_name.replace(/(-value|-key)/g, "");
-            const schema = JSON.parse(this.state.data.list[idx].schema)
             // const meta_join = await this.fetchMetaData(tn) || {}
-            const meta_join = JSON.parse(this.state.data.list[idx].meta_join) || {}
+            const meta_join = this.state.data.list[idx].meta_join || {}
             // console.log(meta_join)
             if(meta_join && meta_join.is_used === 'true') {
                     this.setState({
@@ -133,18 +169,19 @@ class Metalist extends Component {
 
     changing = async (e, index, topic_name) => {
         e.preventDefault();
-        const temp = index ? this.state.data['list'][index]: null
-        const meta_join = JSON.parse(this.state.data.list[index].meta_join)
-        const schema = JSON.parse(this.state.data.list[index].schema)
+        // const temp = index ? this.state.data['list'][index]: null
+        // const meta_join = JSON.parse(this.state.data.list[index].meta_join)
+        // const schema = JSON.parse(this.state.data.list[index].schema)
         const tn = topic_name.replace(/(-value|-key)/g, "");
 
         await axios.post(process.env.REACT_APP_API+"/schema/changed", {"keyword":topic_name}).then(res => {
             if(res.data.length > 1) {
                 let temp = [];
-                res.data.map((item,index) => {
+                res.data.forEach((item,index) => {
                     temp[index] = item;
                     temp[index]['schema']= JSON.parse(item.schema);
                 })
+                console.log(temp)
                 this.props.router.navigate('/meta/view/changed/'+tn, {state:{data:temp, type:'changed'}})
             }
         })
@@ -161,29 +198,63 @@ class Metalist extends Component {
     }
 
     getData = () => {
-        const { idx, topic_name, changed } = this.state.select;
-        const currentPage = this.props.router.params.currentPage;
-        console.log(currentPage);
-        this.fetchData(currentPage-1);
+        // const { idx, topic_name, changed } = this.state.select;
+
+        const currentPage = this.state.data.current;
+        console.log("currentPage",currentPage);
+        this.fetchData(currentPage);
+
     };
 
-    changed = (meta_join, schema) => {
-        return meta_join && parseInt(schema.version.$numberLong) > parseInt(meta_join.schema_version) ? true : false
+    // changed = (meta_join, schema) => {
+    //     return meta_join && meta_join.is_used ==='true' && schema.version > meta_join.schema_version ? true : false
+    // }
+
+    advanced = (e) => {
+        e.preventDefault()
+        this.setState({
+            ...this.state,
+            search:{
+                ...this.state.search,
+                status: !this.state.search.status
+            }
+        })
+
     }
 
     render(){
-        const { data, meta, userReady } = this.state;
+        const { data, userReady } = this.state;
         const { topic_name, idx } = this.state.select;
         if(userReady){
         return (
             <>
-                <div className="meta" key={this.state.time}>
+                <div className="meta" key={this.state.key}>
                     <div className="page-header list">
                         <Breadcrumb/>
                         <div className="search-bar">
-                                <input className="input-search" name="search" value={this.state.search} onChange = {this.onChangeKeyword} placeholder="검색 할 토픽명을 입력하세요"/>
-                                <button type="button" className="btn btn-search" onClick={e=>this.fetchData(0, 'search')}><span className="questionIcon"></span>토픽 검색</button>
+                            <div className={!this.state.search.status ? "normal-search-bar":"normal-search-bar d-none"}>
+                                <div className="input-group">
+                                    <input className="input-search" name="keyword" value={this.state.search.keyword} onChange = {this.onChangeSearch} placeholder="검색 할 토픽명을 입력하세요"/>
+                                </div>
+                                <div className="btn-group">
+                                    <button type="button" className="btn btn-search" onClick={e=>this.fetchData(0, 'search')} disabled={(this.state.search.keyword.trim()).length > 0 ? false:true}><span className="questionIcon"></span>토픽 검색</button>
+                                    <button type="button" className="btn btn-advanced" onClick={this.advanced}>상세 검색</button>
+                                </div>
+                            </div>
+                            <div className={this.state.search.status ? "advanced-search-bar":"advanced-search-bar d-none"}>
+                                <div className="input-group">
+                                    <input className="input-keyword" type="text" name="keyword" value={this.state.search.keyword} onChange = {this.onChangeSearch} placeholder="검색 할 토픽명을 입력하세요"/>
+                                    <input className="input-startdate" type="date" name="startDate" value={this.state.search.startDate} onChange = {this.onChangeSearch} placeholder="등록일자 시작 날짜"/>
+                                    <input className="input-enddate" type="date" name="endDate" value={this.state.search.endDate} onChange = {this.onChangeSearch} placeholder="등록일자 끝 날짜"/>
+                                    <input className="input-last_mod_id" type="text" name="last_mod_id" value={this.state.search.last_mod_id} onChange = {this.onChangeSearch} placeholder="등록자 id"/>
+                                </div>
+                                <div className="btn-group">
+                                    <button type="button" className="btn btn-advanced open" onClick={e=>this.fetchData(0, 'search')} disabled={this.state.search.keyword.length > 0 ? false:true}><span className="questionIcon"></span>상세 검색</button>
+                                    <button type="button" className="btn btn-cancel" onClick={this.advanced}>일반 검색</button>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
                     <div className="listing">
                         <div className="inner">
@@ -191,27 +262,36 @@ class Metalist extends Component {
                                 <thead className="thead-light">
                                     <tr className="text-center p-3">
                                         <th scope="col" className="col-md-1">번호</th>
-                                        <th scope="col" className="col-md-6">토픽명</th>
-                                        <th scope="col" className="col-md-3">등록일시</th>
-                                        <th scope="col" className="col-md-1" data-tooltip="물리 스키마 변경 여부입니다. 값이 Y 이면 등록되어 있는 물리 스키마 버전이 최신이 아니므로 변경 등록 해주세요!">변경(물리)<span className="info-icon">&#x24D8;</span></th>
-                                        <th scope="col" className="col-md-1" data-tooltip="물리 스키마 삭제 여부입니다. 값이 Y 이면 물리 스키마 삭제된 상태이므로 논리 메타를 삭제해주세요!">삭제(물리)<span className="info-icon">&#x24D8;</span></th>
+                                        <th scope="col" className="col-md-4">토픽명</th>
+                                        <th scope="col" className="col-md-1">등록자</th>
+                                        <th scope="col" className="col-md-2">물리등록일시</th>
+                                        <th scope="col" className="col-md-1" data-tooltip="물리 스키마 변경 여부입니다. 값이 Y 이면 등록되어 있는 물리 스키마 버전이 최신이 아니므로 변경 등록 해주세요!">물리변경<span className="info-icon">&#x24D8;</span></th>
+                                        <th scope="col" className="col-md-1" data-tooltip="물리 스키마 삭제 여부입니다. 값이 Y 이면 물리 스키마 삭제된 상태이므로 논리 메타를 삭제해주세요!">물리삭제<span className="info-icon">&#x24D8;</span></th>
+                                        <th scope="col" className="col-md-1" data-tooltip="논리 스키마 삭제 여부입니다. 값이 Y 이면 논리 스키마 삭제된 상태이므로 논리 메타를 삭제해주세요!">토픽삭제<span className="info-icon">&#x24D8;</span></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                             {data && data.list && data.list.length > 0 ? data.list.map((item,index) => {
-                                var schema = JSON.parse(item.schema), meta_join = item.meta_join !=='undefined' ? JSON.parse(item.meta_join):null;
+                                var {schema, meta_join, changed } = item;
                                 return(
-                                        <tr data-index={index} scope="row" className={this.state.select.idx === index ? "table-active":"text-center"} key={schema._id.$oid}>
-                                            <td scope="row">{5*parseInt(data.current)+index+1}</td>
-                                            <td className="value-subject value form-group clickable" onClick={(e)=>this.detailView(index, schema.subject, this.changed(meta_join, schema))}>
+                                        <tr data-index={index} className={idx === index ? "table-active":"text-center"} key={schema._id}>
+                                            <th scope="row">{data.count - (data.size * data.current) - index}</th>
+                                            <td className="value-subject value form-group clickable" onClick={(e)=>this.detailView(index, schema.subject, changed)}>
                                                 {schema.subject.replace(/(-value|-key)/g, "")}
+                                            </td>
+                                            <td className="value-id value form-group">
+                                                {helpers.isEmptyObj(meta_join) === false && JSON.parse(meta_join.is_used) ? meta_join.last_mod_id : "-"}
                                             </td>
                                             <td className="value-id value form-group">
                                                 {helpers.schemaTime(schema.reg_dt)}
                                             </td>
-                                            <td className="modified value">{this.changed(meta_join, schema) ? <span className="clickable" onClick={(e)=> this.changing(e, index, schema.subject,item, schema, meta_join)}>Y</span> : <span>N</span>}</td>
+                                            {/* <td className="modified value">{this.changed(meta_join, schema) ? <span className="clickable" onClick={(e)=> this.changing(e, index, schema.subject,item, schema, meta_join)}>Y</span> : <span>N</span>}</td> */}
+                                            <td className="modified value">{changed ? <span className="clickable" onClick={(e)=> this.changing(e, index, schema.subject,item, schema, meta_join)}>Y</span> : <span>N</span>}</td>
                                             <td className="value-id value form-group">
-                                                {schema.schema ? <span>N</span>:<span>Y</span> }
+                                                {schema.schema ? <span>N</span>:<span className="clickable">Y</span> }
+                                            </td>
+                                            <td className="value-id value form-group">
+                                                {schema.wipeout ? <span>N</span>:<span className="clickable">Y</span> }
                                             </td>
                                         </tr>
                                     );
@@ -234,8 +314,11 @@ class Metalist extends Component {
                             </div>
                         </div>
                         <div className="detailview">
-                            <Detail getData={this.getData} key={this.state.time} topic={this.state.select.topic_name} data={typeof(this.state.select.idx) === 'number' ? data['list'][this.state.select.idx]: null}></Detail>
-                            {/* <Detail topic={this.state.select.topic_name} data={typeof(this.state.select.idx) === 'number' ? data['list'][this.state.select.idx]: null}></Detail> */}
+                            {typeof(this.state.select.idx) === 'number' ?
+                                <Detail getData={this.getData} topic={topic_name} data={typeof(idx) === 'number' ? data['list'][idx]: null}></Detail>
+                            :<></>
+                        }
+
                         </div>
                     </div>
                 </div>

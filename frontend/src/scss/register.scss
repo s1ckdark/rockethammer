@@ -19,7 +19,7 @@
 		border: 2px solid $login-box-line;
 		border-radius: 22px;
 		width: 520px;
-		height: 820px;
+		height: auto;
 		.inner {
 			padding: 50px;
 			h3 {
@@ -56,6 +56,12 @@
 						margin-bottom: 10px;
 					}
 				}
+				.input-select {
+					display: block;
+					width: 100%;
+					height: auto;
+					padding: 15px 10px;
+				}
 			}
 		}
 		.btn-group {
@@ -75,6 +81,18 @@
 				&.btn-cancel {
 					background-color: $btn-dark-blue;
 				}
+			}
+		}
+	}
+}
+
+@media (max-width: 1920px) {
+	.register {
+		height: auto;
+		.register-box {
+			transform: scale(0.8);
+			.input-group {
+				padding: 0 0 15px;
 			}
 		}
 	}

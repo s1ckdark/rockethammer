@@ -29,7 +29,12 @@
 		display: flex;
 		align-items: center;
 		color: $blue-text;
-		&.blue {
+		.cluster-name {
+			border-radius: 12px;
+			padding: 0 25px;
+			margin: 0 15px;
+		}
+		&.Blue {
 			@extend .transition;
 			background-color: $blue;
 			.nav-item {
@@ -40,7 +45,7 @@
 				}
 			}
 		}
-		&.white {
+		&.White {
 			@extend .transition;
 			background-color: $header-wht !important;
 			.nav-item {
@@ -118,9 +123,9 @@
 					&.profile-service {
 						a {
 							p {
-								display: block;
-								opacity: 1;
-								visibility: visible;
+								display: block !important;
+								opacity: 1 !important;
+								visibility: visible !important;
 							}
 						}
 					}
@@ -137,11 +142,11 @@
 			&.auth {
 				position: absolute;
 				right: 10px;
-				p {
-					display: block !important;
-					opacity: 1 !important;
-					visibility: visible !important;
-				}
+				// p {
+				// 	display: block !important;
+				// 	opacity: 1 !important;
+				// 	visibility: visible !important;
+				// }
 			}
 		}
 	}
@@ -223,4 +228,53 @@
 	border-radius: 6px;
 	justify-content: center;
 	flex-wrap: wrap;
+}
+
+span[class^='metaService'] {
+	width: 30px;
+	height: 30px;
+	background-size: size;
+	background-image: url(../img/meta-service.svg);
+	&.color {
+		background-image: url(../img/meta-service-color.svg);
+	}
+	&.gray {
+		background-image: url(../img/meta-service-gray.svg);
+	}
+}
+
+span[class^='managerService'] {
+	width: 29px;
+	height: 28px;
+	background-image: url(../img/manager-service.svg);
+	&.color {
+		background-image: url(../img/manager-service-color.svg);
+	}
+	&.gray {
+		background-image: url(../img/manager-service-gray.svg);
+	}
+}
+
+span[class^='monitorService'] {
+	width: 38px;
+	height: 28px;
+	background-image: url(../img/monitor-service.svg);
+	&.color {
+		background-image: url(../img/monitor-service-color.svg);
+	}
+	&.gray {
+		background-image: url(../img/monitor-service-gray.svg);
+	}
+}
+
+span[class^='collectorService'] {
+	width: 25px;
+	height: 24px;
+	background-image: url(../img/collector-service.svg);
+	&.color {
+		background-image: url(../img/collector-service-color.svg);
+	}
+	&.gray {
+		background-image: url(../img/collector-service-gray.svg);
+	}
 }

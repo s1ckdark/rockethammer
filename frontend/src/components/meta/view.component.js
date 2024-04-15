@@ -12,10 +12,25 @@ import { withRouter } from "../../common/withRouter";
 import Breadcrumb from "../breadcrumb.component";
 
 class Metaview extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            theme:'monokai'
+        }
+    }
 
-    write = (e, type, topic_name)=> {
+    onChangeTheme = async (e) => {
+        this.setState({
+            ...this.state,
+            theme: e.target.value
+        })
+    }
+
+    write = (e, type, topic_name, data)=> {
         e.preventDefault();
-        this.props.router.navigate('/meta/write/'+topic_name, {state:{schema:this.props.router.location.state.schema,meta:this.props.router.location.state.meta_join,type:type}})
+        console.log(e, type, topic_name,data);
+        // console.log(this.props.router.location.state.schema)
+        this.props.router.navigate('/meta/write/'+topic_name, {state:{schema:data,meta:this.props.router.location.state.meta_join,type:type,topic_name:topic_name}})
     }
 
     viewer = (e,type,topic_name, state) => {
@@ -26,7 +41,7 @@ class Metaview extends Component {
 
     inputfield = ( field_name, field_type = 'input') => {
         console.log(this.props.router.location.state)
-        let data = JSON.parse(this.props.router.location.state.meta_join)
+        let data = this.props.router.location.state.meta_join
         return (
             <div className={"input-group "+field_name}>
                 <label htmlFor='field_name' className="field-label">{helpers.translate(field_name, "entokr")}</label>
@@ -41,12 +56,14 @@ class Metaview extends Component {
     view = ( type, props ) => {
         if(type === 'json') {
             console.log(props)
-            const meta = JSON.parse(props.meta_join)
+            const meta = props.meta_join
+            console.log(this.depth(meta))
             return (
                 <>
                     <div className="viewer json">
                         <AceEditor
                             mode="json"
+                            theme={this.state.theme}
                             name={meta._id.$oid}
                             value = {helpers.replaceKey(meta,"entokr")}
                             onChange={this.onChangeJSON}
@@ -69,7 +86,7 @@ class Metaview extends Component {
             )
         } else if(type === 'table'){
             console.log(props)
-            const data = JSON.parse(props.meta_join)
+            const data = props.meta_join
             let schema = Object.keys(data).map(field => {
                 if(typeof(data[field]) === 'object' && data[field].length > 0) return field
             }).filter(ele => ele)
@@ -83,6 +100,7 @@ class Metaview extends Component {
                         {this.inputfield("op_name")}
                         {this.inputfield("service")}
                         {this.inputfield("related_topics")}
+                        {this.inputfield("retension")}
                         {this.inputfield("topic_desc", 'textarea')}
                     </div>
                     <div className="schema-group">
@@ -135,19 +153,28 @@ class Metaview extends Component {
             return (
                 <div className="viewer changed">
                     <div className="diff">
-                        <ReactDiffViewer leftTitle="변경 전" rightTitle="변경 후" oldValue={JSON.stringify(props.data[1], null, 4)} newValue={JSON.stringify(props.data[0], null, 4)} splitView={true} />
+                        <ReactDiffViewer theme={this.state.theme} leftTitle="변경 전" rightTitle="변경 후" oldValue={JSON.stringify(props.data[1], null, 4)} newValue={JSON.stringify(props.data[0], null, 4)} splitView={true} />
                     </div>
                     <div className="btn-group">
-                        <button type="button" className="btn btn-write" onClick={(e)=>this.write(e,"changed", this.props.router.params.topic_name)}>등록</button>
+                        <button type="button" className="btn btn-write btn-changed" onClick={(e)=>this.write(e,"changed", this.props.router.params.topic_name,props.data[0])}>등록</button>
                         <button type="button" className="btn btn-back" onClick={()=>this.props.router.navigate(-1)}>뒤로가기</button>
                     </div>
                 </div>
             )
         }
     }
+
+    depth = (o) => {
+        var values;
+        if (Array.isArray(o)) values = o;
+        else if (typeof o === "object") values = Object.keys(o).map(k=>o[k]);
+        return values ? Math.max.apply(0, values.map(this.depth))+1 : 1;
+    }
+
     render(){
         const data  = this.props.router.location.state
         const {type, topic_name} = this.props.router.params
+        const depth = helpers.depth(data.meta_join) > 4 ? true:false
             return (
                 <>
                 <div className="meta">
@@ -156,10 +183,32 @@ class Metaview extends Component {
                     </div>
                     <div className="viewing">
                         <div className="inner">
+
                             {type !== 'changed' ?
                                 <div className="btn-group type-view">
+                                    {type === 'json' ?
+                                    <div className="field">
+                                        <p className="control">
+                                            <span className="select theme-selector">
+                                                <select onChange={this.onChangeTheme}>
+                                                    <option value="monokai">monokai</option>
+                                                    <option value="github">github</option>
+                                                    <option value="tomorrow">tomorrow</option>
+                                                    <option value="kuroir">kuroir</option>
+                                                    <option value="twilight">twilight</option>
+                                                    <option value="xcode">xcode</option>
+                                                    <option value="textmate">textmate</option>
+                                                    <option value="solarized_dark">solarized_dark</option>
+                                                    <option value="solarized_light">solarized_light</option>
+                                                    <option value="terminal">terminal</option>
+                                                </select>
+                                            </span>
+                                        </p>
+                                    </div>
+                                    :<></>}
                                     <button className={type === 'json' ? "btn btn-json active":"btn btn-json"} onClick={(e)=>this.viewer(e,'json',topic_name, data)}>JSON</button>
-                                    <button className={type === 'table' ? "btn btn-table active":"btn btn-table"} onClick={(e)=>this.viewer(e,'table',topic_name, data)}>TABLE</button>
+                                    <button className={type === 'table' ? "btn btn-table active":"btn btn-table"} onClick={(e)=>this.viewer(e,'table',topic_name, data)} disabled={depth}>TABLE</button>
+
                                 </div>:<></>}
                             {this.view(type, data)}
                         </div>

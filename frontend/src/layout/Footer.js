@@ -15,7 +15,7 @@ class Footer extends Component {
         return(
              <footer className={pathname[0] === '' ? "footer home":"footer "+pathname[0]}>
                 <div className="inner">
-                    <p>Serviced by GoodusData</p>
+                    <p>Serviced by GoodusData Rockethammer V2.1</p>
                 </div>
            </footer>
         )

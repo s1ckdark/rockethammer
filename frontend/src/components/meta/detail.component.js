@@ -1,15 +1,7 @@
 import React, { Component} from "react";
-import { Link } from 'react-router-dom';
 import axios from 'axios';
 import AuthService from "../../services/auth.service";
 
-import JSONInput from 'react-json-editor-ajrm';
-import locale from 'react-json-editor-ajrm/locale/en';
-import AceEditor from "react-ace";
-import "ace-builds/src-noconflict/mode-json";
-import "ace-builds/src-noconflict/theme-github";
-import "ace-builds/src-noconflict/theme-tomorrow";
-import "ace-builds/src-noconflict/ext-language_tools";
 import helpers from "../../common/helpers";
 import { withRouter } from "../../common/withRouter";
 import Dialog from "../dialog.component";
@@ -28,26 +20,29 @@ class Metadetail extends Component {
     // 메타 등록
     write = (e, type, topic_name)=> {
         e.preventDefault();
-        this.props.router.navigate('/meta/'+type+'/'+topic_name, {state:{data:this.props.data}})
+        let tmp = this.props.data
+        tmp.type = type
+        tmp.topic_name = topic_name
+
+        this.props.router.navigate('/meta/'+type+'/'+topic_name, {state:tmp})
     }
+
 
     // meta의 detail이나 history를 조회
     view = (e, type, topic_name, currentPage = 1) => {
-        let url = type ==='history' ? 'history/list/'+topic_name+'/'+currentPage : type+'/'+topic_name
-        this.props.router.navigate('/meta/view/'+url, type !== 'history' ? {state:this.props.data}:{state:{}})
+        let url = type ==='history' ? 'history/list/'+topic_name+'/'+currentPage : 'view/'+type+'/'+topic_name
+        this.props.router.navigate('/meta/'+url, type !== 'history' ? {state:this.props.data}:{state:{}})
     }
 
-    // 삭제
     // 케이스별로 삭제룰 진행한다
     onDel = async (typeofapi, topic_name) => {
-        // console.log(typeofapi, topic_name);
+        console.log("typeofapi:",typeofapi, "topic_name:",topic_name);
         let url, type = typeofapi === 'api1' ? "logical":"physical"
-
+        console.log(typeofapi)
         switch(typeofapi){
             case 'api1':
                 url = process.env.REACT_APP_API+"/meta/delete";
-                console.log("api1")
-                axios.post(url, {keyword:topic_name,last_mod_dt:new Date().toISOString()}).then(res => console.log(res))
+                await axios.post(url, {keyword:topic_name,last_mod_dt:new Date().toISOString()}).then(res => console.log(res))
                 break;
             case 'api3':
                 url = [process.env.REACT_APP_API+"/meta/delete", process.env.REACT_APP_API+"/schema/delete"];
@@ -61,7 +56,7 @@ class Metadetail extends Component {
                 break;
             case 'api2':
                 url = process.env.REACT_APP_API+"/schema/delete";
-                axios.post(url, {keyword:topic_name}).then(res => console.log(res))
+                await axios.post(url, {keyword:topic_name}).then(res => console.log(res))
                 break;
             default:
                 console.log("typeofapi",typeofapi);
@@ -69,15 +64,13 @@ class Metadetail extends Component {
         }
 
 
-        await axios.post(process.env.REACT_APP_API+"/history/history_del", {topic_name:topic_name.replace(/(-value|-key)/g, ""), type:type, reg_dt:(new Date()).toISOString(),user_id:AuthService.getCurrentUser().userid,op:"delete"})
+        await axios.post(process.env.REACT_APP_API+"/history/inserthistory", {topic_name:topic_name.replace(/(-value|-key)/g, ""), last_mod_dt:(new Date()).toISOString(),last_mod_id:AuthService.getCurrentUser().userid,before:JSON.stringify(this.props.data.meta_join), after:JSON.stringify({})})
         this.setState({
             ...this.state,
             message:"삭제가 완료되었습니다",
             messageType:"alert"
         })
-        // setTimeout(() => {
         this.props.getData()
-        // }, 1000)
     }
 
     // 스키마의 버전이 다른 새로운 스키마가 들어와서 새로 등록한 메타가 있음을 알려준다
@@ -97,17 +90,17 @@ class Metadetail extends Component {
     }
 
     // detail 화면에 나오는 버튼을 정의한다
-    detailBtn = (topic_name, sch, meta) => {
-        // console.log(topic_name, sch, meta)
-        // console.log("schema ->",sch.schema, "meta ->",meta, "is_used ->", meta.is_used)
+    detailBtn = (topic_name, sch, meta, meta_history, changed) => {
         const sc = helpers.isEmptyObj(sch.schema)
+        const td = sch.wipeout
         const me = helpers.isEmptyObj(meta)
-        const mi = meta.is_used
+        const mi = me ? false:JSON.parse(meta.is_used)
         const ch = this.changed(meta, sch);
-
+        const hi = meta_history.length > 0 ? true : false;
+        // console.log(helpers.isEmptyObj(sch.schema), sc)
+        // console.log(ch, sc)
         const cond = [sc, me]
-        let typeofapi;
-
+        let typeofapi = "api3";
         function arrayEquals(a, b){
             return Array.isArray(a) &&
                 Array.isArray(b) &&
@@ -116,20 +109,28 @@ class Metadetail extends Component {
         }
 
         if(arrayEquals(cond, [false, false]) === true) typeofapi = "api1"
-        if(arrayEquals(cond, [false, true]) === true) typeofapi = "api1"
-        if(arrayEquals(cond, [true, true]) === true) typeofapi = "api2"
-        if(arrayEquals(cond, [true, false]) === true) typeofapi = "api3"
+        // if(arrayEquals(cond, [false, true]) === true) typeofapi = "api3"
+        // if(arrayEquals(cond, [true, true]) === true) typeofapi = "api3"
+        // if(arrayEquals(cond, [undefined, true]) === true) typeofapi = "api3"
+        // if(arrayEquals(cond, [undefined, false]) === true) typeofapi = "api3"
+        // if(arrayEquals(cond, [true, false]) === true) typeofapi = "api2"
+        // if(arrayEquals(cond, [true, false]) === true) typeofapi = "api3"
+        // if(arrayEquals(cond, [true, false]) === true) typeofapi = "api3"
+        // if(arrayEquals(cond, [null, true]) === true) typeofapi = "api3"
+        // if(arrayEquals(cond, [null, false]) === true) typeofapi = "api3"
+        // if(td === false) typeofapi = "api2"
 
-        // console.log(sc, me, mi)
+
+        console.log("sc:",sc, "me:",me, "mi:",mi, "ch:",ch, "hi:",hi,"td:",td, "api:",typeofapi)
         return (
             <>
-                {ch ? <button type="button" className="btn btn-changed" onClick={(e)=> this.changing(e, sch.subject, sch, meta)}>변경 등록</button>:<></>}
-                <button type="button" className="btn" onClick={e=>this.view(e, "json", topic_name)} disabled={me === false && mi === "true" ? false:true}>조회</button>
-                {sc === false && me === false && mi === 'true' ?
-                <button type="button" className="btn" onClick={e=>this.write(e,"update", topic_name)} disabled={sc === true ? true:false}>수정</button>:
-                <button type="button" className="btn " onClick={e=>this.write(e,"reg", topic_name)} disabled={sc !== false && me !== false ? true:false}>등록</button>}
-                <button type="button" className="btn btn-delete" onClick={e=> this.callAction(e, "confirm", "정말 삭제하시겠습니까?",typeofapi, sch.subject)} role={typeofapi} disabled={typeofapi === 'api1' && (mi === 'false' || mi === undefined) ? true : false}>삭제</button>
-                <button type="button" className="btn btn-history" onClick={(e)=>this.view(e, "history", topic_name)} disabled={me ? true:false}>이력</button>
+                {ch === true && sc === false && td === true ? <button type="button" className="btn btn-changed" onClick={(e)=> this.changing(e, sch.subject, sch, meta)}>변경 등록</button>:<></>}
+                <button type="button" className="btn" onClick={e=>this.view(e, "json", topic_name)} disabled={me === false && mi === true ? false:true}>조회</button>
+                {sc === false && me === false && mi === true && td === true ?
+                <button type="button" className="btn" onClick={e=>this.write(e,"update", topic_name)} disabled={ch !== false && sc === false ? true:false}>수정</button>:
+                <button type="button" className="btn " onClick={e=>this.write(e,"reg", topic_name)} disabled={sc !== false|| td === false ? true:false}>등록</button>}
+                <button type="button" className="btn btn-delete" onClick={e=> this.callAction(e, "confirm", "정말 삭제하시겠습니까?",typeofapi, sch.subject)} role={typeofapi} disabled={sc != false || mi === true  || td === false ? false:true} role={typeofapi}>삭제</button>
+                <button type="button" className="btn btn-history" onClick={(e)=>this.view(e, "history", topic_name)} disabled={ hi ? false:true}>이력</button>
 
             </>
         )
@@ -138,7 +139,8 @@ class Metadetail extends Component {
 
     // 스키마의 버전이 다른 새로운 스키마가 들어와서 새로 등록한 메타가 있음을 알려준다
     changed = (meta_join, schema) => {
-        return meta_join && parseInt(schema.version.$numberLong) > parseInt(meta_join.schema_version) ? true : false
+        // console.log(schema.version, meta_join.schema_version)
+        return meta_join && schema.version > meta_join.schema_version ? true : false
     }
 
 
@@ -180,20 +182,13 @@ class Metadetail extends Component {
         }
       }
 
-
-
     render(){
+        console.log(this.props.data)
         if(this.props.data === null) return false;
-        const {changed} = this.props;
-        const { schema, meta_join } = helpers.parseNested(this.props.data) || {}
-        // const { schema } = helpers.parseNested(this.props.data) || {}
-        let sch = JSON.parse(schema);
-        let meta = helpers.isEmptyObj(meta_join) === false && JSON.parse(meta_join).is_used === 'true' ? JSON.parse(meta_join):{}
-        // const { meta }= this.props || {}
-        // console.log("meta ->",meta)
-        const topic_name = sch.subject.replace(/(-value|-key)/g, "")
-        // console.log("schema ->",helpers.isEmptyObj(sch.schema), "meta ->",helpers.isEmptyObj(meta), "is_used ->", meta.is_used)
-        const cond = [helpers.isEmptyObj(sch.schema), helpers.isEmptyObj(meta), meta.is_used]
+        const { schema, changed } = this.props.data
+        const meta_join = this.props.data.meta_join && this.props.data.meta_join.is_used === 'true' ? this.props.data.meta_join : {}
+        const meta_history = this.props.data.meta_history ? this.props.data.meta_history : []
+        const topic_name = schema.subject.replace(/(-value|-key)/g, "")
         return (
             <>
             <div className="detail-info">
@@ -203,22 +198,22 @@ class Metadetail extends Component {
                 </div>
                     <div className="info-group schema_id">
                         <label className="info-label">물리 스키마 버전</label>
-                        <p>{meta.schema_id ? meta.schema_id : "-"}</p>
+                        <p>{schema.version}</p>
                     </div>
                     <div className="info-group revision">
                         <label className="info-label">논리 스키마 버전</label>
-                        <p>{meta.revision ? meta.revision : "-"}</p>
+                        <p>{meta_join.revision ? meta_join.revision : "-"}</p>
                     </div>
                     <div className="info-group last_mod_id">
                         <label className="info-label">마지막 수정자</label>
-                        <p>{meta.last_mod_id ?meta.last_mod_id:"-" }</p>
+                        <p>{meta_join.last_mod_id ? meta_join.last_mod_id:"-" }</p>
                     </div>
                     <div className="info-group last_mod_dt">
                         <label className="info-label">마지막 수정 일시</label>
-                        <p>{meta.last_mod_dt ? helpers.krDateTime(meta.last_mod_dt) : "-"}</p>
+                        <p>{meta_join.last_mod_dt ? helpers.krDateTime(meta_join.last_mod_dt) : "-"}</p>
                     </div>
                 <div className="btn-group">
-                    {this.detailBtn(topic_name,sch,meta)}
+                    {this.detailBtn(topic_name,schema,meta_join, meta_history, changed)}
                 </div>
             </div>
             {this.state.message && (

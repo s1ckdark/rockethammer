@@ -23,7 +23,7 @@ class UserHistory extends Component {
 
   handlePageChange(pageNumber) {
     // console.log(`active page is ${pageNumber}`);
-    this.props.router.navigate('/admin/history/'+pageNumber)
+    this.props.router.navigate('/admin/userhistory/'+pageNumber)
     this.fetchData(pageNumber-1)
   }
 
@@ -62,8 +62,8 @@ class UserHistory extends Component {
                 {data.list && data.list.length > 0 ? data.list.map((item, index)=>{
                   return (
                     <tr data-index={index}>
-                      <td>{data.size*parseInt(data.current)+index+1}</td>
-                      <td>admin</td>
+                      <td>{data.count - (data.size * data.current) - index}</td>
+                      <td>{item.modifier}</td>
                       <td>{item.userid}</td>
                       <td>{item.mod_item}</td>
                       <td>{helpers.krDateTime(item.mod_dt)}</td>
@@ -78,16 +78,15 @@ class UserHistory extends Component {
             </table>
           </div>
           <div className="paging">
-            <Pagination
-              activePage={data.current+1}
-              itemsCountPerPage={data.size}
-              totalItemsCount={data.count}
-              pageRangeDisplayed={5}
-              onChange={this.handlePageChange}
-              itemClass="page-item"
-              activeLinkClass="page-active"
-              linkClass="page-link"
-              innerClass="pagination"
+          <Pagination
+                activePage={data.current+1}
+                itemsCountPerPage={data.size}
+                totalItemsCount={data.count}
+                onChange={this.handlePageChange}
+                itemClass="page-item"
+                activeLinkClass="page-active"
+                linkClass="page-link"
+                innerClass="pagination"
             />
           </div>
           </div>

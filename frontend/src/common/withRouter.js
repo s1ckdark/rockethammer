@@ -6,7 +6,12 @@ export const withRouter = (Component) => {
     let location = useLocation();
     let navigate = useNavigate();
     let params = useParams();
-    return <Component {...props} router={{ location, navigate, params }} />;
+
+    const reload = () => {
+      navigate(location.pathname);
+    }
+
+    return <Component {...props} router={{ location, navigate, params, reload }} />;
   }
   return ComponentWithRouterProp;
 };

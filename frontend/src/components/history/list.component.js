@@ -20,9 +20,9 @@ class Historylist extends Component {
         super(props);
         this.state = {
             data:{
-                totalcnt:0,
                 current:0,
-                pageSize:5,
+                count:0,
+                size:10,
                 list:[]
             },
             idx: '',
@@ -34,13 +34,13 @@ class Historylist extends Component {
     }
 
     handlePageChange(pageNumber) {
-        this.props.router.navigate('/meta/view/history/list/'+this.state.topic_name+'/'+pageNumber)
+        this.props.router.navigate('/meta/history/list/'+this.state.topic_name+'/'+pageNumber)
         this.fetchData(this.state.topic_name, pageNumber-1);
       }
 
 
     fetchData = (topic_name,page=0) => {
-        axios.post(process.env.REACT_APP_API+"/history/gethistory",{keyword:this.state.topic_name,size:5,page:page}).then(res => {
+        axios.post(process.env.REACT_APP_API+"/history/gethistory",{keyword:this.state.topic_name,size:10,page:page}).then(res => {
             this.setState({
                 ...this.state,
                 data:res.data,
@@ -57,7 +57,7 @@ class Historylist extends Component {
 
     detailView = (e, idx, topic_name) => {
         e.preventDefault();
-        this.props.router.navigate('/meta/view/history/view/'+topic_name,{state:{data:this.state.data.list[idx]}})
+        this.props.router.navigate('/meta/history/view/'+topic_name,{state:{data:this.state.data.list[idx]}})
     }
 
     render(){
@@ -70,10 +70,10 @@ class Historylist extends Component {
                 <div className="meta history">
                     <div className="page-header">
                         <BreadcrumbComponent/>
-                        <div className="search-bar">
+                        {/* <div className="search-bar">
                             <input className="input-search" name="search" value={this.state.search} onChange = {this.onChangeKeyword} placeholder="검색 할 토픽명을 입력하세요"/>
                             <button type="button" className="btn btn-search" onClick={e=>this.fetchData(0, 'search')}>토픽 검색</button>
-                        </div>
+                        </div> */}
                     </div>
                     <div className="listing">
                         <div className="schema-list">
@@ -90,7 +90,7 @@ class Historylist extends Component {
                                     {list.length > 0 ? list.map((item,index) => {
                                         return(
                                             <tr data-index={index} className="text-center" key={item.hist_id} onClick={(e)=>{this.detailView(e, index, item.topic_name)}}>
-                                                <th scope="row">{index+1}</th>
+                                                <th scope="row">{count - (current*size) - index}</th>
                                                 <td className="value-subject value form-group">
                                                 {item.topic_name}
                                                 </td>
@@ -107,9 +107,9 @@ class Historylist extends Component {
                             </table>
                             <div className="paging">
                                 <Pagination
-                                    activePage={data.current+1}
-                                    itemsCountPerPage={data.size}
-                                    totalItemsCount={data.count}
+                                    activePage={current+1}
+                                    itemsCountPerPage={size}
+                                    totalItemsCount={count}
                                     pageRangeDisplayed={5}
                                     onChange={this.handlePageChange}
                                     itemClass="page-item"

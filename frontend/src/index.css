@@ -1,0 +1,62 @@
+body {
+	margin: 0;
+	font-family: 'Pretendard', 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
+		'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !important;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	letter-spacing: -0.5px;
+	font-size: 14px;
+	line-height: 1.3;
+	font-weight: 400;
+	box-sizing: border-box;
+}
+body > div {
+	mix-blend-mode: overlay;
+}
+body * {
+	letter-spacing: -0.5px;
+}
+
+a {
+	text-decoration: none;
+}
+a:active,
+a:focus {
+	color: inherit;
+}
+
+button {
+	white-space: pre;
+	color: #fff;
+}
+button:disabled,
+button[disabled] {
+	opacity: 0.5;
+	border: none;
+	color: rgba(0, 0, 0, 0.5);
+}
+
+input,
+textarea,
+select {
+	border: none;
+}
+input:focus,
+input:active,
+textarea:focus,
+textarea:active,
+select:focus,
+select:active {
+	border: 0;
+	outline: none;
+}
+
+select {
+	height: 42px;
+	border: none;
+}
+
+table tr td,
+table tr th {
+	vertical-align: middle;
+} /*# sourceMappingURL=index.css.map */

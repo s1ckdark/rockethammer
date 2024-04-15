@@ -25,7 +25,7 @@ export default class Kafkaadmin extends Component {
         ...this.state,
         redirect: true
       })
-    } 
+    }
   }
 
   runAfterRender = () => {

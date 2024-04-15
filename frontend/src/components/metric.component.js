@@ -27,7 +27,7 @@ export default class Metric extends Component {
         ...this.state,
         redirect: true
       })
-    } 
+    }
   }
 
 

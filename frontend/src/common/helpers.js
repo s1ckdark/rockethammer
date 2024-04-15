@@ -9,7 +9,7 @@ const helpers = {
     },
     // connector에 의해 들어온 topic들의 시간은 mongodb의 ISODate로 들어오기 떄문에 KR time으로 변경해줘야한다
     schemaTime : (date) => {
-        var tmp = new Date(date);
+        var tmp = new Date(date.replace(/:[0-9]{3}/,""))
         tmp = tmp.setHours(tmp.getHours() + 9);
         return new Date(new Date(tmp) - new Date().getTimezoneOffset() * 60000).toISOString().split('.')[0].replace('T', ' ')
     },
@@ -57,7 +57,9 @@ const helpers = {
                     "스키마ID":"schema_id",
                     "스키마버전":"schema_version",
                     "메타버전":"meta_version",
+                    "물리스키마버전":"schema_version",
                     "데이터삭제주기":"recycle_pol",
+                    "논리스키마버전":"revision",
                     "관리부서":"op_name",
                     "업무시스템":"service",
                     "연관토픽":"related_topics",
@@ -79,12 +81,19 @@ const helpers = {
             const pattern = new RegExp(
                 Object.keys(swaps).map(e => `(?:"(${e})":)`).join("|"), "g"
             );
-            const result = JSON.stringify(data, null, 8).replace(pattern, m => `"${swaps[m.slice(1,-2)]}":`)
+            const result = typeof(data) === 'object' ? JSON.stringify(data, null, 8).replace(pattern, m => `"${swaps[m.slice(1,-2)]}":`):data.replace(pattern, m => `"${swaps[m.slice(1,-2)]}":`)
             return result;
     },
         // obj가 빈값인지 아닌지 구분한다
     isEmpty : ( str ) => {
         return (str === '' || str === undefined || str === null || str === 'null' );
+    },
+    isNull : (value) => {
+        if (value.includes('null')) {
+            return 'Y';
+        } else {
+            return 'N';
+        }
     },
     // obj가 빈값인지 아닌지 구분한다
     isNotEmpty : (str) => {
@@ -125,7 +134,7 @@ const helpers = {
             "list":"목록",
             "write":"등록",
             "view":"조회",
-            "history":"사용자 이력",
+            "history":"이력",
             "retension":"보존기간(일)",
             "pii":"pii",
             "table":"테이블",
@@ -134,7 +143,16 @@ const helpers = {
             "update":"수정",
             "reg":"등록",
             "change":"변경 등록",
-            "":"홈"
+            "":"홈",
+            "userhistory":"사용자 이력",
+            "support":"지원",
+            "incident":"장애",
+            "document":"문서",
+            "diag":"점검",
+            "etc":"기타",
+            "title":"제목",
+            "contents":"내용",
+            "tag":"태그"
         }
         return  defineName[name] ? defineName[name]:name;
     },
@@ -179,9 +197,13 @@ const helpers = {
                 return str
             }
     },
-    // string을 json으로 바꾼다
-    parse : (str) => {
-        return JSON.parse(str);
+    alertbox : (message) => {
+        this.setState({
+            ...this.state,
+            message: message,
+            messageType:'alert',
+            successful:false
+        },()=>document.querySelector(".dialog .btn-close").focus())
     },
     // javascript의 confirm을 구현
     useConfirm : (e, message, onConfirm, onCancel) => {
@@ -205,6 +227,12 @@ const helpers = {
         },
         {}
      )
+    },
+    depth : (o) => {
+        var values;
+        if (Array.isArray(o)) values = o;
+        else if (typeof o === "object") values = Object.keys(o).map(k=>o[k]);
+        return values ? Math.max.apply(0, values.map(helpers.depth))+1 : 1;
     }
 }
 

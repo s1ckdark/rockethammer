@@ -10,11 +10,7 @@ class Admin extends Component {
           <Breadcrumb/>
         </div>
         <div className="overviewing">
-          <div className="inner">
-          <div className="rocket-group">
-          <div className="rocket floating"></div>
-          <div className="bg_rocket"></div>
-        </div>
+        <div className="inner">
             <div className="info">
               <div className="info-userRegister" onClick={(e) => this.props.router.navigate('/admin/register')}>
                 <h1>사용자 등록</h1>
@@ -24,7 +20,7 @@ class Admin extends Component {
                 <h1>사용자 관리</h1>
                 <p>사용자에 대한 변경 및 삭제, 관리 합니다</p>
               </div>
-              <div className="info-userHistory" onClick={(e) => this.props.router.navigate('/admin/history')}>
+              <div className="info-userHistory" onClick={(e) => this.props.router.navigate('/admin/userhistory')}>
                 <h1>사용자 이력</h1>
                 <p>사용자의 사용 현황을 확인 합니다</p>
               </div>
@@ -35,7 +31,7 @@ class Admin extends Component {
             </div>
           </div>
         </div>
-      </div>
+        </div>
     );
   }
 }

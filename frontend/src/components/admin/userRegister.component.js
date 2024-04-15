@@ -4,8 +4,8 @@ import axios from 'axios';
 import Breadcrumb from "../breadcrumb.component";
 import { withRouter } from "../../common/withRouter";
 import Dialog from "../dialog.component";
-class UserRegister extends Component {
 
+class UserRegister extends Component {
   constructor(props) {
     super(props);
     this.handleRegister = this.handleRegister.bind(this);
@@ -31,10 +31,19 @@ class UserRegister extends Component {
         confirmPassword:"",
         result:false
       },
-      successful: false,
       message: "",
-      modal: false
+      messageType:"",
+      successful: false,
+      user:{}
     };
+  }
+
+  componentDidMount(){
+    const user = JSON.parse(localStorage.getItem("user"));
+    this.setState({
+      ...this.state,
+      user:user
+    })
   }
 
   dialogReset = ()=>{
@@ -42,6 +51,7 @@ class UserRegister extends Component {
       ...this.state,
       message: ""
     })
+    if(this.state.successful === true) this.props.router.navigate('/admin/manager');
   }
 
   validate(){
@@ -52,7 +62,7 @@ class UserRegister extends Component {
         name:"",
         dept:"",
         group:""
-      }
+    }
     let formIsValid = true;
 
     if (!fields["userid"]) {
@@ -121,17 +131,21 @@ class UserRegister extends Component {
       errors["group"] = "그룹을 지정해주세요";
     }
 
-    this.setState({
-      ...this.state,
-      errors: errors,
-      successful:false,
-      message:"입력란에 잘못된 입력이 있습니다. 안내를 확인하시고 수정해주세요"
-    });
+    if(formIsValid === false) {
+      this.setState({
+        ...this.state,
+        errors: errors,
+        messageType:"alert",
+        successful: false,
+        message:"입력란에 잘못된 입력이 있습니다. 안내를 확인하시고 수정해주세요",
+      });
+  }
 
     return formIsValid;
 }
 
   onChangeValue = (e) => {
+    e.preventDefault()
     this.setState({
       ...this.state,
       fields:{
@@ -150,26 +164,9 @@ class UserRegister extends Component {
     this.props.router.navigate(-1)
   }
 
-  handleRegister(e) {
+  handleRegister = (e) => {
     e.preventDefault();
-
     if(!this.validate()) {
-      this.setState({
-        fields:{
-        userid: "",
-        password: "",
-        name:"",
-        dept:"",
-        group:"USER",
-        },
-        compare:{
-          newPassword:"",
-          confirmPassword:"",
-          result:false
-        },
-        successful: false,
-        message: ''
-      })
       return false;
   }
 
@@ -179,23 +176,26 @@ class UserRegister extends Component {
       this.state.fields.name,
       this.state.fields.dept,
       this.state.fields.group
-    ).then(response => {
-        this.setState({
-          message: response.data.message,
-          successful: true
-        });
+    ).then(res => {
+      if(res.status === 200) {
         axios.post(process.env.REACT_APP_API+"/user/upthistory",
           {
+            modifier: this.state.user.userid,
             userid: this.state.fields.userid,
             mod_item: "사용자 등록"
           }
         ).then( res => {
           if(res.status === 200) {
-            this.props.router.navigate('/admin/manager');
-            // window.location.reload()
+                  this.setState({
+                    ...this.state,
+                    type:"list",
+                    successful: true,
+                    message: "등록이 완료되었습니다",
+                    messageType:"alert"
+                  })
          }
         })
-      },
+      }},
       error => {
         const resMessage =
           (error.response &&
@@ -203,8 +203,8 @@ class UserRegister extends Component {
             error.response.data.message) ||
           error.message ||
           error.toString();
-
         this.setState({
+          ...this.state,
           successful: false,
           message: resMessage
         });
@@ -235,26 +235,6 @@ class UserRegister extends Component {
     })
   }
 
-  dialogFunc = (act) => {
-    switch (act){
-      case 'yes':
-
-      break;
-
-      case 'no':
-
-      break;
-
-      case 'close':
-        this.setState({
-          ...this.state,
-          message: ""
-        })
-      break;
-      default:
-        console.log("dialogFunc")
-    }
-  }
 
   render() {
     return (
@@ -305,7 +285,7 @@ class UserRegister extends Component {
               <button type="button" className="btn btn-cancel" onClick={this.handleCancelClick}>취소</button>
             </div>
           {this.state.message && (
-            <Dialog type="alert" callback={this.dialogFunc} message={this.state.message}/>
+             <Dialog type="alert" callback={this.dialogReset} message={this.state.message}/>
           )}
         </div>
       </div>

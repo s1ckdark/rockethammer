@@ -1,9 +1,9 @@
-import React, { Component }  from 'react';
+import React from 'react';
 import { Navigate } from 'react-router-dom';
 
 const PrivateRoute = ({ isAllowed, children, redirectTo }) => {
-  if (!isAllowed) return <Navigate to={redirectTo} replace />;
-  return children;
+  const user = JSON.parse(localStorage.getItem("user"));
+  return user === null ? <Navigate to={redirectTo} replace /> : children;
 };
 
 export default PrivateRoute;

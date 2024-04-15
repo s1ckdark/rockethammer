@@ -121,7 +121,7 @@ class UserWebLog extends Component {
                                     {data.list && data.list.length > 0 ? data.list.map((item,index) => {
                                         return(
                                             <tr data-index={index} key={data.size*parseInt(data.current)+index+1}>
-                                                <td scope="row">{data.size*parseInt(data.current)+index+1}</td>
+                                                <td scope="row">{data.count - (data.size * data.current) - index}</td>
                                                 <td className="log">{item.log}</td>
                                                 <td className="ipAddr">{item.ipAddr}</td>
                                                 <td className="userid">{item.userid}</td>

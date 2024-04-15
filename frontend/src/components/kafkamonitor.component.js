@@ -8,7 +8,6 @@ import { Navigate } from "react-router-dom";
 class Kafkamonitor extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       content: "",
       redirect:false
